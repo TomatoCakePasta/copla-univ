@@ -24,6 +24,8 @@ const router = createRouter({
       // HomeContentコンポーネントを読み込みます
       // HomeContentはimportしたHomeContent.vueのことです
       component: HomeContent
+
+      // ログインページに飛ばす
     },
     {
       path: "/event",

@@ -149,6 +149,7 @@
                     repContent: item.repContent,
                     // repUserIcon: item.repUserIcon,
                     repTime: item.repTime,
+                    repFav: item.repFav,
                     // 返信を送った人のidを追記
                     // repUserId: item.repUserId
                 });
@@ -220,7 +221,7 @@
                 propという変数でコンポーネントに値を渡します
                 左辺に任意の変数名を指定し、右辺に今回のfor文で取得したpostを渡します
             -->
-            {{ post }}
+            <!-- {{ post }} -->
             <PostContent
                 :key="post.postID"
                 :post="post"

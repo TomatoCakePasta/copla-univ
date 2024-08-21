@@ -31,7 +31,7 @@
     // シングルポストのページに遷移
     const onFocus = () => {
         // router.push({ path: `/post/${ post.id }`, state: { postData: post }});
-        router.push({ path: `/post/${ post.id }`, params: { id: post.id }});
+        router.push({ path: `/post/${ post.postID }`, params: { id: post.postID }});
     }
 
     // textareaでEnterが押された時の処理
@@ -111,7 +111,7 @@
                 cssでdisplay:noneで非表示を使う場合は、開発者ツールで見えてしまいますが
                 v-ifは要素が無いので見えません
             -->
-            <hr v-if="post.replies.length">
+            <hr v-if="post.replies.length - dispNum > 0">
 
             <!-- 返信 -->
             <div v-for="(rep, index) in post.replies" :key="rep.repID">
@@ -142,15 +142,15 @@
                     <v-card-item class="pt-0">
                         <div class="ml-3 flex">
                             <v-icon size="20" @click.stop="" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
-                            <p>5</p>
+                            <p>{{ rep.repFav }}</p>
                         </div>
                     </v-card-item>
                 </div>
             </div>
 
-            <hr v-if="dispNum <= 1 && post.replies.length">
+            <hr v-if="dispNum <= 1 && post.replies.length - dispNum > 0">
             <!-- .stopで親カードのonFocusを作動させずに返信を開ける -->
-            <p link v-if="dispNum <= 1 && post.replies.length" @click.stop="openReplies(post.replies)" class="top-layer mouse">さらに{{ post.replies.length - 1 }}件の返信</p>
+            <p link v-if="dispNum <= 1 && post.replies.length && post.replies.length - dispNum > 0" @click.stop="openReplies(post.replies)" class="top-layer mouse">さらに{{ post.replies.length - dispNum }}件の返信</p>
         </v-card>
     </div>
 </template>
