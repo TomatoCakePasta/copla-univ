@@ -64,19 +64,20 @@
                     <div class="flex">
                         <p class="icon" :style="{  }"></p>
                         <p class="mt-2 font-weight-bold">
-                            {{ post.userName }}さん
+                            {{ post.postName }}さん
                         </p>
                         <p class="mt-2 ml-2 sub-info">
-                            M-D h:m
+                            <!-- M-D h:m -->
+                             {{ post.postTime }}
                         </p>
-                        <p class="mt-2 ml-auto sub-info">ジャンル</p>
+                        <p class="mt-2 ml-auto sub-info">{{ post.postGenre }}</p>
                     </div>
                 </v-card-item>
 
                 <!-- 投稿本文 -->
                 <v-card-item class="pt-0">
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
-                        {{ post.content }}
+                        {{ post.postContent }}
                     </v-card-text>
                 </v-card-item>
 
@@ -84,7 +85,7 @@
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
                         <v-icon size="20" @click.stop="" :ripple="false" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
-                        <p>5</p>
+                        <p>{{ post.postFav }}</p>
                     </div>
                 </v-card-item>
 
@@ -110,10 +111,10 @@
                 cssでdisplay:noneで非表示を使う場合は、開発者ツールで見えてしまいますが
                 v-ifは要素が無いので見えません
             -->
-            <hr v-if="post.replies">
+            <hr v-if="post.replies.length">
 
             <!-- 返信 -->
-            <div v-for="(rep, index) in post.replies" :key="rep.id">
+            <div v-for="(rep, index) in post.replies" :key="rep.repID">
                 <!-- 
                     表示件数を指定します
                     初期値は1件で
@@ -124,17 +125,17 @@
                         <div class="flex">
                             <p class="icon" :style="{  }"></p>
                             <p class="mt-2 font-weight-bold">
-                                {{ rep.userName }}さん
+                                {{ rep.repName }}さん
                             </p>
                             <p class="mt-2 ml-2 sub-info">
-                                M-D h:m
+                                {{ rep.repTime }}
                             </p>
                         </div>
                     </v-card-item>
         
                     <v-card-item class="pt-0">
                         <v-card-text class="pt-0" style="white-space: pre-wrap;">
-                            {{ rep.content }}
+                            {{ rep.repContent }}
                         </v-card-text>
                     </v-card-item>
 
@@ -147,9 +148,9 @@
                 </div>
             </div>
 
-            <hr v-if="dispNum <= 1 && post.replies">
+            <hr v-if="dispNum <= 1 && post.replies.length">
             <!-- .stopで親カードのonFocusを作動させずに返信を開ける -->
-            <p link v-if="dispNum <= 1 && post.replies" @click.stop="openReplies(post.replies)" class="top-layer mouse">さらに{{ post.replies.length - 1 }}件の返信</p>
+            <p link v-if="dispNum <= 1 && post.replies.length" @click.stop="openReplies(post.replies)" class="top-layer mouse">さらに{{ post.replies.length - 1 }}件の返信</p>
         </v-card>
     </div>
 </template>
