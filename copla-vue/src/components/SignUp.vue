@@ -12,7 +12,7 @@
             </div>
             <v-card max-width="600px" class="mx-auto mt-5 pa-10 pt-0 form-size">
                 <v-card-text>
-                    <v-card-title>Login</v-card-title>
+                    <v-card-title>Sign Up</v-card-title>
                     <v-form>
                         <v-text-field label="ユーザ名">
                             <!-- <template v-slot:prepend>
@@ -26,8 +26,8 @@
                             </template> -->
                         </v-text-field>
                         <v-card-action>
-                            <v-btn class="w-100 text-none text-white" color="blue-darken-4" variant="flat">ログイン</v-btn>
-                            <v-btn class="w-100 mt-5" color="blue-darken-4" variant="outlined" to="/signup">新規登録</v-btn>
+                            <v-btn class="w-100 text-none text-white" color="orange-darken-4" variant="flat">新規登録</v-btn>
+                            <v-btn class="w-100 mt-5" color="orange-darken-4" variant="outlined" to="/login">戻る</v-btn>
                         </v-card-action>
                     </v-form>
                 </v-card-text>

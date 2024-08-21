@@ -12,6 +12,7 @@ import NotFound from '@/components/NotFound.vue'
 import BusPage from '@/components/BusPage.vue'
 import HomeBase from '@/components/HomeBase.vue'
 import LoginPage from '@/components/LoginPage.vue'
+import SignUp from '@/components/SignUp.vue';
 
 const isAuthenticated = ref(true);
 
@@ -86,6 +87,11 @@ const router = createRouter({
       path: "/login",
       name: "login",
       component: LoginPage,
+    },
+    {
+      path: "/signup",
+      name: "signup",
+      component: SignUp,
     },
     // {
     //   path: "/event",
