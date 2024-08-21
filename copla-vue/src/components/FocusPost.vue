@@ -2,14 +2,16 @@
     import { computed, ref, onMounted } from "vue";
     import { useRoute } from "vue-router";
     import { mdiHeartOutline } from "@mdi/js";
+    import axios from "axios";
 
     const route = useRoute();
 
     // クエリに渡されたidの値を取得
     console.log(route.params.id + "の投稿を抽出");
 
-    const post = ref(null);
+    const post = ref();
     const isLoading = ref(false);
+    const dispNum = ref(1);
 
     // const post = route.state.post;
     // console.log("GET state post");
@@ -23,14 +25,7 @@
         const id = route.params.id;
 
         // axiosでそのidの投稿と返信を取得
-        
-        // イメージ
-        post.value = { id: 1, userName: "Taro", content: "Hello1\nこんにちは", replies: 
-            [
-                {id: 1, userName: "Taro", content: "返信"}, 
-                {id: 2, userName: "Shimizu", content: "返信2"}
-            ] 
-        };
+        getSinglePost(id);
 
         isLoading.value = true;
     })
@@ -38,6 +33,68 @@
     console.log(post);
 
     const testFlag = ref(true);
+
+    const getSinglePost = (id) => {
+        axios.get(`http://localhost:3000/get/${id}`)
+            .then((res) => {
+                post.value = nestPostsAndReplies(res.data.posts);
+                post.value = post.value[0];
+                console.log(post);
+                console.log("GET DATA");
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    }
+
+    function nestPostsAndReplies(data) {
+        // 投稿IDをキーにして、投稿とその返信を格納するマップ
+        const postsMap = new Map();
+
+        // 元のデータをループして、投稿とその返信をグループ化する
+        data.forEach(item => {
+            // 投稿がまだマップにない場合は追加
+            if (!postsMap.has(item.postID)) {
+                postsMap.set(item.postID, {
+                    postID: item.postID,
+                    postName: item.postName,
+                    postContent: item.postContent,
+                    // postUserIcon: 0,
+                    postFav: item.postFav,
+                    postTime: item.postTime,
+                    postGenre: item.genre,
+
+                    // 投稿を送った人のidを追記
+                    // postUserId: item.postUserId,
+
+                    // 学系学部学年とか
+                    // position: item.position,
+                    // department: item.department,
+                    // location: item.location,
+
+                    // lastEnterTime: item.lastEnterTime,
+                    replies: []  // 返信の配列
+                });
+            }
+            
+            // 投稿に対する返信を追加
+            if (item.repName) {
+                postsMap.get(item.postID).replies.push({
+                    repID: item.repID,
+                    repName: item.repName,
+                    repContent: item.repContent,
+                    // repUserIcon: item.repUserIcon,
+                    repTime: item.repTime,
+                    repFav: item.repFav,
+                    // 返信を送った人のidを追記
+                    // repUserId: item.repUserId
+                });
+            }
+        });
+
+        // マップから配列に変換
+        return Array.from(postsMap.values());
+    }
 </script>
 
 <template>
@@ -50,6 +107,7 @@
     <div>
         <h1>ID = {{ route.params.id }} の投稿と返信抽出イメージ</h1>
 
+        <!-- {{ post }} -->
         <!-- {{ post.replies }} -->
         <v-card
             class="ma-5 my-2"
@@ -69,24 +127,24 @@
                             <!-- {{ post.userName }}さん -->
                         </v-card-subtitle>
                         <p class="mt-2 font-weight-bold">
-                            {{ post.userName }}さん
+                            {{ post.postName }}さん
                         </p>
                         <p class="mt-2 ml-2 sub-info">
-                            M-D h:m
+                            {{ post.postTime }}
                         </p>
                     </div>
                 </v-card-item>
 
                 <v-card-item class="pt-0">
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
-                        {{ post.content }}
+                        {{ post.postContent }}
                     </v-card-text>
                 </v-card-item>
 
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
                         <v-icon size="20" @click.stop="" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
-                        <p>5</p>
+                        <p>{{ post.postFav }}</p>
                     </div>
                 </v-card-item>
 
@@ -103,32 +161,32 @@
                 </v-card-item>
             </div>           
 
-            <hr v-if="post.replies">
+            <hr v-if="post.replies.length - dispNum > 0">
 
             <!-- 返信 -->
-            <div v-for="(rep) in post.replies" :key="rep.id">
+            <div v-for="(rep) in post.replies" :key="rep.repID">
                 <v-card-item>
                     <div class="flex">
                         <p class="icon" :style="{  }"></p>
                         <p class="mt-2 font-weight-bold">
-                            {{ rep.userName }}さん
+                            {{ rep.repName }}さん
                         </p>
                         <p class="mt-2 ml-2 sub-info">
-                            M-D h:m
+                            {{ rep.repTime }}
                         </p>
                     </div>
                 </v-card-item>
     
                 <v-card-item class="pt-0">
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
-                        {{ rep.content }}
+                        {{ rep.repContent }}
                     </v-card-text>
                 </v-card-item>
 
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
                         <v-icon size="20" @click.stop="" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
-                        <p>5</p>
+                        <p>{{ rep.repFav }}</p>
                     </div>
                 </v-card-item>
             </div>

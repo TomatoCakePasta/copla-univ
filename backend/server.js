@@ -26,10 +26,10 @@ app.use(logger('dev'));
 // ミドルウェア
 app.use(cors({
     // 以下からのアクセスを許可
-    origin: "http://localhost:5173",
+    // origin: "http://localhost:5173",
 
     // 許可するアクセス
-    methods: ["GET", "POST", "DELETE"],
+    methods: ["GET", "POST"],
     // 許可するデータ
     allowedHeaders: ["Content-Type", "Authorization"],
 
@@ -77,7 +77,35 @@ app.get("/get/all", (req, res) => {
             throw err;
         }
         res.send({posts: results});
-    })
+    });
+});
+
+app.get("/get/:id", (req, res) => {
+    const id = +req.params.id;
+    console.log(`single post id = ${id}`);
+    con.query(`SELECT 
+                    p.postID, 
+                    p.genre, 
+                    u.userName AS postName, 
+                    p.body AS postContent, 
+                    p.datetime AS postTime, 
+                    p.fav AS postFav,
+                    r.repID,
+                    u2.userName AS repName,
+                    r.body AS repContent,
+                    r.datetime AS repTime,
+                    r.fav AS repFav
+                FROM posts p
+                LEFT JOIN users u ON p.userID = u.userID 
+                LEFT JOIN replies r ON p.postID = r.postID
+                LEFT JOIN users u2 ON r.userID = u2.userID
+                WHERE p.postID = ?
+                ORDER BY p.datetime DESC`, id, (err, results) => {
+        if (err) {
+            throw err;
+        }
+        res.send({posts: results});
+    });
 });
 
 app.listen(PORT, () => {
