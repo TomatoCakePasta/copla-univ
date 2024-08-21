@@ -51,7 +51,7 @@ provide("isMobile", isMobile);
 
 <!-- 以下の内容がHTMLに挿入されます -->
 <template>
-  <v-layout class="rounded rounded-md">
+  <!-- <v-layout class="rounded rounded-md"> -->
     <!-- <v-app-bar color="surface-variant" title="Application bar"></v-app-bar> -->
 
     <!-- 
@@ -64,22 +64,18 @@ provide("isMobile", isMobile);
     <!-- PC版 -->
     <!-- SideBarコンポーネントの内容が挿入されます -->
     <!-- 直接書く事も出来ますが分割することでスッキリさせています -->
-    <SideBar />
+    <!-- <SideBar /> -->
 
     <!-- TrendMenuコンポーネントの内容が挿入されます -->
-    <TrendMenu />
+    <!-- <TrendMenu /> -->
 
-    <v-main class="align-center justify-center" style="min-height: 300px;">
+    <!-- <v-main class="align-center justify-center" style="min-height: 300px;">
       <div>
-        <!-- 
-            アクセスするURLによって読み込まれるものが変わります
-            投稿, マイページ, 設定など...
-            詳しいルーティングはrouter/index.jsを見てください
-        -->
         <RouterView />
       </div>
-    </v-main>
-  </v-layout>
+    </v-main> -->
+  <!-- </v-layout> -->
+  <RouterView />
 </template>
 
 <!-- CSSを記述 -->

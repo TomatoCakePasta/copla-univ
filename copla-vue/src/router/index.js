@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { ref } from "vue";
 
 // コンポーネントの読み込み
 import HomeContent from '@/components/HomeContent.vue'
@@ -9,6 +10,10 @@ import SettingsPage from '@/components/SettingsPage.vue'
 import FocusPost from '@/components/FocusPost.vue'
 import NotFound from '@/components/NotFound.vue'
 import BusPage from '@/components/BusPage.vue'
+import HomeBase from '@/components/HomeBase.vue'
+import LoginPage from '@/components/LoginPage.vue'
+
+const isAuthenticated = ref(true);
 
 // ルーティング制御のファイルです
 const router = createRouter({
@@ -19,57 +24,112 @@ const router = createRouter({
       path: '/',
       // 以下はvueで名前を指定してアクセスするための別名です
       // hrefとかでURLを書かなくても homeを指定すれば飛べます
-      name: 'home',
+      // name: 'home',
 
       // HomeContentコンポーネントを読み込みます
       // HomeContentはimportしたHomeContent.vueのことです
-      component: HomeContent
+      // component: HomeContent
+
+      component: HomeBase,
+
+      children: [
+        {
+          path: "/",
+          name: "home",
+          component: HomeContent,
+        },
+        {
+          path: "/event",
+          name: "event",
+          component: EventPage,
+        },
+        {
+          // trafficやaccessの方がいい?
+          path: "/bus",
+          name: "bus",
+          component: BusPage,
+        },
+        {
+          path: "/articles",
+          name: "articles",
+          component: ArticlesContent,
+        },
+        {
+          path: "/mypage",
+          name: "mypage",
+          component: MyPage,
+        },
+        {
+          path: "/settings",
+          name: "settings",
+          component: SettingsPage,
+        },
+        {
+          // シングルポストのルートです
+          path: "/post/:id",
+
+          // path: "/post",
+          name: "focusPost",
+          component: FocusPost,
+
+          // FocusPostコンポーネントにクエリの値を渡します
+          // まだ上手く使いきれてないのでもう少し勉強します
+          props: (route) => ({
+            post: String(route.query.post)
+          }),
+        },
+      ],
 
       // ログインページに飛ばす
     },
     {
-      path: "/event",
-      name: "event",
-      component: EventPage
+      path: "/login",
+      name: "login",
+      component: LoginPage,
     },
-    {
-      path: "/bus",
-      name: "bus",
-      component: BusPage
-    },
-    {
-      path: '/articles',
-      name: 'articles',
+    // {
+    //   path: "/event",
+    //   name: "event",
+    //   component: EventPage
+    // },
+    // {
+    //   path: "/bus",
+    //   name: "bus",
+    //   component: BusPage
+    // },
+    // {
+    //   path: '/articles',
+    //   name: 'articles',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       // component: () => import('../views/AboutView.vue')
-      component: ArticlesContent
-    },
-    {
-      path: "/mypage",
-      name: "mypage",
-      component: MyPage
-    },
-    {
-      path: "/settings",
-      name: "settings",
-      component: SettingsPage
-    },
-    {
-      // シングルポストのルートです
-      path: "/post/:id",
+    //   component: ArticlesContent
+    // },
+    // {
+    //   path: "/mypage",
+    //   name: "mypage",
+    //   component: MyPage
+    // },
+    // {
+    //   path: "/settings",
+    //   name: "settings",
+    //   component: SettingsPage
+    // },
+    // {
+    //   // シングルポストのルートです
+    //   path: "/post/:id",
 
-      // path: "/post",
-      name: "focusPost",
-      component: FocusPost,
+    //   // path: "/post",
+    //   name: "focusPost",
+    //   component: FocusPost,
 
-      // FocusPostコンポーネントにクエリの値を渡します
-      // まだ上手く使いきれてないのでもう少し勉強します
-      props: (route) => ({
-        post: String(route.query.post)
-      }),
-    },
+    //   // FocusPostコンポーネントにクエリの値を渡します
+    //   // まだ上手く使いきれてないのでもう少し勉強します
+    //   props: (route) => ({
+    //     post: String(route.query.post)
+    //   }),
+    // },
     {
       // 上記以外のURLにアクセスした場合はNot Foundページに遷移します
       path: `/:pathMatch(.*)*`,
@@ -77,5 +137,14 @@ const router = createRouter({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.name !== "login" && !isAuthenticated.value) {
+    next({ name: "login" });
+  }
+  else {
+    next();
+  }
+});
 
 export default router
