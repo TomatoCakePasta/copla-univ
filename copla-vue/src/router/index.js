@@ -87,11 +87,13 @@ const router = createRouter({
       path: "/login",
       name: "login",
       component: LoginPage,
+      meta: { requiresAuth: true },
     },
     {
       path: "/signup",
       name: "signup",
       component: SignUp,
+      meta: { requiresAuth: true },
     },
     {
       // 上記以外のURLにアクセスした場合はNot Foundページに遷移します
@@ -131,18 +133,6 @@ router.beforeEach((to, from, next) => {
   else {
     next();
   }
-
-  // if (to.name !== "login" && !session) {
-  //   if (to.name === "signup") {
-  //     next();
-  //   }
-  //   else {
-  //     next({ name: "login" });
-  //   }
-  // }
-  // else {
-  //   next();
-  // }
 });
 
 export default router

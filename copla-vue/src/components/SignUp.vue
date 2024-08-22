@@ -1,5 +1,42 @@
 <script setup>
+    import { ref } from "vue";
     import { mdiAccount, mdiLock, mdiEyeOff } from '@mdi/js';
+    import axios from "axios";
+    import { useRouter } from "vue-router";
+
+    const name = ref("");
+    const pass = ref("");
+
+    const router = useRouter();
+
+    const onSignUp = () => {
+        if (name === "" || pass === "") {
+            alert("全ての項目を入力してください");
+            return;
+        }
+
+        const data = {
+            name: name.value,
+            pass: pass.value,
+        };
+
+        // postリクエスト
+        axios.post("http://localhost:3000/signup", data, { withCredentiala: true })
+            .then((res) => {
+                if (res.data.flag) {
+                    clearForm();
+                    router.push({ name: "login" });
+                }
+                else {
+                    alert("そのユーザ名は既に使われています");
+                }
+            });
+    }
+
+    const clearForm = () => {
+        name.value = "";
+        pass.value = "";
+    }
 </script>
 
 <template>
@@ -12,21 +49,25 @@
             </div>
             <v-card max-width="600px" class="mx-auto mt-5 pa-10 pt-0 form-size">
                 <v-card-text>
-                    <v-card-title>Sign Up</v-card-title>
+                    <v-card-title>新規登録</v-card-title>
                     <v-form>
-                        <v-text-field label="ユーザ名">
+
+                        <v-text-field label="学籍番号 技育博のため無し" disabled>
+                        </v-text-field>
+                        
+                        <v-text-field label="ユーザ名" v-model="name">
                             <!-- <template v-slot:prepend>
                                 <v-icon>{{ mdiAccount }}</v-icon>
                             </template> -->
                         </v-text-field>
         
-                        <v-text-field type="password" label="パスワード">
+                        <v-text-field type="password" label="パスワード" v-model="pass">
                             <!-- <template v-slot:prepend>
                                 <v-icon>{{ mdiLock }}</v-icon>
                             </template> -->
                         </v-text-field>
                         <v-card-action>
-                            <v-btn class="w-100 text-none text-white" color="orange-darken-4" variant="flat">新規登録</v-btn>
+                            <v-btn class="w-100 text-none text-white" color="orange-darken-4" variant="flat" @click="onSignUp">新規登録</v-btn>
                             <v-btn class="w-100 mt-5" color="orange-darken-4" variant="outlined" to="/login">戻る</v-btn>
                         </v-card-action>
                     </v-form>

@@ -7,7 +7,7 @@ import session from "express-session";
 // import cookieParser from "cookie-parser";
 // import logger from "morgan";
 // import MemoryStore from "memorystore";
-// import bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 
 const app = express();
 const PORT = 3000;
@@ -59,6 +59,10 @@ const con = mysql.createConnection({
     database : "copla_db"
 });
 
+/**
+ * あとでファイル分割する, ログイン系, 投稿系, ...
+ */
+
 // ログイン
 app.post("/login", (req, res) => {
     // 分割代入
@@ -66,26 +70,69 @@ app.post("/login", (req, res) => {
     // console.log(req.body);
 
     con.query(`SELECT * FROM users 
-                WHERE userName = ? AND password = ?`, 
-                [name, pass], 
-                (err, row) => {
+                WHERE userName = ?`, 
+                name, 
+                (err, rows) => {
         // ユーザが見つかった場合
-        if (row.length) {
-            const user = row[0];
-            const data = { name: user.userName, userID: user.userID };
-            console.log("match");
-            console.log(data);
-            req.session.user = { name };
-            console.log(req.sessionID);
-            console.log(req.session);
-            res.status(200).send({ flag: true, loginName: user.userName, loginID: user.userID });
+        if (rows.length) {
+            let endFlag = false;
+            rows.forEach(row => {
+                console.log(row);
+                if (bcrypt.compareSync(pass, row.password)) {
+                    const data = { userName: row.userName, userID: row.userID };
+                    console.log("match");
+                    console.log(data);
+                    req.session.user = data;        
+                    endFlag = true;
+                    res.status(200).send({ flag: true, loginName: row.userName, loginID: row.userID });
+                }
+            });
+            if (!endFlag) {
+                res.status(200).send({ flag: false });
+            }
         }
         else {
             console.log("No users");
             res.status(200).send({ flag: false });
         }
     });
-})
+});
+
+// 新規登録
+app.post("/signup", (req, res) => {
+    // 重複チェック
+    const { name, pass } = req.body;
+    console.log(name);
+
+    const hashed_pass = bcrypt.hashSync(pass, 10);
+
+    con.query(`SELECT * FROM users 
+                WHERE userName = ?`, 
+                name, 
+                (err, row) => {
+        // 既にユーザ名が存在する場合
+        if (row.length) {
+            res.status(200).send({ flag: false});
+        }
+        // 新規登録許可
+        else {
+            con.query("SELECT * FROM users", (err, allRows) => {
+                const nextID = allRows.length + 1;
+                console.log(nextID, name);
+                con.query(`INSERT INTO users(userID, password, userName, idName) VALUES(?, ?, ?, ?)`, 
+                            [nextID, hashed_pass, name, nextID],
+                            (err) => {
+                    if (err) {
+                        console.error("Failed to signup", err);
+                    }
+                    else {
+                        res.status(200).send({ flag: true });
+                    }
+                });
+            });
+        }
+    });
+});
 
 // ログアウト
 app.post("/logout", (req, res) => {
@@ -98,20 +145,21 @@ app.post("/logout", (req, res) => {
             res.status(200).send({ flag: true });
         }
     })
-})
+});
 
 // セッションチェック
 app.get("/session", (req, res) => {
     let flag = false;
 
     console.log("session check");
+    console.log(req.session.user);
 
     if (req.session.user) {
         flag = true;
     }
 
-    res.status(200).send({ flag: flag});
-})
+    res.status(200).send({ flag: flag, user: req.session.user });
+});
 
 app.get("/", (req, res) => {
     console.log(req.session.user);
@@ -173,6 +221,18 @@ app.get("/get/:id", (req, res) => {
         }
         res.status(200).send({posts: results});
     });
+});
+
+// 新規投稿
+app.post("/post", (req, res) => {
+    // セッションからuserIDを取得
+
+});
+
+// 新規返信
+app.post("/rep/:id", (req, res) => {
+    // 投稿idの投稿に返信をする
+    const postID = id;
 });
 
 app.listen(PORT, () => {

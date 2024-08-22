@@ -3,8 +3,8 @@
     import PostContent from './PostContent.vue';
     import axios from "axios";
 
-    const loginName = inject("loginName");
-    const loginID = inject("loginID");
+    // const loginName = inject("loginName");
+    // const loginID = inject("loginID");
 
     // 画面読み込み時
     onMounted(() => {
@@ -136,7 +136,7 @@
             @clickはv-onディレクティブというVueの属性で要素がクリックされた時に実行する関数などを指定
             します。JSのonClick属性みたいな感じ? addEventListenerを使う事も減ると思います
         -->
-        {{ loginName }} {{ loginID }}
+        <!-- {{ loginName }} {{ loginID }} -->
         <div>
             <v-card
                 class="ma-5 my-2"

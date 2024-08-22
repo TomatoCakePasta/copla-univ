@@ -39,6 +39,7 @@
                 }
                 else {
                     console.log("NO USERS");
+                    alert("入力が間違っています");
                 }
             })
             .catch((err) => {
@@ -74,7 +75,7 @@
 <template>
     <!-- <div class="top"> -->
     <v-app>
-        <v-btn @click="onSessionTest">session</v-btn>
+        <!-- <v-btn @click="onSessionTest">session</v-btn> -->
         <v-main class="body-color">
             <div class="center mt-5 flex">
                 <img src="../assets/logo.png" alt="">
@@ -82,8 +83,12 @@
             </div>
             <v-card max-width="600px" class="mx-auto mt-5 pa-10 pt-0 form-size">
                 <v-card-text>
-                    <v-card-title>Login</v-card-title>
+                    <v-card-title>ログイン</v-card-title>
                     <v-form>
+
+                        <v-text-field label="学籍番号 技育博のため無し" disabled>
+                        </v-text-field>
+
                         <v-text-field label="ユーザ名" v-model="name">
                             <!-- <template v-slot:prepend>
                                 <v-icon>{{ mdiAccount }}</v-icon>

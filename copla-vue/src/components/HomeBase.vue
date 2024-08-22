@@ -5,13 +5,15 @@
   <script>(JavaScript), <template>(HTML要素), <style>(CSS)
   を記述します
 */
-import { ref, provide, watch, onMounted } from "vue";
+import { ref, provide, watch, onMounted, inject } from "vue";
 import { RouterLink, RouterView } from 'vue-router'
 
 // コンポーネントを読み込みます
 import SideBar from './SideBar.vue';
 import TrendMenu from "./TrendMenu.vue";
 
+const loginName = inject("loginName");
+const loginID = inject("loginID");
 </script>
 
 <!-- 以下の内容がHTMLに挿入されます -->

@@ -75,6 +75,11 @@
         postFormFlag.value = true;
     }
 
+    const onPost = () => {
+        // postリクエスト
+        postDialog = false; 
+    }
+
 </script>
 
 <template>
@@ -197,7 +202,7 @@
     
                         <v-btn
                             text="送信"
-                            @click="postDialog = false; "
+                            @click="onPost"
                             class="ml-5"
                         ></v-btn>
                         <!-- @click="onPost(); postDialog = false; " -->
