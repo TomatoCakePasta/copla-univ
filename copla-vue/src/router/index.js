@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { ref } from "vue";
+import { ref, inject } from "vue";
+import axios from 'axios';
 
 // コンポーネントの読み込み
 import HomeContent from '@/components/HomeContent.vue'
@@ -12,8 +13,7 @@ import NotFound from '@/components/NotFound.vue'
 import BusPage from '@/components/BusPage.vue'
 import HomeBase from '@/components/HomeBase.vue'
 import LoginPage from '@/components/LoginPage.vue'
-
-const isAuthenticated = ref(true);
+import SignUp from '@/components/SignUp.vue';
 
 // ルーティング制御のファイルです
 const router = createRouter({
@@ -31,6 +31,7 @@ const router = createRouter({
       // component: HomeContent
 
       component: HomeBase,
+      meta: { requiresAuth: true },
 
       children: [
         {
@@ -86,50 +87,14 @@ const router = createRouter({
       path: "/login",
       name: "login",
       component: LoginPage,
+      meta: { requiresAuth: true },
     },
-    // {
-    //   path: "/event",
-    //   name: "event",
-    //   component: EventPage
-    // },
-    // {
-    //   path: "/bus",
-    //   name: "bus",
-    //   component: BusPage
-    // },
-    // {
-    //   path: '/articles',
-    //   name: 'articles',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import('../views/AboutView.vue')
-    //   component: ArticlesContent
-    // },
-    // {
-    //   path: "/mypage",
-    //   name: "mypage",
-    //   component: MyPage
-    // },
-    // {
-    //   path: "/settings",
-    //   name: "settings",
-    //   component: SettingsPage
-    // },
-    // {
-    //   // シングルポストのルートです
-    //   path: "/post/:id",
-
-    //   // path: "/post",
-    //   name: "focusPost",
-    //   component: FocusPost,
-
-    //   // FocusPostコンポーネントにクエリの値を渡します
-    //   // まだ上手く使いきれてないのでもう少し勉強します
-    //   props: (route) => ({
-    //     post: String(route.query.post)
-    //   }),
-    // },
+    {
+      path: "/signup",
+      name: "signup",
+      component: SignUp,
+      meta: { requiresAuth: true },
+    },
     {
       // 上記以外のURLにアクセスした場合はNot Foundページに遷移します
       path: `/:pathMatch(.*)*`,
@@ -139,8 +104,31 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== "login" && !isAuthenticated.value) {
-    next({ name: "login" });
+  if (to.name !== "login" && to.meta.requiresAuth) {
+    if (to.name === "signup") {
+      next();
+    }
+    else {
+      try {
+        axios.get("http://localhost:3000/session", { withCredentials: true })
+          .then((res) => {
+            if (res.data.flag) {
+              // 認証済みの場合はアクセス許可
+              console.log("Pass");
+              next();
+            }
+            else {
+              console.log("Please Login");
+              // ログイン要求
+              next("/login");
+            }
+          });
+      }
+      catch (err) {
+        console.error("Authentication check failed", err);
+        next("/login");
+      }
+    }
   }
   else {
     next();
