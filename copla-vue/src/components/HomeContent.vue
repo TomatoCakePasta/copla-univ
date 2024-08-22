@@ -1,7 +1,15 @@
 <script setup>
-    import { ref, onMounted, inject } from "vue";
+    import { ref, onMounted, inject, onUnmounted } from "vue";
     import PostContent from './PostContent.vue';
     import axios from "axios";
+    import io from "socket.io-client";
+
+    // definePropsはマクロなので未宣言で使用可
+    const props = defineProps({
+        socket: Object
+    });
+
+    const socket = props.socket;
 
     // const loginName = inject("loginName");
     // const loginID = inject("loginID");
@@ -121,10 +129,22 @@
             }
         });
 
+        postsMap.forEach(post => {
+            post.replies.sort((a, b) => new Date(a.repTime) - new Date(b.repTime));
+        })
+
         // マップから配列に変換
         return Array.from(postsMap.values());
     }
 
+    const onRequest = () => {
+        socket.emit("hello");
+    }
+
+    socket.on("getPosts", () => {
+        console.log("投稿表示を更新");
+        getDatas();
+    });
 </script>
 
 <template>
@@ -138,6 +158,7 @@
         -->
         <!-- {{ loginName }} {{ loginID }} -->
         <div>
+            <v-btn @click="onRequest">Socket TEST</v-btn>
             <v-card
                 class="ma-5 my-2"
                 elevation="2"
@@ -191,6 +212,7 @@
             <PostContent
                 :key="post.postID"
                 :post="post"
+                :socket="props.socket"
             />
 
             <!-- 記事の場合 -->

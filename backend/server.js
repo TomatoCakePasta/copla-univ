@@ -23,6 +23,7 @@ app.use(bodyParser.json());
 // ミドルウェア
 app.use(cors({
     // 以下からのアクセスを許可
+    // 全てからのアクセスを許可したい
     origin: "http://localhost:5173",
 
     // 許可するアクセス
@@ -226,13 +227,45 @@ app.get("/get/:id", (req, res) => {
 // 新規投稿
 app.post("/post", (req, res) => {
     // セッションからuserIDを取得
+    const userID = req.session.user.userID;
+    const { content, genre, datetime } = req.body;
 
+    console.log("New POST");
+    console.log(userID);
+
+
+    con.query(`INSERT INTO posts(userID, genre, body, datetime) VALUES(?, ?, ?, ?)`, 
+                [userID, genre, content, datetime],
+                (err) => {
+        if (err) {
+            console.error("Failed to post", err);
+            res.status(200).send({ flag: false });
+        }
+        else {
+            res.status(200).send({ flag: true });
+        }
+    })
 });
 
 // 新規返信
-app.post("/rep/:id", (req, res) => {
-    // 投稿idの投稿に返信をする
-    const postID = id;
+app.post("/reply", (req, res) => {
+    const userID = req.session.user.userID;
+    const { postID, repContent, datetime } = req.body;
+
+    console.log("New Reply");
+    console.log(userID);
+
+    con.query(`INSERT INTO replies(postID, userID, body, datetime) VALUES(?, ?, ?, ?)`, 
+                [postID, userID, repContent, datetime],
+                (err) => {
+        if (err) {
+            console.error("Failed to reply", err);
+            res.status(200).send({ flag: false });
+        }
+        else {
+            res.status(200).send({ flag: true });
+        }
+    })
 });
 
 app.listen(PORT, () => {

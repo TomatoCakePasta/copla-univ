@@ -1,19 +1,33 @@
 <script setup>
-/*
-  シングルファイルコンポーネントなので、
-  1つのVueファイル内でそれぞれ独立して
-  <script>(JavaScript), <template>(HTML要素), <style>(CSS)
-  を記述します
-*/
-import { ref, provide, watch, onMounted, inject } from "vue";
-import { RouterLink, RouterView } from 'vue-router'
+  /*
+    シングルファイルコンポーネントなので、
+    1つのVueファイル内でそれぞれ独立して
+    <script>(JavaScript), <template>(HTML要素), <style>(CSS)
+    を記述します
+  */
+  import { ref, provide, watch, onMounted, inject, onUnmounted } from "vue";
+  import { RouterLink, RouterView } from 'vue-router'
 
-// コンポーネントを読み込みます
-import SideBar from './SideBar.vue';
-import TrendMenu from "./TrendMenu.vue";
+  // コンポーネントを読み込みます
+  import SideBar from './SideBar.vue';
+  import TrendMenu from "./TrendMenu.vue";
 
-const loginName = inject("loginName");
-const loginID = inject("loginID");
+  import io from "socket.io-client"
+
+  const PORT = 8000;
+
+  const socket = io.connect(`http://localhost:${PORT}`);
+
+  socket.on("connect", () => {
+    console.log("connected to server.");
+  });
+
+  const loginName = inject("loginName");
+  const loginID = inject("loginID");
+
+  onUnmounted(() => {
+    socket.disconnect();
+  })
 </script>
 
 <!-- 以下の内容がHTMLに挿入されます -->
@@ -31,10 +45,10 @@ const loginID = inject("loginID");
     <!-- PC版 -->
     <!-- SideBarコンポーネントの内容が挿入されます -->
     <!-- 直接書く事も出来ますが分割することでスッキリさせています -->
-    <SideBar />
+    <SideBar :socket="socket"/>
 
     <!-- TrendMenuコンポーネントの内容が挿入されます -->
-    <TrendMenu />
+    <TrendMenu :socket="socket"/>
 
     <v-main class="align-center justify-center" style="min-height: 300px;">
       <div>
@@ -43,7 +57,7 @@ const loginID = inject("loginID");
             投稿, マイページ, 設定など...
             詳しいルーティングはrouter/index.jsを見てください
         -->
-        <RouterView />
+        <RouterView :socket="socket"/>
       </div>
     </v-main>
   </v-layout>

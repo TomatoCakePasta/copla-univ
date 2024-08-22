@@ -1,10 +1,11 @@
 <script setup>
-    import { ref } from "vue";
+    import { ref, watch } from "vue";
     import { useRouter } from 'vue-router';
     import { 
             mdiChatOutline,
             mdiHeartOutline
             } from "@mdi/js";
+    import axios from "axios";
     // const props = defineProps({
     //     post: {
     //         type: Object,
@@ -14,30 +15,90 @@
 
     // propsを取得します
     // postという名前で渡されたので、それを指定しています
-    const props = defineProps(["post"]);
+    const props = defineProps(["post", "socket"]);
 
-    const post = props.post;
-    console.log(typeof(post));
+    // 以下の記述だとpostは静的なので、新規投稿が反映されない
+    // const post = props.post;
 
+    // console.log(typeof(post));
+
+    const socket = props.socket;
+    
     const router = useRouter();
 
     const dispNum = ref(1);
 
+    const repContent = ref("");
+
+    const openFlag = ref(false);
+
+    const genre = ["All", "授業", "サークル", "研究室", "就活", "その他", "イベント", "記事"]
+
     const openReplies = (rep) => {
         console.log(rep.length);
         dispNum.value = rep.length;
+        openFlag.value = true;
     }
+
+    watch(() => props.post.replies, () => {
+        if (openFlag.value) {
+            openReplies(props.post.replies);
+        }
+    })
 
     // シングルポストのページに遷移
     const onFocus = () => {
         // router.push({ path: `/post/${ post.id }`, state: { postData: post }});
-        router.push({ path: `/post/${ post.postID }`, params: { id: post.postID }});
+        router.push({ path: `/post/${ props.post.postID }`, params: { id: props.post.postID }});
+    }
+
+    const onReply = (id) => {
+        console.log("onReply", id);
+        const repTime = getTime();
+
+        if (repContent.value === "") {
+            alert("返信内容を入力してください");
+            return;
+        }
+
+        const data = {
+            postID: id,
+            repContent: repContent.value,
+            datetime: repTime
+        };
+
+        axios.post("http://localhost:3000/reply", data, { withCredentials: true})
+            .then((res) => {
+                if (res.data.flag) {
+                    repContent.value = "";
+
+                    socket.emit("makePost");
+                }
+                else {
+                    alert("Failed to reply");
+                }
+            })
+            .catch((err) => {
+
+            });
     }
 
     // textareaでEnterが押された時の処理
     // (他の動作と干渉しないように用意しただけです)
     const handleEnterKey = (event) => {
         event.target.value += "\n";
+    }
+
+    const getTime = () => {
+        const date = new Date();
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        const H = String(date.getHours()).padStart(2, "0");
+        const M = String(date.getMinutes()).padStart(2, "0");
+        const s = String(date.getSeconds()).padStart(2, "0");
+
+        return `${y}-${m}-${d} ${H}:${M}:${s}`;
     }
 </script>
 
@@ -48,7 +109,8 @@
 
 <template>
     <div>
-        <!-- {{ post }} -->
+        <!-- {{ repContent }} -->
+        <!-- {{ props.post }} -->
         <v-card
             class="ma-5 my-5"
             elevation="2"
@@ -64,20 +126,21 @@
                     <div class="flex">
                         <p class="icon" :style="{  }"></p>
                         <p class="mt-2 font-weight-bold">
-                            {{ post.postName }}さん
+                            {{ props.post.postName }}さん
                         </p>
                         <p class="mt-2 ml-2 sub-info">
                             <!-- M-D h:m -->
-                             {{ post.postTime }}
+                             {{ props.post.postTime }}
                         </p>
-                        <p class="mt-2 ml-auto sub-info">{{ post.postGenre }}</p>
+                        <!-- <p class="mt-2 ml-auto sub-info">{{ post.postGenre }}</p> -->
+                        <v-chip class="mt-2 ml-auto sub-info">{{ genre[props.post.postGenre] }}</v-chip>
                     </div>
                 </v-card-item>
 
                 <!-- 投稿本文 -->
                 <v-card-item class="pt-0">
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
-                        {{ post.postContent }}
+                        {{ props.post.postContent }}
                     </v-card-text>
                 </v-card-item>
 
@@ -85,7 +148,7 @@
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
                         <v-icon size="20" @click.stop="" :ripple="false" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
-                        <p>{{ post.postFav }}</p>
+                        <p>{{ props.post.postFav }}</p>
                     </div>
                 </v-card-item>
 
@@ -99,8 +162,9 @@
                             rows="1"
                             auto-grow
                             class="ml-2"
+                            v-model.trim="repContent"
                         ></v-textarea>
-                        <v-btn @click.stop="" class="rounded-xl ml-2" color="blue">Reply</v-btn>
+                        <v-btn @click.stop="onReply(props.post.postID)" class="rounded-xl ml-2" color="blue">Reply</v-btn>
                     </div>
                 </v-card-item>
             </div>           
@@ -111,10 +175,10 @@
                 cssでdisplay:noneで非表示を使う場合は、開発者ツールで見えてしまいますが
                 v-ifは要素が無いので見えません
             -->
-            <hr v-if="post.replies.length - dispNum > 0">
+            <hr v-if="props.post.replies.length - dispNum > 0">
 
             <!-- 返信 -->
-            <div v-for="(rep, index) in post.replies" :key="rep.repID">
+            <div v-for="(rep, index) in props.post.replies" :key="rep.repID">
                 <!-- 
                     表示件数を指定します
                     初期値は1件で
@@ -148,9 +212,9 @@
                 </div>
             </div>
 
-            <hr v-if="dispNum <= 1 && post.replies.length - dispNum > 0">
+            <hr v-if="dispNum <= 1 && props.post.replies.length - dispNum > 0">
             <!-- .stopで親カードのonFocusを作動させずに返信を開ける -->
-            <p link v-if="dispNum <= 1 && post.replies.length && post.replies.length - dispNum > 0" @click.stop="openReplies(post.replies)" class="top-layer mouse">さらに{{ post.replies.length - dispNum }}件の返信</p>
+            <p link v-if="dispNum <= 1 && props.post.replies.length && props.post.replies.length - dispNum > 0" @click.stop="openReplies(props.post.replies)" class="top-layer mouse">さらに{{ props.post.replies.length - dispNum }}件の返信</p>
         </v-card>
     </div>
 </template>
