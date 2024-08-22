@@ -248,9 +248,24 @@ app.post("/post", (req, res) => {
 });
 
 // 新規返信
-app.post("/rep/:id", (req, res) => {
-    // 投稿idの投稿に返信をする
-    const postID = id;
+app.post("/reply", (req, res) => {
+    const userID = req.session.user.userID;
+    const { postID, repContent, datetime } = req.body;
+
+    console.log("New Reply");
+    console.log(userID);
+
+    con.query(`INSERT INTO replies(postID, userID, body, datetime) VALUES(?, ?, ?, ?)`, 
+                [postID, userID, repContent, datetime],
+                (err) => {
+        if (err) {
+            console.error("Failed to reply", err);
+            res.status(200).send({ flag: false });
+        }
+        else {
+            res.status(200).send({ flag: true });
+        }
+    })
 });
 
 app.listen(PORT, () => {

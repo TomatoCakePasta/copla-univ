@@ -9,6 +9,8 @@
         socket: Object
     });
 
+    const socket = props.socket;
+
     // const loginName = inject("loginName");
     // const loginID = inject("loginID");
 
@@ -127,15 +129,20 @@
             }
         });
 
+        postsMap.forEach(post => {
+            post.replies.sort((a, b) => new Date(a.repTime) - new Date(b.repTime));
+        })
+
         // マップから配列に変換
         return Array.from(postsMap.values());
     }
 
     const onRequest = () => {
-        props.socket.emit("hello");
+        socket.emit("hello");
     }
 
-    props.socket.on("getPosts", () => {
+    socket.on("getPosts", () => {
+        console.log("投稿表示を更新");
         getDatas();
     });
 </script>
@@ -205,6 +212,7 @@
             <PostContent
                 :key="post.postID"
                 :post="post"
+                :socket="props.socket"
             />
 
             <!-- 記事の場合 -->

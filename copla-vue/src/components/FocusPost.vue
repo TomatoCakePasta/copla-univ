@@ -12,6 +12,8 @@
     const post = ref();
     const isLoading = ref(false);
     const dispNum = ref(1);
+    const id = ref();
+    const repContent = ref("");
 
     // const post = route.state.post;
     // console.log("GET state post");
@@ -22,10 +24,10 @@
     // 本来はリンクに投稿オブジェクトを渡したかったけど
     // 上手くできなかったから...再度投稿取得をリクエスト
     onMounted(() => {
-        const id = route.params.id;
+        id.value = route.params.id;
 
         // axiosでそのidの投稿と返信を取得
-        getSinglePost(id);
+        getSinglePost(id.value);
 
         isLoading.value = true;
     })
@@ -95,6 +97,48 @@
         // マップから配列に変換
         return Array.from(postsMap.values());
     }
+
+    const onReply = () => {
+        console.log("onReply", id.value);
+        const repTime = getTime();
+
+        if (repContent.value === "") {
+            alert("返信内容を入力してください");
+            return;
+        }
+
+        const data = {
+            postID: id.value,
+            repContent: repContent.value,
+            datetime: repTime
+        };
+
+        axios.post("http://localhost:3000/reply", data, { withCredentials: true})
+            .then((res) => {
+                if (res.data.flag) {
+                    repContent.value = "";
+                    getSinglePost(data.postID);
+                }
+                else {
+                    alert("Failed to reply");
+                }
+            })
+            .catch((err) => {
+
+            });
+    }
+
+    const getTime = () => {
+        const date = new Date();
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        const H = String(date.getHours()).padStart(2, "0");
+        const M = String(date.getMinutes()).padStart(2, "0");
+        const s = String(date.getSeconds()).padStart(2, "0");
+
+        return `${y}-${m}-${d} ${H}:${M}:${s}`;
+    }
 </script>
 
 <template>
@@ -155,8 +199,9 @@
                             rows="1"
                             auto-grow
                             class="ml-2"
+                            v-model="repContent"
                         ></v-textarea>
-                        <v-btn @click.stop="" class="rounded-xl ml-2" color="blue">Reply</v-btn>
+                        <v-btn @click.stop="onReply" class="rounded-xl ml-2" color="blue">Reply</v-btn>
                     </div>
                 </v-card-item>
             </div>           
