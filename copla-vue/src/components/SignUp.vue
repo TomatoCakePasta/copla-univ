@@ -46,6 +46,7 @@
             <div class="center mt-5 flex">
                 <img src="../assets/logo.png" alt="">
                 <h1 class="title mt-auto mb-auto">Copla</h1>
+                <h3>技育博 体験版</h3>
             </div>
             <v-card max-width="600px" class="mx-auto mt-5 pa-10 pt-0 form-size">
                 <v-card-text>

@@ -3,7 +3,8 @@
     import { useRouter } from 'vue-router';
     import { 
             mdiChatOutline,
-            mdiHeartOutline
+            mdiHeartOutline,
+            mdiHeart
             } from "@mdi/js";
     import axios from "axios";
     // const props = defineProps({
@@ -83,6 +84,41 @@
             });
     }
 
+    const onPostFav = (postID) => {
+
+        console.log(postID, "にいいねを押す");
+
+        if (getPostFavStatus(postID)) {
+            alert("既にいいねを押しています");
+            return;
+        }
+
+        // イメージ
+        // クライアント側で見た目だけ押した感じにする
+        // ブラウザリロードしたらrefプロパティ自体の値は消えるけど
+        // 別のページとか閲覧して戻ってきたときに、
+        // コンポーネントが再レンダリングされて、DBと紐づいた値になるイメージ
+        addFav(postID);
+
+        // サーバのlikesテーブルの追加処理のみする?
+        // こちらでlikesテーブルのユーザがいいねした投稿IDを取得しないとか
+        // axios.post("http://localhost:3000/", postID, { withCredentials: true })
+        //     .then((res) => {
+        //         // 取得した自分がいいねした投稿のIDをpost_favsに格納
+        //         addFav(postID);
+
+        //         // 投稿を再読み込み(いいねを更新)
+        //         // もし重かったら,{{props.post.fav}}の数値にプラス1して、ユーザの見た目ではいいねした様に見せるとか?
+        //     })
+        //     .catch((err) => {
+
+        //     });
+    };
+
+    const onRepFav = () => {
+
+    }
+
     // textareaでEnterが押された時の処理
     // (他の動作と干渉しないように用意しただけです)
     const handleEnterKey = (event) => {
@@ -100,6 +136,21 @@
 
         return `${y}-${m}-${d} ${H}:${M}:${s}`;
     }
+
+    const post_favs = ref({ 67: true, 66: true });
+
+    const getPostFavStatus = (postID) => {
+        return post_favs.value[postID] ?? false;
+    };
+
+    const addFav = (postID) => {
+        post_favs.value[postID] = true;
+    };
+
+    // post_likesからログインユーザがいいねしたpotsIDを取得
+    // keyにpostID, valueに真偽値をセットしてアイコンの色を変えるとか
+
+    // reply_likesも同様
 </script>
 
 <!--
@@ -147,8 +198,9 @@
                 <!-- リアクション いいねとか -->
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
-                        <v-icon size="20" @click.stop="" :ripple="false" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
-                        <p>{{ props.post.postFav }}</p>
+                        <v-icon size="20" @click.stop="onPostFav(props.post.postID)" :ripple="false" color="red" class="on-good rounded-circle">{{ getPostFavStatus(props.post.postID) ? mdiHeart : mdiHeartOutline }}</v-icon>
+                        <p>{{ props.post.postFav }}, postID = </p>
+                        {{ props.post.postID }}
                     </div>
                 </v-card-item>
 
@@ -205,7 +257,7 @@
 
                     <v-card-item class="pt-0">
                         <div class="ml-3 flex">
-                            <v-icon size="20" @click.stop="" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
+                            <v-icon size="20" @click.stop="onRepFav(rep.repID)" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
                             <p>{{ rep.repFav }}</p>
                         </div>
                     </v-card-item>
