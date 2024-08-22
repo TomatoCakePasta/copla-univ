@@ -1,7 +1,10 @@
 <script setup>
-    import { ref, onMounted } from "vue";
+    import { ref, onMounted, inject } from "vue";
     import PostContent from './PostContent.vue';
     import axios from "axios";
+
+    const loginName = inject("loginName");
+    const loginID = inject("loginID");
 
     // 画面読み込み時
     onMounted(() => {
@@ -20,45 +23,7 @@
     const repId = ref(1);
     const getMsg = ref();
 
-    // const postsImageData = ref([]);
-
-    // データの取得はこんなイメージ?
-    // 各投稿の中で返信を入れ子で持つ
-
     const postsImageData = ref();
-    /*
-    = ref([
-        { id: postId.value++, userName: "Taro", content: "Hello1\nこんにちは", replies: 
-            [
-                {id: repId.value++, userName: "Taro", content: "返信"}, 
-                {id: repId.value++, userName: "Shimizu", content: "返信2"},
-                {id: repId.value++, userName: "Kakimura", content: "返信3"}
-            ] 
-        },
-        { id: postId.value++, userName: "Yumi", content: "Hello2", replies:
-            [
-                {id: repId.value++, userName: "Tomita", content: "返信1"},
-                {id: repId.value++, userName: "Sasaki", content: "返信2"}
-            ]
-         },
-        { id: postId.value++, userName: "Kimura", content: "Good Morning 3" },
-
-        { id: postId.value++, userName: "Taro", content: "Hello1", replies: 
-            [
-                {id: repId.value++, userName: "Taro", content: "返信"}, 
-                {id: repId.value++, userName: "Shimizu", content: "返信2"},
-                {id: repId.value++, userName: "Kakimura", content: "返信3"}
-            ] 
-        },
-        { id: postId.value++, userName: "Taro", content: "Hello1", replies: 
-            [
-                {id: repId.value++, userName: "Taro", content: "返信"}, 
-                {id: repId.value++, userName: "Shimizu", content: "返信2"},
-                {id: repId.value++, userName: "Kakimura", content: "返信3"}
-            ] 
-        },
-    ]);
-    */
 
     const samplePost = ref({ id: postId.value++, userName: "Taro", content: "Hello1", replies: 
             [
@@ -93,11 +58,11 @@
     // 画面読み込み時, 一定間隔, ソケットイベント検知などのタイミングで呼出
     const getDatas = () => {
         // 以下のURLに投稿取得リクエストをします
-        axios.get("http://localhost:3000/get/all")
+        axios.get("http://localhost:3000/get/all", {withCredentials: true})
             .then((res) => {
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
-                console.log(postsImageData);
-                console.log("GET DATA");
+                // console.log(postsImageData);
+                // console.log("GET DATA");
             })
             .catch((err) => {
                 console.error(err);
@@ -171,6 +136,7 @@
             @clickはv-onディレクティブというVueの属性で要素がクリックされた時に実行する関数などを指定
             します。JSのonClick属性みたいな感じ? addEventListenerを使う事も減ると思います
         -->
+        {{ loginName }} {{ loginID }}
         <div>
             <v-card
                 class="ma-5 my-2"

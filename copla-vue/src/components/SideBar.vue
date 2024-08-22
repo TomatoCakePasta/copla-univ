@@ -14,8 +14,9 @@
             } from '@mdi/js';
 
     import { ref, computed, onMounted, watch, inject } from 'vue';
-    import { RouterLink, RouterView } from 'vue-router'
+    import { RouterLink, RouterView, useRouter } from 'vue-router'
     import { useDisplay } from 'vuetify/lib/framework.mjs';
+    import axios from 'axios';
     
     const loginFlag = ref(true);
 
@@ -32,12 +33,28 @@
 
     const chatContent = ref("");
 
-    // ログイン処理
-    const onLogin = () => {
-        loginFlag.value = !loginFlag.value;
+    const router = useRouter();
 
-        // isMobile.value = device.xs.value;
-        // isLessHalf.value = device.smAndDown.value;
+    // ログアウト処理
+    const onLogout = () => {
+        loginFlag.value = !loginFlag.value;
+        
+        // ログアウトリクエスト
+        // セッションをクリアする
+        axios.post("http://localhost:3000/logout", {}, { withCredentials: true })
+            .then((res) => {
+                if (res.data.flag) {
+                    console.log("Success to logout");
+                    router.push({ name: "login" });
+                }
+                else {
+                    alert("Failed to logout");
+                    return;
+                }
+            })
+            .catch((err) => {
+                console.error("Error during logout:", err);
+            });
     }
 
     // リロード時に実行
@@ -143,10 +160,10 @@
                         </div>
                     </v-list-item>
 
-                    <v-list-item link to="" class="rounded-xl" @click="onLogin">
+                    <v-list-item link to="" class="rounded-xl" @click="onLogout">
                         <div class="flex">
-                            <v-icon size="40">{{ loginFlag ? mdiLogin : mdiLogout }}</v-icon>
-                            <p class="ml-5 v-center flex" v-if="!isLessHalf">{{ loginFlag ? "ログイン" : "ログアウト" }}</p>
+                            <v-icon size="40">{{ mdiLogout }}</v-icon>
+                            <p class="ml-5 v-center flex" v-if="!isLessHalf">ログアウト</p>
                         </div>
                     </v-list-item>
                 </v-list-item>

@@ -27,6 +27,13 @@ const isLessHalf = ref(device.smAndDown.value);
 // スマホ画面か判定
 const isMobile = ref(device.xs.value);
 
+// セッション管理
+const session = ref(true);
+console.log(session);
+
+const loginName = ref(null);
+const loginID = ref(0);
+
 onMounted(() => {
   isLessHalf.value = device.smAndDown.value;
   isMobile.value = device.xs.value;
@@ -47,6 +54,9 @@ watch(device.name, () => {
 provide("device", device);
 provide("isLessHalf", isLessHalf);
 provide("isMobile", isMobile);
+provide("session", session);
+provide("loginName", loginName);
+provide("loginID", loginID);
 </script>
 
 <!-- 以下の内容がHTMLに挿入されます -->
