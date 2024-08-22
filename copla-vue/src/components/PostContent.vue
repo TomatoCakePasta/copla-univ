@@ -23,6 +23,8 @@
 
     const dispNum = ref(1);
 
+    const genre = ["授業", "サークル", "研究室", "就活", "その他", "イベント", "記事"]
+
     const openReplies = (rep) => {
         console.log(rep.length);
         dispNum.value = rep.length;
@@ -70,7 +72,8 @@
                             <!-- M-D h:m -->
                              {{ post.postTime }}
                         </p>
-                        <p class="mt-2 ml-auto sub-info">{{ post.postGenre }}</p>
+                        <!-- <p class="mt-2 ml-auto sub-info">{{ post.postGenre }}</p> -->
+                        <v-chip class="mt-2 ml-auto sub-info">{{ genre[post.postGenre - 1] }}</v-chip>
                     </div>
                 </v-card-item>
 

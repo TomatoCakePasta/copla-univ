@@ -20,6 +20,10 @@
     
     const loginFlag = ref(true);
 
+    const props = defineProps({
+        socket: Object
+    });
+
     // 画面サイズを監視
     // const device = inject("device");
 
@@ -34,6 +38,20 @@
     const chatContent = ref("");
 
     const router = useRouter();
+
+    // -1ならAllジャンル
+    const selectedKey = ref(0);
+    
+    const items = [
+        { key: 0, value: "All" },
+        { key: 1, value: "授業" },
+        { key: 2, value: "サークル" },
+        { key: 3, value: "研究室" },
+        { key: 4, value: "就活" },
+        { key: 5, value: "その他" },
+        { key: 6, value: "イベント" },
+        { key: 7, value: "記事" }
+    ];
 
     // ログアウト処理
     const onLogout = () => {
@@ -76,10 +94,49 @@
     }
 
     const onPost = () => {
+        if (chatContent.value === "") {
+            alert("投稿内容を入力してください");
+            return;
+        }
+
+        const postTime = getTime();
+
+        const data = { 
+            content: chatContent.value,
+            genre: selectedKey.value,
+            datetime: postTime
+        };
+
         // postリクエスト
-        postDialog = false; 
+        axios.post("http://localhost:3000/post", data, { withCredentials: true })
+            .then((res) => {
+                if (res.data.flag) {
+                    // フォームを閉じる
+                    postDialog.value = false; 
+    
+                    chatContent.value = "";
+
+                    // ソケット
+                    props.socket.emit("makePost");
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to post", err);
+                alert("Failed to post", err);
+            });
     }
 
+    const getTime = () => {
+        const date = new Date();
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        const H = String(date.getHours()).padStart(2, "0");
+        const M = String(date.getMinutes()).padStart(2, "0");
+        const s = String(date.getSeconds()).padStart(2, "0");
+
+        return `${y}-${m}-${d} ${H}:${M}:${s}`;
+    }
 </script>
 
 <template>
@@ -193,6 +250,11 @@
                     <v-card-text>
                         <v-textarea variant="outlined" placeholder="投稿内容" class="area" v-model.trim="chatContent"></v-textarea>
                     </v-card-text>
+                    <select v-model="selectedKey">
+                        <option v-for="(item, index) in items" :key="index" :value="item.key">{{ item.value }}</option>
+                    </select>
+                    <!-- {{ selectedKey }} -->
+
 
                     <div class="flex end pa-4">
                         <v-btn
@@ -255,8 +317,8 @@
                     <v-icon size="40">{{ mdiCogOutline }}</v-icon>
                 </v-list-item> -->
     
-                <v-list-item link to="" title="" @click="onLogin" class="pa-0 ma-1 rounded-circle">
-                    <v-icon size="40">{{ loginFlag ? mdiLogin : mdiLogout }}</v-icon>
+                <v-list-item link to="" title="" @click="onLogout" class="pa-0 ma-1 rounded-circle">
+                    <v-icon size="40">{{ mdiLogout }}</v-icon>
                 </v-list-item>
             </div>
         </v-bottom-navigation>

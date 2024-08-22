@@ -1,7 +1,13 @@
 <script setup>
-    import { ref, onMounted, inject } from "vue";
+    import { ref, onMounted, inject, onUnmounted } from "vue";
     import PostContent from './PostContent.vue';
     import axios from "axios";
+    import io from "socket.io-client";
+
+    // definePropsはマクロなので未宣言で使用可
+    const props = defineProps({
+        socket: Object
+    });
 
     // const loginName = inject("loginName");
     // const loginID = inject("loginID");
@@ -125,6 +131,13 @@
         return Array.from(postsMap.values());
     }
 
+    const onRequest = () => {
+        props.socket.emit("hello");
+    }
+
+    props.socket.on("getPosts", () => {
+        getDatas();
+    });
 </script>
 
 <template>
@@ -138,6 +151,7 @@
         -->
         <!-- {{ loginName }} {{ loginID }} -->
         <div>
+            <v-btn @click="onRequest">Socket TEST</v-btn>
             <v-card
                 class="ma-5 my-2"
                 elevation="2"
