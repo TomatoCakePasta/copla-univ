@@ -33,6 +33,7 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 ・Express<br>
 (一度使ったことがあるのと、<br>
 非同期通信などが得意らしいのでPHPから変更しました。)<br>
+・Socket.io<br>
 <br>
 データベース<br>
 ・MySQL<br>
