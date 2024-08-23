@@ -1,4 +1,4 @@
-実行方法
+-- 実行方法
 ・xamppのhtdocsにプロジェクトを作成
 ・xamppでApache, MySQLを起動
 ・ターミナルを3つ立ち上げて以下のコマンドを実行
@@ -14,7 +14,12 @@ cdコマンドでbackendディレクトリに移動し下記を実行
 cdコマンドでbackendディレクトリに移動し、下記を実行
 [node socket.js]
 
-DB初期化用
+その他にトラブル
+モジュールがインストールされていない場合
+以下を実行してください
+[npm install]
+
+-- DB初期化用
 
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
