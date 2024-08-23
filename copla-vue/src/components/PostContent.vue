@@ -16,7 +16,7 @@
 
     // propsを取得します
     // postという名前で渡されたので、それを指定しています
-    const props = defineProps(["post", "socket", "postFavs"]);
+    const props = defineProps(["post", "socket", "postFavs", "repFavs"]);
 
     // 以下の記述だとpostは静的なので、新規投稿が反映されない
     // const post = props.post;
@@ -39,7 +39,7 @@
 
     onMounted(() => {
         // getPostsFaved();
-        console.log(props.postFavs);
+        // console.log(props.postFavs);
     });
 
     const openReplies = (rep) => {
@@ -119,8 +119,22 @@
             });
     };
 
-    const onRepFav = () => {
+    const onRepFav = (repID) => {
+        console.log(repID, "いいねを押下");
 
+        if (everRepFaved(repID)) {
+            alert("既にいいねを押しています");
+            return;
+        }
+
+        axios.post("http://localhost:3000/reply/add-fav", { repID: repID }, { withCredentials: true })
+            .then((res) => {
+                // 取得した自分がいいねした投稿のIDをpost_favsに格納
+                addRepFav(repID); 
+            })
+            .catch((err) => {
+
+            }); 
     }
 
     // textareaでEnterが押された時の処理
@@ -147,6 +161,11 @@
         return ret;
     }
 
+    const getRepFavStatus = (repID) => {
+        const ret = props.repFavs[repID] > 1 ? 1 : 0;
+        return ret;
+    }
+
     // いいね押下済み確認
     // ログイン前に押下済み,ログイン後に押下済みを含む
     const everPostFaved = (postID) => {
@@ -154,11 +173,21 @@
         return ret;
     }
 
+    const everRepFaved = (repID) => {
+        const ret = props.repFavs[repID] > 0 ? true : false;
+        return ret;
+    }
+
     // ローカルで投稿いいね押下の見た目処理
     const addPostFav = (postID) => {
         props.postFavs[postID] = 2;
-        console.log(props.postFavs);
+        // console.log(props.postFavs);
     };
+
+    const addRepFav = (repID) => {
+        props.repFavs[repID] = 2;
+        console.log(props.repFavs);
+    }
 
     // いいね済み投稿取得
     /*
@@ -211,7 +240,7 @@
                     <div class="flex">
                         <p class="icon" :style="{  }"></p>
                         <p class="mt-2 font-weight-bold">
-                            {{ props.post.postName }}さん
+                            {{ props.post.postName }}
                         </p>
                         <p class="mt-2 ml-2 sub-info">
                             <!-- M-D h:m -->
@@ -235,7 +264,6 @@
                 >
                     <div class="ml-3 flex">
                         <v-icon size="30" @click.stop="onPostFav(props.post.postID)" :ripple="false" color="red" class="on-good rounded-circle pa-1">{{ everPostFaved(props.post.postID) ? mdiHeart : mdiHeartOutline }}</v-icon>
-                        <!-- postFavで既に自分も押されている場合,getPostFavStatusで自分が重複加算される -->
                         <p>{{ props.post.postFav + getPostFavStatus(props.post.postID) }}, postID = </p>
                         {{ props.post.postID }}
                     </div>
@@ -278,7 +306,7 @@
                         <div class="flex">
                             <p class="icon" :style="{  }"></p>
                             <p class="mt-2 font-weight-bold">
-                                {{ rep.repName }}さん
+                                {{ rep.repName }}
                             </p>
                             <p class="mt-2 ml-2 sub-info">
                                 {{ rep.repTime }}
@@ -294,8 +322,9 @@
 
                     <v-card-item class="pt-0">
                         <div class="ml-3 flex">
-                            <v-icon size="30" @click.stop="onRepFav(rep.repID)" color="red" class="on-good rounded-circle pa-1">{{ mdiHeartOutline }}</v-icon>
-                            <p>{{ rep.repFav }}</p>
+                            <v-icon size="30" @click.stop="onRepFav(rep.repID)" color="red" class="on-good rounded-circle pa-1">{{ everRepFaved(rep.repID) ? mdiHeart : mdiHeartOutline }}</v-icon>
+                            <p>{{ rep.repFav + getRepFavStatus(rep.repID) }}, postID = </p>
+                            {{ rep.repID }}
                         </div>
                     </v-card-item>
                 </div>

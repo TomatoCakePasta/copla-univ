@@ -21,6 +21,7 @@
 
         // いいねを取得
         getPostsFaved();
+        getRepFaved();
     });
 
     // 投稿をaxiosで送ります
@@ -45,6 +46,7 @@
 
     // propsで渡す
     const postFavs = ref({});
+    const repFavs = ref({});
 
     // 投稿ボタンが押された場合
     const onSubmit = () => {
@@ -162,14 +164,34 @@
                         // console.log("いいね投稿ID", postID.postID);
                         postFavs.value[postID.postID] = 1;
                     });
-                    console.log("いいねした投稿ID");
+                    // console.log("いいねした投稿ID");
                     // console.log(postFavs);
                 }
             })
             .catch((err) => {
                 console.error("Failed to get posts faved", err);
                 // alert("Failed to get posts faved", err);
+            });
+    }
+
+    // いいね済み返信取得
+    const getRepFaved = () => {
+        axios.get("http://localhost:3000/replies/faved", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.favs > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.repIDs.forEach(repID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        repFavs.value[repID.repID] = 1;
+                    });
+                    console.log("いいねした返信ID");
+                    console.log(repFavs);
+                }
             })
+            .catch((err) => {
+                console.error("Failed to get posts faved", err);
+                // alert("Failed to get posts faved", err);
+            });
     }
 </script>
 
@@ -240,6 +262,7 @@
                 :post="post"
                 :socket="props.socket"
                 :postFavs="postFavs"
+                :repFavs="repFavs"
             />
 
             <!-- 記事の場合 -->

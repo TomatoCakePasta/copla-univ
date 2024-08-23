@@ -290,6 +290,22 @@ app.get("/posts/faved", (req, res) => {
 
 // いいね済み返信の取得
 app.get("/replies/faved", (req, res) => {
+    const userID = req.session.user.userID;
+
+    console.log("rep fav");
+    con.query(`SELECT 
+                    repID
+                FROM reply_likes
+                WHERE userID = ?
+                ORDER BY repID ASC`, [userID], (err, results) => {
+        if (err) {
+            throw err;
+        }
+        else {
+            console.log(results.length);
+            res.status(200).send({flag: true, repIDs: results, favs: results.length });
+        }
+    });
 
 });
 
@@ -323,7 +339,30 @@ app.post("/post/add-fav", (req, res) => {
 
 // 返信いいね押下
 app.post("/reply/add-fav", (req, res) => {
+    const repID = req.body.repID;
+    const userID = req.session.user.userID;
 
+    // post_likesで誰がどの返信にいいねしたか追加
+    con.query(`INSERT INTO reply_likes(repID, userID) VALUES(?, ?)`, 
+                [repID, userID],
+                (err) => {
+        if (err) {
+            console.error("Failed to rep fav", err);
+            res.status(200).send({ flag: false });
+        }
+        else {
+            // postsで投稿のいいね数を加算
+            con.query(`UPDATE replies SET fav = fav + 1 WHERE repID = ?`, [repID], (err) => {
+                if (err) {
+                    console.error("Failed to rep fav", err);
+                    res.status(200).send({ flag: false });
+                }
+                else {
+                    res.status(200).send({ flag: true });
+                }
+            });
+        }
+    });
 });
 
 app.listen(PORT, () => {
