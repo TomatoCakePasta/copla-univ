@@ -1,4 +1,4 @@
--- 実行方法 <br>
+### 実行方法 <br>
 ・xamppのhtdocsにプロジェクトを作成 <br>
 ・xamppでApache, MySQLを起動 <br>
 ・ターミナルを3つ立ち上げて以下のコマンドを実行 <br>
@@ -20,7 +20,7 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 [npm install] <br>
 <br>
 <br>
--- 技術<br>
+### 技術<br>
 フロントエンド<br>
 ・Vue.js<br>
 ・Vuetify<br>
