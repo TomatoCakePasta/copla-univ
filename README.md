@@ -1,3 +1,19 @@
+実行方法
+・xamppのhtdocsにプロジェクトを作成
+・xamppでApache, MySQLを起動
+・ターミナルを3つ立ち上げて以下のコマンドを実行
+フロントエンド
+cdコマンドでcopla-vueディレクトリに移動し下記を実行
+[npm run dev]
+
+サーバー1
+cdコマンドでbackendディレクトリに移動し下記を実行
+[node server.js]
+
+ソケットサーバー
+cdコマンドでbackendディレクトリに移動し、下記を実行
+[node socket.js]
+
 DB初期化用
 
 -- phpMyAdmin SQL Dump
