@@ -7,6 +7,7 @@
     const route = useRoute();
 
     const postFavs = ref({});
+    const repFavs = ref({});
 
     // クエリに渡されたidの値を取得
     console.log(route.params.id + "の投稿を抽出");
@@ -33,6 +34,7 @@
 
         // いいねを取得
         getPostsFaved();
+        getRepFaved();
 
         isLoading.value = true;
     })
@@ -133,10 +135,31 @@
     };
 
     // 返信にいいね押下
+    const onRepFav = (repID) => {
+        console.log(repID, "にいいねを押す");
 
+        if (everRepFaved(repID)) {
+            alert("既にいいねを押しています");
+            return;
+        }
+
+        axios.post("http://localhost:3000/reply/add-fav", { repID: repID }, { withCredentials: true })
+            .then((res) => {
+                // 取得した自分がいいねした投稿のIDをpost_favsに格納
+                addRepFav(repID); 
+            })
+            .catch((err) => {
+
+            });
+        };
     // ログイン後にいいねを押したか
     const getPostFavStatus = (postID) => {
         const ret = postFavs.value[postID] > 1 ? 1 : 0;
+        return ret;
+    }
+
+    const getRepFavStatus = (repID) => {
+        const ret = repFavs.value[repID] > 1 ? 1 : 0;
         return ret;
     }
 
@@ -147,10 +170,20 @@
         return ret;
     }
 
+    const everRepFaved = (repID) => {
+        const ret = repFavs.value[repID] > 0 ? true : false;
+        return ret;
+    }
+
     // ローカルで投稿いいね押下の見た目処理
     const addPostFav = (postID) => {
         postFavs.value[postID] = 2;
         console.log(postFavs);
+    };
+
+    const addRepFav = (repID) => {
+        repFavs.value[repID] = 2;
+        console.log(repFavs);
     };
 
     const onReply = () => {
@@ -212,6 +245,27 @@
             })
             .catch((err) => {
                 console.error("Failed to get posts faved", err);
+                // alert("Failed to get posts faved", err);
+            });
+    }
+
+    // いいね済み投稿取得
+    const getRepFaved = () => {
+        axios.get("http://localhost:3000/replies/faved", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.favs > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.repIDs.forEach(repID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        repFavs.value[repID.repID] = 1;
+                    });
+                    console.log("いいねした投稿ID");
+                    console.log(repFavs);
+                    // console.log(postFavs.value[65]);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get replies faved", err);
                 // alert("Failed to get posts faved", err);
             });
     }
@@ -308,8 +362,9 @@
 
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
-                        <v-icon size="30" @click.stop="" color="red" class="on-good rounded-circle pa-1">{{ mdiHeartOutline }}</v-icon>
-                        <p>{{ rep.repFav }}</p>
+                        <v-icon size="30" @click.stop="onRepFav(rep.repID)" color="red" class="on-good rounded-circle pa-1">{{ everRepFaved(rep.repID) ? mdiHeart : mdiHeartOutline }}</v-icon>
+                        <p>{{ rep.repFav + getRepFavStatus(rep.repID) }}, postID = </p>
+                        {{ rep.repID }}
                     </div>
                 </v-card-item>
             </div>
