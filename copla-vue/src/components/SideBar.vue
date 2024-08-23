@@ -36,13 +36,14 @@
     const postDialog = ref(false);
 
     const chatContent = ref("");
+    const chatTitle = ref("");
 
     const router = useRouter();
 
     // -1ならAllジャンル
     const selectedKey = ref(0);
     
-    const items = [
+    const items = ref([
         { key: 0, value: "All" },
         { key: 1, value: "授業" },
         { key: 2, value: "サークル" },
@@ -50,8 +51,9 @@
         { key: 4, value: "就活" },
         { key: 5, value: "その他" },
         { key: 6, value: "イベント" },
-        { key: 7, value: "記事" }
-    ];
+        { key: 7, value: "記事" },
+        { key: 8, value: "忘れ物" }
+    ]);
 
     // ログアウト処理
     const onLogout = () => {
@@ -104,7 +106,8 @@
         const data = { 
             content: chatContent.value,
             genre: selectedKey.value,
-            datetime: postTime
+            datetime: postTime,
+            title: chatTitle.value
         };
 
         // postリクエスト
@@ -180,7 +183,7 @@
                     <v-list-item link to="" class="rounded-xl" @click="postDialog = true">
                         <div class="flex">
                             <v-icon size="40">{{ mdiPencilOutline }}</v-icon>
-                            <p class="ml-5 v-center flex" v-if="!isLessHalf">投稿</p>
+                            <p class="ml-5 v-center flex" v-if="!isLessHalf">投稿 HomeContentの右上にする? SOCKET TESTボタンの右端のイメージ?右利きだとマウスが画面中央より右にい勝ち?</p>
                         </div>
                     </v-list-item>
 
@@ -205,7 +208,7 @@
                     <v-list-item link to="/articles" class="rounded-xl">
                         <div class="flex">
                             <v-icon size="40">{{ mdiFileDocumentEditOutline }}</v-icon>
-                            <p class="ml-5 v-center flex" v-if="!isLessHalf">記事</p>
+                            <p class="ml-5 v-center flex" v-if="!isLessHalf">ブックマーク</p>
                         </div>
                     </v-list-item>
 
@@ -249,13 +252,22 @@
                 >
                     <!-- focusでダイアログ開いたらフォームにカーソル当てた方がいいかも -->
                     <v-card-text>
+                        <v-text-field variant="outlined" v-if="selectedKey === 7" placeholder="タイトル" v-model.trim="chatTitle"></v-text-field>
                         <v-textarea variant="outlined" placeholder="投稿内容" class="area" v-model.trim="chatContent"></v-textarea>
-                    </v-card-text>
-                    <select v-model="selectedKey">
-                        <option v-for="(item, index) in items" :key="index" :value="item.key">{{ item.value }}</option>
-                    </select>
-                    <!-- {{ selectedKey }} -->
 
+                        <v-select
+                            v-model="selectedKey"
+                            :items="items"
+                            item-value="key"
+                            item-title="value"
+                            label="Select Genre"
+                        ></v-select>
+                    </v-card-text>
+                    <!-- <select v-model="selectedKey">
+                        <option v-for="(item, index) in items" :key="index" :value="item.key">{{ item.value }}</option>
+                    </select> -->
+
+                    <!-- {{ selectedKey }} -->
 
                     <div class="flex end pa-4">
                         <v-btn

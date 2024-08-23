@@ -72,6 +72,7 @@
                     postFav: item.postFav,
                     postTime: item.postTime,
                     postGenre: item.genre,
+                    postTitle: item.title,
 
                     // 投稿を送った人のidを追記
                     // postUserId: item.postUserId,
@@ -311,6 +312,7 @@
 
                 <v-card-item class="pt-0">
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
+                        <h1>{{ post.postTitle }}</h1>
                         {{ post.postContent }}
                     </v-card-text>
                 </v-card-item>
