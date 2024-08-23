@@ -174,6 +174,7 @@ app.get("/get/all", (req, res) => {
     con.query(`SELECT 
                     p.postID, 
                     p.genre, 
+                    p.title,
                     u.userName AS postName, 
                     p.body AS postContent, 
                     p.datetime AS postTime, 
@@ -202,6 +203,7 @@ app.get("/get/:id", (req, res) => {
     con.query(`SELECT 
                     p.postID, 
                     p.genre, 
+                    p.title,
                     u.userName AS postName, 
                     p.body AS postContent, 
                     p.datetime AS postTime, 
@@ -228,14 +230,13 @@ app.get("/get/:id", (req, res) => {
 app.post("/post", (req, res) => {
     // セッションからuserIDを取得
     const userID = req.session.user.userID;
-    const { content, genre, datetime } = req.body;
+    const { content, genre, datetime, title } = req.body;
 
     console.log("New POST");
     console.log(userID);
 
-
-    con.query(`INSERT INTO posts(userID, genre, body, datetime) VALUES(?, ?, ?, ?)`, 
-                [userID, genre, content, datetime],
+    con.query(`INSERT INTO posts(userID, genre, body, datetime, title) VALUES(?, ?, ?, ?, ?)`, 
+                [userID, genre, content, datetime, title],
                 (err) => {
         if (err) {
             console.error("Failed to post", err);

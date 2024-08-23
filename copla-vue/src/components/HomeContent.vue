@@ -1,6 +1,7 @@
 <script setup>
     import { ref, onMounted, inject, onUnmounted } from "vue";
     import PostContent from './PostContent.vue';
+    import ArticlesContent from "./ArticlesContent.vue";
     import axios from "axios";
     import io from "socket.io-client";
 
@@ -108,6 +109,7 @@
                     postFav: item.postFav,
                     postTime: item.postTime,
                     postGenre: item.genre,
+                    postTitle: item.title,
 
                     // 投稿を送った人のidを追記
                     // postUserId: item.postUserId,
@@ -256,9 +258,21 @@
                 propという変数でコンポーネントに値を渡します
                 左辺に任意の変数名を指定し、右辺に今回のfor文で取得したpostを渡します
             -->
-            <!-- {{ post }} -->
+            <!-- <p v-if="post.postGenre === 7">記事投稿です{{ post.postTitle }}</p> -->
+            <!-- 記事 -->
+            <ArticlesContent 
+                v-if="post.postGenre === 7"
+                :key="'article-' + post.postID"
+                :post="post"
+                :socket="props.socket"
+                :postFavs="postFavs"
+                :repFavs="repFavs"
+            />
+
+            <!-- 通常投稿 -->
             <PostContent
-                :key="post.postID"
+                v-else
+                :key="'post-' + post.postID"
                 :post="post"
                 :socket="props.socket"
                 :postFavs="postFavs"
