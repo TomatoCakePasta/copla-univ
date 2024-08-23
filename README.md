@@ -1,24 +1,24 @@
--- 実行方法
-・xamppのhtdocsにプロジェクトを作成
-・xamppでApache, MySQLを起動
-・ターミナルを3つ立ち上げて以下のコマンドを実行
-フロントエンド
-cdコマンドでcopla-vueディレクトリに移動し下記を実行
-[npm run dev]
-
-サーバー1
-cdコマンドでbackendディレクトリに移動し下記を実行
-[node server.js]
-
-ソケットサーバー
-cdコマンドでbackendディレクトリに移動し、下記を実行
-[node socket.js]
-
-その他にトラブル
-モジュールがインストールされていない場合
-以下を実行してください
-[npm install]
-
+実行方法 <br>
+・xamppのhtdocsにプロジェクトを作成 <br>
+・xamppでApache, MySQLを起動 <br>
+・ターミナルを3つ立ち上げて以下のコマンドを実行 <br>
+フロントエンド <br>
+cdコマンドでcopla-vueディレクトリに移動し下記を実行 <br>
+[npm run dev] <br>
+<br>
+サーバー1 <br>
+cdコマンドでbackendディレクトリに移動し下記を実行 <br>
+[node server.js] <br>
+<br>
+ソケットサーバー <br>
+cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
+[node socket.js] <br>
+<br>
+その他トラブル <br>
+モジュールがインストールされていない場合 <br>
+以下を実行してください <br>
+[npm install] <br>
+<br>
 -- DB初期化用
 
 -- phpMyAdmin SQL Dump
