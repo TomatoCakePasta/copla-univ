@@ -1,4 +1,4 @@
-実行方法 <br>
+-- 実行方法 <br>
 ・xamppのhtdocsにプロジェクトを作成 <br>
 ・xamppでApache, MySQLを起動 <br>
 ・ターミナルを3つ立ち上げて以下のコマンドを実行 <br>
@@ -18,6 +18,28 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 モジュールがインストールされていない場合 <br>
 以下を実行してください <br>
 [npm install] <br>
+<br>
+<br>
+-- 技術<br>
+フロントエンド<br>
+・Vue.js<br>
+・Vuetify<br>
+・Vue Router<br>
+・Vite<br>
+(SPA開発のためVueを選択)<br>
+<br>
+バックエンド<br>
+・Node.js<br>
+・Express<br>
+(一度使ったことがあるのと、<br>
+非同期通信などが得意らしいのでPHPから変更しました。)<br>
+<br>
+データベース<br>
+・MySQL<br>
+(無料で使えるので利用)<br>
+<br>
+ローカル開発環境<br>
+・XAMPP(MySQLを利用)<br>
 <br>
 -- DB初期化用
 
