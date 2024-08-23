@@ -1,9 +1,10 @@
 <script setup>
-    import { ref, watch } from "vue";
+    import { onMounted, ref, watch } from "vue";
     import { useRouter } from 'vue-router';
     import { 
             mdiChatOutline,
-            mdiHeartOutline
+            mdiHeartOutline,
+            mdiHeart
             } from "@mdi/js";
     import axios from "axios";
     // const props = defineProps({
@@ -15,7 +16,7 @@
 
     // propsを取得します
     // postという名前で渡されたので、それを指定しています
-    const props = defineProps(["post", "socket"]);
+    const props = defineProps(["post", "socket", "postFavs", "repFavs"]);
 
     // 以下の記述だとpostは静的なので、新規投稿が反映されない
     // const post = props.post;
@@ -33,6 +34,13 @@
     const openFlag = ref(false);
 
     const genre = ["All", "授業", "サークル", "研究室", "就活", "その他", "イベント", "記事"]
+
+    const post_favs = ref({});
+
+    onMounted(() => {
+        // getPostsFaved();
+        // console.log(props.postFavs);
+    });
 
     const openReplies = (rep) => {
         console.log(rep.length);
@@ -83,6 +91,52 @@
             });
     }
 
+    const onPostFav = (postID) => {
+
+        console.log(postID, "にいいねを押す");
+
+        if (everPostFaved(postID)) {
+            alert("既にいいねを押しています");
+            return;
+        }
+
+        // イメージ
+        // クライアント側で見た目だけ押した感じにする
+        // ブラウザリロードしたらrefプロパティ自体の値は消えるけど
+        // 別のページとか閲覧して戻ってきたときに、
+        // コンポーネントが再レンダリングされて、DBと紐づいた値になるイメージ
+        // addPostFav(postID);
+
+        // サーバのlikesテーブルの追加処理のみする?
+        // こちらでlikesテーブルのユーザがいいねした投稿IDを取得しないとか
+        axios.post("http://localhost:3000/post/add-fav", { postID: postID }, { withCredentials: true })
+            .then((res) => {
+                // 取得した自分がいいねした投稿のIDをpost_favsに格納
+                addPostFav(postID); 
+            })
+            .catch((err) => {
+
+            });
+    };
+
+    const onRepFav = (repID) => {
+        console.log(repID, "いいねを押下");
+
+        if (everRepFaved(repID)) {
+            alert("既にいいねを押しています");
+            return;
+        }
+
+        axios.post("http://localhost:3000/reply/add-fav", { repID: repID }, { withCredentials: true })
+            .then((res) => {
+                // 取得した自分がいいねした投稿のIDをpost_favsに格納
+                addRepFav(repID); 
+            })
+            .catch((err) => {
+
+            }); 
+    }
+
     // textareaでEnterが押された時の処理
     // (他の動作と干渉しないように用意しただけです)
     const handleEnterKey = (event) => {
@@ -100,6 +154,66 @@
 
         return `${y}-${m}-${d} ${H}:${M}:${s}`;
     }
+
+    // ログイン後にいいねを押したか
+    const getPostFavStatus = (postID) => {
+        const ret = props.postFavs[postID] > 1 ? 1 : 0;
+        return ret;
+    }
+
+    const getRepFavStatus = (repID) => {
+        const ret = props.repFavs[repID] > 1 ? 1 : 0;
+        return ret;
+    }
+
+    // いいね押下済み確認
+    // ログイン前に押下済み,ログイン後に押下済みを含む
+    const everPostFaved = (postID) => {
+        const ret = props.postFavs[postID] > 0 ? true : false;
+        return ret;
+    }
+
+    const everRepFaved = (repID) => {
+        const ret = props.repFavs[repID] > 0 ? true : false;
+        return ret;
+    }
+
+    // ローカルで投稿いいね押下の見た目処理
+    const addPostFav = (postID) => {
+        props.postFavs[postID] = 2;
+        // console.log(props.postFavs);
+    };
+
+    const addRepFav = (repID) => {
+        props.repFavs[repID] = 2;
+        console.log(props.repFavs);
+    }
+
+    // いいね済み投稿取得
+    /*
+    const getPostsFaved = () => {
+        axios.get("http://localhost:3000/posts/faved", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.favs > 0) {
+                    console.log(res.data.postIDs);
+                    // res.data.postIDs.forEach(postID => {
+                    //     post_favs.value[postID] = 1;
+                    // });
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get posts faved", err);
+                // alert("Failed to get posts faved", err);
+            })
+    }
+            */
+
+    // いいね済み返信取得
+
+    // post_likesからログインユーザがいいねしたpotsIDを取得
+    // keyにpostID, valueに真偽値をセットしてアイコンの色を変えるとか
+
+    // reply_likesも同様
 </script>
 
 <!--
@@ -126,7 +240,7 @@
                     <div class="flex">
                         <p class="icon" :style="{  }"></p>
                         <p class="mt-2 font-weight-bold">
-                            {{ props.post.postName }}さん
+                            {{ props.post.postName }}
                         </p>
                         <p class="mt-2 ml-2 sub-info">
                             <!-- M-D h:m -->
@@ -145,10 +259,13 @@
                 </v-card-item>
 
                 <!-- リアクション いいねとか -->
-                <v-card-item class="pt-0">
+                <v-card-item 
+                    class="pt-0"
+                >
                     <div class="ml-3 flex">
-                        <v-icon size="20" @click.stop="" :ripple="false" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
-                        <p>{{ props.post.postFav }}</p>
+                        <v-icon size="30" @click.stop="onPostFav(props.post.postID)" :ripple="false" color="red" class="on-good rounded-circle pa-1">{{ everPostFaved(props.post.postID) ? mdiHeart : mdiHeartOutline }}</v-icon>
+                        <p>{{ props.post.postFav + getPostFavStatus(props.post.postID) }}, postID = </p>
+                        {{ props.post.postID }}
                     </div>
                 </v-card-item>
 
@@ -189,7 +306,7 @@
                         <div class="flex">
                             <p class="icon" :style="{  }"></p>
                             <p class="mt-2 font-weight-bold">
-                                {{ rep.repName }}さん
+                                {{ rep.repName }}
                             </p>
                             <p class="mt-2 ml-2 sub-info">
                                 {{ rep.repTime }}
@@ -205,8 +322,9 @@
 
                     <v-card-item class="pt-0">
                         <div class="ml-3 flex">
-                            <v-icon size="20" @click.stop="" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
-                            <p>{{ rep.repFav }}</p>
+                            <v-icon size="30" @click.stop="onRepFav(rep.repID)" color="red" class="on-good rounded-circle pa-1">{{ everRepFaved(rep.repID) ? mdiHeart : mdiHeartOutline }}</v-icon>
+                            <p>{{ rep.repFav + getRepFavStatus(rep.repID) }}, postID = </p>
+                            {{ rep.repID }}
                         </div>
                     </v-card-item>
                 </div>

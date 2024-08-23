@@ -161,7 +161,8 @@
                     <RouterLink to="/">
                         <div class="flex mouse topLogo">
                             <img src="../assets/logo.png" alt="">
-                            <v-list-item title="Copla" subtitle="for all students at DU">
+                            <v-list-item title="Copla" subtitle="技育博 体験版">
+                            <!-- subtitle="for all students at DU" -->
                                 <!-- <img src="../assets/logo.png"> -->
                             </v-list-item>
                         </div>

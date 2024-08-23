@@ -18,6 +18,10 @@
     onMounted(() => {
         // 投稿を取得
         getDatas();
+
+        // いいねを取得
+        getPostsFaved();
+        getRepFaved();
     });
 
     // 投稿をaxiosで送ります
@@ -39,6 +43,10 @@
                 {id: repId.value++, userName: "Shimizu", content: "返信2"}
             ] 
         });
+
+    // propsで渡す
+    const postFavs = ref({});
+    const repFavs = ref({});
 
     // 投稿ボタンが押された場合
     const onSubmit = () => {
@@ -145,6 +153,46 @@
         console.log("投稿表示を更新");
         getDatas();
     });
+
+    // いいね済み投稿取得
+    const getPostsFaved = () => {
+        axios.get("http://localhost:3000/posts/faved", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.favs > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.postIDs.forEach(postID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        postFavs.value[postID.postID] = 1;
+                    });
+                    // console.log("いいねした投稿ID");
+                    // console.log(postFavs);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get posts faved", err);
+                // alert("Failed to get posts faved", err);
+            });
+    }
+
+    // いいね済み返信取得
+    const getRepFaved = () => {
+        axios.get("http://localhost:3000/replies/faved", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.favs > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.repIDs.forEach(repID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        repFavs.value[repID.repID] = 1;
+                    });
+                    console.log("いいねした返信ID");
+                    console.log(repFavs);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get posts faved", err);
+                // alert("Failed to get posts faved", err);
+            });
+    }
 </script>
 
 <template>
@@ -213,6 +261,8 @@
                 :key="post.postID"
                 :post="post"
                 :socket="props.socket"
+                :postFavs="postFavs"
+                :repFavs="repFavs"
             />
 
             <!-- 記事の場合 -->
