@@ -152,7 +152,8 @@
             .catch((err) => {
 
             });
-        };
+    };
+
     // ログイン後にいいねを押したか
     const getPostFavStatus = (postID) => {
         const ret = postFavs.value[postID] > 1 ? 1 : 0;
@@ -207,6 +208,8 @@
                 if (res.data.flag) {
                     repContent.value = "";
                     getSinglePost(data.postID);
+                    getPostsFaved();
+                    getRepFaved();
                 }
                 else {
                     alert("Failed to reply");

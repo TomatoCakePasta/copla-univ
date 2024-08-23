@@ -154,6 +154,9 @@
     socket.on("getPosts", () => {
         console.log("投稿表示を更新");
         getDatas();
+
+        getPostsFaved();
+        getRepFaved();
     });
 
     // いいね済み投稿取得
