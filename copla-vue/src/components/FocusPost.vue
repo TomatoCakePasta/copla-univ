@@ -187,7 +187,7 @@
 
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
-                        <v-icon size="20" @click.stop="" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
+                        <v-icon size="30" @click.stop="" color="red" class="on-good rounded-circle pa-1">{{ mdiHeartOutline }}</v-icon>
                         <p>{{ post.postFav }}</p>
                     </div>
                 </v-card-item>
@@ -230,7 +230,7 @@
 
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
-                        <v-icon size="20" @click.stop="" color="red" class="on-good rounded-circle">{{ mdiHeartOutline }}</v-icon>
+                        <v-icon size="30" @click.stop="" color="red" class="on-good rounded-circle pa-1">{{ mdiHeartOutline }}</v-icon>
                         <p>{{ rep.repFav }}</p>
                     </div>
                 </v-card-item>

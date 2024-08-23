@@ -18,6 +18,9 @@
     onMounted(() => {
         // 投稿を取得
         getDatas();
+
+        // いいねを取得
+        getPostsFaved();
     });
 
     // 投稿をaxiosで送ります
@@ -39,6 +42,9 @@
                 {id: repId.value++, userName: "Shimizu", content: "返信2"}
             ] 
         });
+
+    // propsで渡す
+    const postFavs = ref({});
 
     // 投稿ボタンが押された場合
     const onSubmit = () => {
@@ -145,6 +151,26 @@
         console.log("投稿表示を更新");
         getDatas();
     });
+
+    // いいね済み投稿取得
+    const getPostsFaved = () => {
+        axios.get("http://localhost:3000/posts/faved", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.favs > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.postIDs.forEach(postID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        postFavs.value[postID.postID] = 1;
+                    });
+                    console.log("いいねした投稿ID");
+                    // console.log(postFavs);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get posts faved", err);
+                // alert("Failed to get posts faved", err);
+            })
+    }
 </script>
 
 <template>
@@ -213,6 +239,7 @@
                 :key="post.postID"
                 :post="post"
                 :socket="props.socket"
+                :postFavs="postFavs"
             />
 
             <!-- 記事の場合 -->
