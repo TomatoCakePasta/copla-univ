@@ -205,9 +205,75 @@ app.get("/get/genre/:id", (req, res) => {
         if (err) {
             throw err;
         }
-        res.status(200).send({posts: results});
+        res.status(200).send({flag: true, posts: results});
     });
 });
+
+// 検索投稿取得
+app.post("/search", (req, res) => {
+    let rowWords = req.body.words;
+    const queryWords = rowWords.map(word => `%${word}%`);
+    const genreWords = { "授業": 1, "サークル": 2, "研究室": 3, "就活": 4, "その他": 5, "イベント": 6, "記事": 7 };
+    let genreIDs = [];
+    let genre = 0;
+
+    let query = `SELECT 
+                    p.postID, 
+                    p.genre, 
+                    p.title,
+                    u.userName AS postName, 
+                    p.body AS postContent, 
+                    p.datetime AS postTime, 
+                    p.fav AS postFav,
+                    r.repID,
+                    u2.userName AS repName,
+                    r.body AS repContent,
+                    r.datetime AS repTime,
+                    r.fav AS repFav
+                FROM posts p
+                LEFT JOIN users u ON p.userID = u.userID 
+                LEFT JOIN replies r ON p.postID = r.postID
+                LEFT JOIN users u2 ON r.userID = u2.userID`;
+
+    if (rowWords.length > 0) {
+        query += " WHERE";
+    }
+
+    query += queryWords.map((word) => ` p.body LIKE '${ word }' OR p.title LIKE '${ word }' OR u.userName LIKE '${ word }'`).join(" OR ");
+                // OR p.genre = ?
+
+                // p.genreがまだ中途半端
+                // Allの投稿が全て当てはまるから
+                // 記事タイトルも
+
+    // もしタグ名が含まれていたら
+    rowWords.some((word) => {
+        if (genreWords[word]) {
+            genreIDs.push(genreWords[word]);
+        }
+    });
+
+    if (genreIDs.length > 0) {
+        query += ` OR p.genre IN (${ genreIDs }) ORDER BY p.datetime DESC`;
+    }
+    else {
+        query += ` ORDER BY p.datetime DESC`;
+    }
+
+    console.log(genre, queryWords, query);
+
+    con.query(query, (err, results) => {
+        if (err) {
+            console.error(err);
+            res.send(500).send({ flag: false, msg: "Internal Server Error" });
+        }
+        else {
+            console.log(results);
+            res.send({ flag: true, posts: results });
+        }
+    });
+
+})
 
 // シングルポスト表示
 app.get("/get/:id", (req, res) => {

@@ -4,6 +4,7 @@
     import ArticlesContent from "./ArticlesContent.vue";
     import axios from "axios";
     import io from "socket.io-client";
+    import { mdiMagnify } from "@mdi/js";
 
     // definePropsはマクロなので未宣言で使用可
     const props = defineProps({
@@ -34,11 +35,14 @@
     // username, content, titleとか
 
     const chatContent = ref("");
+    const keyContent = ref("");
     const postId = ref(1);
     const repId = ref(1);
     const getMsg = ref();
 
     const postsImageData = ref();
+
+    const loading = ref(false);
 
     const samplePost = ref({ id: postId.value++, userName: "Taro", content: "Hello1", replies: 
             [
@@ -150,10 +154,6 @@
         return Array.from(postsMap.values());
     }
 
-    const onRequest = () => {
-        socket.emit("hello");
-    }
-
     socket.on("getPosts", () => {
         console.log("投稿表示を更新");
         getDatas(selectedGenre.value);
@@ -201,6 +201,51 @@
                 // alert("Failed to get posts faved", err);
             });
     }
+
+    const onKeySearch = () => {
+        if (keyContent.value === "") {
+            alert("検索ワードを入力してください");
+            return;
+        }
+
+        // console.log(keyContent.value);
+
+        // 検索単語を1文字以上の半角または全角スペースで区切って配列にする
+        // /正規表現/, spaceを1文字以上+
+        // 区切った単語の文字が1文字以上残る場合、単語として配列に格納
+        const words = keyContent.value.replaceAll("　", " ").split(/\s+/).filter(Boolean);
+        // console.log(words);
+
+        // console.log(keyContent.value);
+
+        // 配列を渡す
+
+        loading.value = true;
+
+        // もしジャンルが入力されていたら
+        // サーバー側でジャンルをキーに対応する番号に変換する
+        // 就活 ES みたいな検索イメージ
+        axios.post("http://localhost:3000/search", { words: words}, { withCredentials: true})
+            .then((res) => {
+                // もし0件なら投稿が見つかりませんでしたを表示したい
+                if (res.data.flag) {
+                    postsImageData.value = nestPostsAndReplies(res.data.posts);
+                    console.log("検索結果");
+                    console.log(postsImageData.value);
+                    keyContent.value = "";
+                }
+                else {
+                    // 0件
+                }
+                loading.value = false;
+            })
+            .catch((err) => {
+                if (err) {
+                    console.error("Failed to search post", err);
+                }
+                loading.value = false;
+            })
+    }
 </script>
 
 <template>
@@ -214,13 +259,22 @@
         -->
         <!-- {{ loginName }} {{ loginID }} -->
         <div>
-            <v-btn @click="onRequest">Socket TEST</v-btn>
-            <v-card
-                class="ma-5 my-2"
-                elevation="2"
+
+            <v-card-text
             >
-                <input type="text" v-model="chatContent" placeholder="検索" class="input">
-            </v-card>
+                <v-text-field
+                    :loading="loading"
+                    density="compact"
+                    label="検索 + Enter"
+                    variant="solo"
+                    hide-details
+                    rounded="pill"
+                    single-line
+                    v-model="keyContent"
+                    @keydown.enter="onKeySearch()"
+                >
+                </v-text-field>
+            </v-card-text>
 
             <div class="trend flex ml-5 mt-3 mb-3">
                 <h4>今のトレンド</h4>
