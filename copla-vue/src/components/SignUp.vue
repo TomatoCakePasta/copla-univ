@@ -21,7 +21,7 @@
         };
 
         // postリクエスト
-        axios.post("/signup", data, { withCredentiala: true })
+        axios.post("/api/signup", data, { withCredentiala: true })
             .then((res) => {
                 if (res.data.flag) {
                     clearForm();

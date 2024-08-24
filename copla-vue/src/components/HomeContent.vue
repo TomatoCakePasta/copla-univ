@@ -81,7 +81,7 @@
     // 画面読み込み時, 一定間隔, ソケットイベント検知などのタイミングで呼出
     const getDatas = (genre = 0) => {
         // 以下のURLに投稿取得リクエストをします
-        axios.get(`/get/genre/${genre}`, {withCredentials: true})
+        axios.get(`/api/get/genre/${genre}`, {withCredentials: true})
             .then((res) => {
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
                 // console.log(postsImageData);
@@ -164,7 +164,7 @@
 
     // いいね済み投稿取得
     const getPostsFaved = () => {
-        axios.get("/posts/faved", { withCredentials: true} )
+        axios.get("/api/posts/faved", { withCredentials: true} )
             .then((res) => {
                 if (res.data.flag && res.data.favs > 0) {
                     // console.log(res.data.postIDs);
@@ -184,7 +184,7 @@
 
     // いいね済み返信取得
     const getRepFaved = () => {
-        axios.get("/replies/faved", { withCredentials: true} )
+        axios.get("/api/replies/faved", { withCredentials: true} )
             .then((res) => {
                 if (res.data.flag && res.data.favs > 0) {
                     // console.log(res.data.postIDs);
@@ -225,7 +225,7 @@
         // もしジャンルが入力されていたら
         // サーバー側でジャンルをキーに対応する番号に変換する
         // 就活 ES みたいな検索イメージ
-        axios.post("/search", { words: words}, { withCredentials: true})
+        axios.post("/api/search", { words: words}, { withCredentials: true})
             .then((res) => {
                 // もし0件なら投稿が見つかりませんでしたを表示したい
                 if (res.data.flag) {
