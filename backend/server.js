@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 app.use(cors({
     // 以下からのアクセスを許可
     // 全てからのアクセスを許可したい
-    origin: "http://localhost:5173",
+    origin: "192.168.0.10:5173",
 
     // 許可するアクセス
     methods: ["GET", "POST"],

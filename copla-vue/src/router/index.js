@@ -111,7 +111,7 @@ router.beforeEach((to, from, next) => {
     }
     else {
       try {
-        axios.get("http://localhost:3000/session", { withCredentials: true })
+        axios.get("/api/session", { withCredentials: true })
           .then((res) => {
             if (res.data.flag) {
               // 認証済みの場合はアクセス許可

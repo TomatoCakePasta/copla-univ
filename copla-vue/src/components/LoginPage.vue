@@ -24,7 +24,7 @@
         console.log(data);
 
         // APIリクエスト
-        axios.post("http://localhost:3000/login", data, {withCredentials: true})
+        axios.post("/api/login", data, {withCredentials: true})
             .then((res) => {
                 // console.log(res);
                 if (res.data.flag) {
@@ -47,19 +47,19 @@
             });
     }
 
-    const onSessionTest = () => {
-        axios.get("http://localhost:3000/test/session", { withCredentials: true})
-            .then((res) => {
-                if (res) {
+    // const onSessionTest = () => {
+    //     axios.get("/test/session", { withCredentials: true})
+    //         .then((res) => {
+    //             if (res) {
 
-                }
-                else {
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }
+    //             }
+    //             else {
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             console.error(err);
+    //         });
+    // }
 
     const isNull = (value) => {
         console.log(value);

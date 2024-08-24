@@ -61,7 +61,7 @@
         
         // ログアウトリクエスト
         // セッションをクリアする
-        axios.post("http://localhost:3000/logout", {}, { withCredentials: true })
+        axios.post("/api/logout", {}, { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     console.log("Success to logout");
@@ -111,7 +111,7 @@
         };
 
         // postリクエスト
-        axios.post("http://localhost:3000/post", data, { withCredentials: true })
+        axios.post("/api/post", data, { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     // フォームを閉じる
