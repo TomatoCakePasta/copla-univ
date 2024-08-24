@@ -34,6 +34,9 @@ console.log(session);
 const loginName = ref(null);
 const loginID = ref(0);
 
+// 今どのジャンルを選択しているか
+const selectedGenre = ref(0);
+
 onMounted(() => {
   isLessHalf.value = device.smAndDown.value;
   isMobile.value = device.xs.value;
@@ -57,6 +60,7 @@ provide("isMobile", isMobile);
 provide("session", session);
 provide("loginName", loginName);
 provide("loginID", loginID);
+provide("selectedGenre", selectedGenre);
 </script>
 
 <!-- 以下の内容がHTMLに挿入されます -->
