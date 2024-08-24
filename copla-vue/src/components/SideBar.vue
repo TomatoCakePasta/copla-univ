@@ -173,7 +173,7 @@
 
                     <v-divider></v-divider>
 
-                    <v-list-item link to="/" class="rounded-xl">
+                    <v-list-item link to="/" exact class="rounded-xl">
                         <div class="flex">
                             <v-icon size="40">{{ mdiHome }}</v-icon>
                             <p class="ml-5 v-center flex" v-if="!isLessHalf">ホーム</p>
@@ -205,7 +205,7 @@
                         </div>
                     </v-list-item>
 
-                    <v-list-item link to="/articles" class="rounded-xl">
+                    <v-list-item link to="/myfavorite" class="rounded-xl">
                         <div class="flex">
                             <v-icon size="40">{{ mdiFileDocumentEditOutline }}</v-icon>
                             <p class="ml-5 v-center flex" v-if="!isLessHalf">ブックマーク</p>
@@ -299,7 +299,7 @@
             :height="50"
         >
             <div class="flex phoneMenu">
-                <v-list-item link to="/" title="" class="pa-0 ma-1 rounded-circle">
+                <v-list-item link to="/" exact title="" class="pa-0 ma-1 rounded-circle">
                     <v-icon size="40">{{ mdiHome }}</v-icon>
                 </v-list-item>
 
@@ -312,7 +312,7 @@
                     <v-icon size="40">{{ mdiSilverwareForkKnife }}</v-icon>
                 </v-list-item>
 
-                <v-list-item link to="/articles" title="" class="pa-0 ma-1 rounded-circle">
+                <v-list-item link to="/myfavorite" title="" class="pa-0 ma-1 rounded-circle">
                     <v-icon size="40">{{ mdiFileDocumentEditOutline }}</v-icon>
                 </v-list-item>
 

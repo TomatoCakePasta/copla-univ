@@ -14,6 +14,7 @@ import BusPage from '@/components/BusPage.vue'
 import HomeBase from '@/components/HomeBase.vue'
 import LoginPage from '@/components/LoginPage.vue'
 import SignUp from '@/components/SignUp.vue';
+import MyFavorite from '@/components/MyFavorite.vue';
 
 // ルーティング制御のファイルです
 const router = createRouter({
@@ -51,9 +52,9 @@ const router = createRouter({
           component: BusPage,
         },
         {
-          path: "/articles",
-          name: "articles",
-          component: ArticlesContent,
+          path: "/myfavorite",
+          name: "myfavorite",
+          component: MyFavorite,
         },
         {
           path: "/mypage",
