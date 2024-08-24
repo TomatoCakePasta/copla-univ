@@ -12,6 +12,8 @@
 
     const socket = props.socket;
 
+    const selectedGenre = inject("selectedGenre");
+
     // const loginName = inject("loginName");
     // const loginID = inject("loginID");
 
@@ -73,9 +75,9 @@
 
     // 投稿を取得
     // 画面読み込み時, 一定間隔, ソケットイベント検知などのタイミングで呼出
-    const getDatas = () => {
+    const getDatas = (genre = 0) => {
         // 以下のURLに投稿取得リクエストをします
-        axios.get("http://localhost:3000/get/all", {withCredentials: true})
+        axios.get(`http://localhost:3000/get/genre/${genre}`, {withCredentials: true})
             .then((res) => {
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
                 // console.log(postsImageData);
@@ -87,10 +89,11 @@
     };
 
     // ジャンル選択
-    const onSearch = (word) => {
-        console.log(`${ word }の投稿を表示`);
+    const onSearch = (genre) => {
+        console.log(`${ genre }の投稿を表示`);
+        selectedGenre.value = genre;
 
-        // axiosでリクエスト送る?
+        getDatas(genre);
     };
 
     function nestPostsAndReplies(data) {
@@ -153,7 +156,7 @@
 
     socket.on("getPosts", () => {
         console.log("投稿表示を更新");
-        getDatas();
+        getDatas(selectedGenre.value);
 
         getPostsFaved();
         getRepFaved();
@@ -231,14 +234,14 @@
                     bg-color="deep-purple-darken-4"
                     center-active
                 >
-                <v-tab @click="onSearch('ALL')">ALL</v-tab>
-                <v-tab @click="onSearch('授業')">授業</v-tab>
-                <v-tab @click="onSearch('サークル')">サークル</v-tab>
-                <v-tab @click="onSearch('研究室')">研究室</v-tab>
-                <v-tab @click="onSearch('就活')">就活</v-tab>
-                <v-tab @click="onSearch('その他')">その他</v-tab>
-                <v-tab @click="onSearch('イベント')">イベント</v-tab>
-                <v-tab @click="onSearch('記事')">記事</v-tab>
+                <v-tab @click="onSearch('0')">ALL</v-tab>
+                <v-tab @click="onSearch('1')">授業</v-tab>
+                <v-tab @click="onSearch('2')">サークル</v-tab>
+                <v-tab @click="onSearch('3')">研究室</v-tab>
+                <v-tab @click="onSearch('4')">就活</v-tab>
+                <v-tab @click="onSearch('5')">その他</v-tab>
+                <v-tab @click="onSearch('6')">イベント</v-tab>
+                <v-tab @click="onSearch('7')">記事</v-tab>
                 </v-tabs>
             </v-card>
         </div>

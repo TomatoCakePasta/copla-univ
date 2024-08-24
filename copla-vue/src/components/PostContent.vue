@@ -1,5 +1,5 @@
 <script setup>
-    import { onMounted, ref, watch } from "vue";
+    import { onMounted, ref, watch, inject } from "vue";
     import { useRouter } from 'vue-router';
     import { 
             mdiChatOutline,
@@ -36,6 +36,8 @@
     const genre = ["All", "授業", "サークル", "研究室", "就活", "その他", "イベント", "記事"]
 
     const post_favs = ref({});
+
+    const selectedGenre = inject("selectedGenre");
 
     onMounted(() => {
         // getPostsFaved();

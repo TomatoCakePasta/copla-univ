@@ -56,6 +56,7 @@ const con = mysql.createConnection({
     host : "localhost",
     user : "root",
     // 外部変数?にした方がいい
+    // envファイル, dotenv?
     password: "",
     database : "copla_db"
 });
@@ -167,11 +168,13 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
-// 全投稿取得
-app.get("/get/all", (req, res) => {
+// 投稿取得
+app.get("/get/genre/:id", (req, res) => {
     console.log("get all posts");
     console.log(req.session);
-    con.query(`SELECT 
+
+    let genre = +req.params.id;
+    let query = `SELECT 
                     p.postID, 
                     p.genre, 
                     p.title,
@@ -187,8 +190,18 @@ app.get("/get/all", (req, res) => {
                 FROM posts p
                 LEFT JOIN users u ON p.userID = u.userID 
                 LEFT JOIN replies r ON p.postID = r.postID
-                LEFT JOIN users u2 ON r.userID = u2.userID
-                ORDER BY p.datetime DESC`, (err, results) => {
+                LEFT JOIN users u2 ON r.userID = u2.userID`;
+
+    // 全投稿
+    if (genre === 0) {
+        query += " ORDER BY p.datetime DESC";
+    }
+    // 特定ジャンル
+    else {
+        query += ` WHERE p.genre = ${ genre } ORDER BY p.datetime DESC`;
+    }
+
+    con.query(query, (err, results) => {
         if (err) {
             throw err;
         }
