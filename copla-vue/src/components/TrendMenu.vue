@@ -12,7 +12,8 @@
         >
           <v-list>
             <v-list-item title="">
-              <h1>Real Time</h1>
+              <h1>Copla News</h1>
+              <h2>忘れ物掲示とか, UNIPAで見逃されそうな掲示情報とか</h2>
             </v-list-item>
           </v-list>
         </v-navigation-drawer>
