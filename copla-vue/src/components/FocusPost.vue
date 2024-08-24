@@ -44,7 +44,7 @@
     const testFlag = ref(true);
 
     const getSinglePost = (id) => {
-        axios.get(`http://localhost:3000/get/${id}`)
+        axios.get(`/get/${id}`)
             .then((res) => {
                 post.value = nestPostsAndReplies(res.data.posts);
                 post.value = post.value[0];
@@ -125,7 +125,7 @@
 
         // サーバのlikesテーブルの追加処理のみする?
         // こちらでlikesテーブルのユーザがいいねした投稿IDを取得しないとか
-        axios.post("http://localhost:3000/post/add-fav", { postID: postID }, { withCredentials: true })
+        axios.post("/post/add-fav", { postID: postID }, { withCredentials: true })
             .then((res) => {
                 // 取得した自分がいいねした投稿のIDをpost_favsに格納
                 addPostFav(postID); 
@@ -144,7 +144,7 @@
             return;
         }
 
-        axios.post("http://localhost:3000/reply/add-fav", { repID: repID }, { withCredentials: true })
+        axios.post("/reply/add-fav", { repID: repID }, { withCredentials: true })
             .then((res) => {
                 // 取得した自分がいいねした投稿のIDをpost_favsに格納
                 addRepFav(repID); 
@@ -203,7 +203,7 @@
             datetime: repTime
         };
 
-        axios.post("http://localhost:3000/reply", data, { withCredentials: true})
+        axios.post("/reply", data, { withCredentials: true})
             .then((res) => {
                 if (res.data.flag) {
                     repContent.value = "";
@@ -234,7 +234,7 @@
 
     // いいね済み投稿取得
     const getPostsFaved = () => {
-        axios.get("http://localhost:3000/posts/faved", { withCredentials: true} )
+        axios.get("/posts/faved", { withCredentials: true} )
             .then((res) => {
                 if (res.data.flag && res.data.favs > 0) {
                     // console.log(res.data.postIDs);
@@ -255,7 +255,7 @@
 
     // いいね済み投稿取得
     const getRepFaved = () => {
-        axios.get("http://localhost:3000/replies/faved", { withCredentials: true} )
+        axios.get("/replies/faved", { withCredentials: true} )
             .then((res) => {
                 if (res.data.flag && res.data.favs > 0) {
                     // console.log(res.data.postIDs);

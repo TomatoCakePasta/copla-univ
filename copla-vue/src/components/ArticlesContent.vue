@@ -76,7 +76,7 @@
             datetime: repTime
         };
 
-        axios.post("http://localhost:3000/reply", data, { withCredentials: true})
+        axios.post("/reply", data, { withCredentials: true})
             .then((res) => {
                 if (res.data.flag) {
                     repContent.value = "";
@@ -110,7 +110,7 @@
 
         // サーバのlikesテーブルの追加処理のみする?
         // こちらでlikesテーブルのユーザがいいねした投稿IDを取得しないとか
-        axios.post("http://localhost:3000/post/add-fav", { postID: postID }, { withCredentials: true })
+        axios.post("/post/add-fav", { postID: postID }, { withCredentials: true })
             .then((res) => {
                 // 取得した自分がいいねした投稿のIDをpost_favsに格納
                 addPostFav(postID); 
@@ -128,7 +128,7 @@
             return;
         }
 
-        axios.post("http://localhost:3000/reply/add-fav", { repID: repID }, { withCredentials: true })
+        axios.post("/reply/add-fav", { repID: repID }, { withCredentials: true })
             .then((res) => {
                 // 取得した自分がいいねした投稿のIDをpost_favsに格納
                 addRepFav(repID); 

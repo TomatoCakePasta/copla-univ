@@ -21,7 +21,7 @@
         };
 
         // postリクエスト
-        axios.post("http://localhost:3000/signup", data, { withCredentiala: true })
+        axios.post("/signup", data, { withCredentiala: true })
             .then((res) => {
                 if (res.data.flag) {
                     clearForm();
