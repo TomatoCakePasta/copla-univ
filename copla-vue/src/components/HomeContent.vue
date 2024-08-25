@@ -86,6 +86,10 @@
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
                 // console.log(postsImageData);
                 // console.log("GET DATA");
+
+                // 以下はソケットが動けば不要?
+                getPostsFaved();
+                getRepFaved();
             })
             .catch((err) => {
                 console.error(err);
@@ -111,6 +115,7 @@
                 postsMap.set(item.postID, {
                     postID: item.postID,
                     postName: item.postName,
+                    postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
                     // postUserIcon: 0,
                     postFav: item.postFav,
@@ -136,6 +141,7 @@
                 postsMap.get(item.postID).replies.push({
                     repID: item.repID,
                     repName: item.repName,
+                    repUserIcon: item.repUserIcon,
                     repContent: item.repContent,
                     // repUserIcon: item.repUserIcon,
                     repTime: item.repTime,
