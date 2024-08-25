@@ -267,6 +267,7 @@
         <div>
 
             <v-card-text
+                class="flex"
             >
                 <v-text-field
                     :loading="loading"
@@ -274,12 +275,13 @@
                     label="検索 + Enter"
                     variant="solo"
                     hide-details
-                    rounded="pill"
                     single-line
                     v-model="keyContent"
+                    id="searchForm"
                     @keydown.enter="onKeySearch()"
                 >
                 </v-text-field>
+                <v-btn color="primary" @click="onKeySearch()" height="40" width="100"><v-icon color="white" size="30">{{ mdiMagnify }}</v-icon></v-btn>
             </v-card-text>
 
             <div class="trend flex ml-5 mt-3 mb-3">
