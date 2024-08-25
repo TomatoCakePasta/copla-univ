@@ -291,11 +291,11 @@
                 <p class="ml-5 tag">#期末</p>
             </div>
 
-            <v-card>
-                <v-tabs
-                    bg-color="deep-purple-darken-4"
-                    center-active
-                >
+            <!-- <v-card> -->
+            <v-tabs
+                bg-color="deep-purple-darken-4"
+                center-active
+            >
                 <v-tab @click="onSearch('0')">ALL</v-tab>
                 <v-tab @click="onSearch('1')">授業</v-tab>
                 <v-tab @click="onSearch('2')">サークル</v-tab>
@@ -304,8 +304,8 @@
                 <v-tab @click="onSearch('5')">その他</v-tab>
                 <v-tab @click="onSearch('6')">イベント</v-tab>
                 <v-tab @click="onSearch('7')">記事</v-tab>
-                </v-tabs>
-            </v-card>
+            </v-tabs>
+            <!-- </v-card> -->
         </div>
 
         <!-- <router-link to="/articles">これはロード無しで飛べる</router-link><br>

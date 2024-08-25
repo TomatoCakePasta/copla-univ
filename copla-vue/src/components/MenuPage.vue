@@ -42,6 +42,11 @@
                     <!-- {{ menu }} -->
                     <v-card link>
                         <!-- 画像 -->
+                        <v-img
+                            :src="`/menus/menu${Math.floor(Math.random() * 12) + 1}.jpg`"
+                            class="align-end"
+                        >
+                        </v-img>
                         <p v-for="(detail, index2) in menu" :key="index2">
                             {{ detail }}{{ index2 === 2 ? "円" : ""}}
                         </p>

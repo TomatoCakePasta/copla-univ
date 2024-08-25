@@ -114,20 +114,20 @@ const onMenu = (id) => {
                 <p class="ml-5 tag mt-auto mb-auto">3位 {{ trend[2] }}</p>
             </div>
 
-            <v-card>
-                <v-tabs
-                    bg-color="deep-purple-darken-4"
-                    center-active
-                >
-                    <v-tab @click="onMenu(0)">学食</v-tab>
-                    <v-tab @click="onMenu(1)">カフェ</v-tab>
-                    <v-tab @click="onMenu(2)">キッチンカー</v-tab>
-                    <v-tab @click="onMenu(3)">大学周辺</v-tab>
-                    <v-tab @click="onMenu(-1)">投票状況</v-tab>
-                </v-tabs>
-            </v-card>
+            <!-- <v-card> -->
+            <v-tabs
+                bg-color="deep-purple-darken-4"
+                center-active
+            >
+                <v-tab @click="onMenu(0)">学食</v-tab>
+                <v-tab @click="onMenu(1)">カフェ</v-tab>
+                <v-tab @click="onMenu(2)">キッチンカー</v-tab>
+                <v-tab @click="onMenu(3)">大学周辺</v-tab>
+                <v-tab @click="onMenu(-1)">投票状況</v-tab>
+            </v-tabs>
+            <!-- </v-card> -->
         </div>
-
+        一度投票確定したら、そのカードを縁取ったり、手ごたえを演出
 
         <!-- 学食, カフェ, 大学周辺, その他 -->
         <!-- メニューカードをクリックしたら、[コレにする! のダイアログでボタン表示] (小文字で※投票は1日1回です.と書いておく) -->
