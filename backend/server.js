@@ -24,7 +24,10 @@ app.use(bodyParser.json());
 app.use(cors({
     // 以下からのアクセスを許可
     // 全てからのアクセスを許可したい
-    origin: "192.168.0.10:5173",
+    // origin: "192.168.0.10:5173",
+
+    // これでも動いてる?
+    origin: "*",
 
     // 許可するアクセス
     methods: ["GET", "POST"],
@@ -110,7 +113,7 @@ app.post("/signup", (req, res) => {
 
     con.query(`SELECT * FROM users 
                 WHERE userName = ?`, 
-                name, 
+                [ name ] , 
                 (err, row) => {
         // 既にユーザ名が存在する場合
         if (row.length) {
@@ -141,7 +144,7 @@ app.post("/logout", (req, res) => {
     req.session.destroy(err => {
         if (err) {
             console.error("Failed to destory session:", err);
-            res.status(500).send({ flag: false });
+            res.send({ flag: false });
         }
         else {
             res.status(200).send({ flag: true });
@@ -168,6 +171,99 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
+// ユーザ情報取得
+app.get("/get/user", (req, res) => {
+    const userID = req.session.user.userID;
+
+    let query = `SELECT 
+                    u.userName,
+                    u.icon
+                FROM users u
+                WHERE userID = ?`;
+    
+    con.query(query, [ userID ], (err, results) => {
+        if (err) {
+            console.error("DB query error:", err);
+            res.send({ flag: false });
+            return;
+        }
+        else {
+            // console.log(results);
+            res.status(200).send({ flag: true, userInfo: results });
+        }
+    })
+
+});
+
+// ユーザ情報更新
+app.post("/set/user", (req, res) => {
+    const userID = req.session.user.userID;
+
+    let { userName, profilePict, currentPass, renewPass } = req.body;
+    
+    let hashedRenewPass = bcrypt.hashSync(renewPass, 10);
+
+    // console.log(userName, " : ", profilePict, currentPass, " -> ", renewPass);
+
+    let query = `UPDATE users SET 
+                userName = COALESCE(?, userName),
+                icon = COALESCE(?, icon),
+                password = COALESCE(?, password)
+                WHERE userID = ?`
+
+    // もしパスワードが入力されている場合
+    if (renewPass !== "") {
+        // 既存のパスと比較
+        con.query(`SELECT * FROM users WHERE userID = ?`, 
+                [ userID ], 
+                (err, results) => {
+            if (err || results.length === 0) {
+                console.error("DB query error:", err);
+                res.send({ flag: -1 });
+                return;
+            }
+            // ユーザ入力の現在のパスが一致しなかった場合
+            else if (!bcrypt.compareSync(currentPass, results[0].password)) {
+                console.log("現在のパスが不一致");
+                res.send({ flag: 0 });
+                return;
+            }
+            else {
+                // データ更新
+                console.log("パスワード込みデータ更新");
+                con.query(query, [userName, profilePict, hashedRenewPass, userID], (err, results) => {
+                    if (err) {
+                        console.error("DB query error:", err);
+                        res.send({ flag: -1 });
+                        return;    
+                    }
+    
+                    res.send({ flag: 2 });
+                });
+            }
+        });
+    }
+    else {
+        console.log("通常データ更新")
+        // もし空データならnullに変換
+        if (renewPass === "") {
+            hashedRenewPass = null;
+        }
+    
+        // データ更新
+        con.query(query, [userName, profilePict, hashedRenewPass, userID], (err, results) => {
+            if (err) {
+                console.error("DB query error:", err);
+                res.send({ flag: -1 });
+                return;
+            }
+            else {
+                res.status(200).send({ flag: 2 });
+            }
+        })
+    }
+});
+
 // 投稿取得
 app.get("/get/genre/:id", (req, res) => {
     console.log("get all posts");
@@ -179,11 +275,13 @@ app.get("/get/genre/:id", (req, res) => {
                     p.genre, 
                     p.title,
                     u.userName AS postName, 
+                    u.icon AS postUserIcon,
                     p.body AS postContent, 
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
                     u2.userName AS repName,
+                    u2.icon AS repUserIcon,
                     r.body AS repContent,
                     r.datetime AS repTime,
                     r.fav AS repFav
@@ -203,7 +301,8 @@ app.get("/get/genre/:id", (req, res) => {
 
     con.query(query, (err, results) => {
         if (err) {
-            throw err;
+            console.error("DB query error:", err);
+            return;
         }
         res.status(200).send({flag: true, posts: results});
     });
@@ -222,11 +321,13 @@ app.post("/search", (req, res) => {
                     p.genre, 
                     p.title,
                     u.userName AS postName, 
+                    u.icon AS postUserIcon,
                     p.body AS postContent, 
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
                     u2.userName AS repName,
+                    u2.icon AS repUserIcon,
                     r.body AS repContent,
                     r.datetime AS repTime,
                     r.fav AS repFav
@@ -265,7 +366,7 @@ app.post("/search", (req, res) => {
     con.query(query, (err, results) => {
         if (err) {
             console.error(err);
-            res.send(500).send({ flag: false, msg: "Internal Server Error" });
+            res.send({ flag: false, msg: "Internal Server Error" });
         }
         else {
             console.log(results);
@@ -284,11 +385,13 @@ app.get("/get/:id", (req, res) => {
                     p.genre, 
                     p.title,
                     u.userName AS postName, 
+                    u.icon AS postUserIcon,
                     p.body AS postContent, 
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
                     u2.userName AS repName,
+                    u2.icon AS repUserIcon,
                     r.body AS repContent,
                     r.datetime AS repTime,
                     r.fav AS repFav
@@ -299,7 +402,8 @@ app.get("/get/:id", (req, res) => {
                 WHERE p.postID = ?
                 ORDER BY p.datetime DESC`, id, (err, results) => {
         if (err) {
-            throw err;
+            console.error("DB query error:", err);
+            return;
         }
         res.status(200).send({posts: results});
     });
@@ -358,7 +462,8 @@ app.get("/posts/faved", (req, res) => {
                 WHERE userID = ?
                 ORDER BY postID ASC`, [userID], (err, results) => {
         if (err) {
-            throw err;
+            console.error("DB query error:", err);
+            return;
         }
         else {
             console.log(results.length);
@@ -379,7 +484,8 @@ app.get("/replies/faved", (req, res) => {
                 WHERE userID = ?
                 ORDER BY repID ASC`, [userID], (err, results) => {
         if (err) {
-            throw err;
+            console.error("DB query error:", err);
+            return;
         }
         else {
             console.log(results.length);

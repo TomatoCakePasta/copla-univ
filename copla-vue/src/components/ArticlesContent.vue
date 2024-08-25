@@ -212,7 +212,7 @@
                 <v-card-item>
                     <!-- ユーザのカラーコードまたはアイコン画像パスとか -->
                     <div class="flex">
-                        <p class="icon" :style="{  }"></p>
+                        <p class="icon" :style="{ backgroundColor: props.post.postUserIcon }"></p>
                         <p class="mt-2 font-weight-bold">
                             {{ props.post.postName }}
                         </p>

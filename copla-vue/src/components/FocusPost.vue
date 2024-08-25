@@ -67,6 +67,7 @@
                 postsMap.set(item.postID, {
                     postID: item.postID,
                     postName: item.postName,
+                    postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
                     // postUserIcon: 0,
                     postFav: item.postFav,
@@ -92,6 +93,7 @@
                 postsMap.get(item.postID).replies.push({
                     repID: item.repID,
                     repName: item.repName,
+                    repUserIcon: item.repUserIcon,
                     repContent: item.repContent,
                     // repUserIcon: item.repUserIcon,
                     repTime: item.repTime,
@@ -296,7 +298,7 @@
                 <v-card-item>
                     <!-- ユーザのカラーコードまたはアイコン画像パスとか -->
                     <div class="flex">
-                        <p class="icon" :style="{  }"></p>
+                        <p class="icon" :style="{ backgroundColor: post.postUserIcon }"></p>
                         <v-card-title>
                             <!-- Card title {{ post.id }} -->
                         </v-card-title>
@@ -349,7 +351,7 @@
             <div v-for="(rep) in post.replies" :key="rep.repID">
                 <v-card-item>
                     <div class="flex">
-                        <p class="icon" :style="{  }"></p>
+                        <p class="icon" :style="{ backgroundColor: rep.repUserIcon }"></p>
                         <p class="mt-2 font-weight-bold">
                             {{ rep.repName }}
                         </p>

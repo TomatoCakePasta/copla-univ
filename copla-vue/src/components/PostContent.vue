@@ -240,7 +240,7 @@
                 <v-card-item>
                     <!-- ユーザのカラーコードまたはアイコン画像パスとか -->
                     <div class="flex">
-                        <p class="icon" :style="{  }"></p>
+                        <p class="icon" :style="{ backgroundColor: props.post.postUserIcon }"></p>
                         <p class="mt-2 font-weight-bold">
                             {{ props.post.postName }}
                         </p>
@@ -306,7 +306,7 @@
                 <div v-if="index < dispNum">
                     <v-card-item>
                         <div class="flex">
-                            <p class="icon" :style="{  }"></p>
+                            <p class="icon" :style="{ backgroundColor: rep.repUserIcon }"></p>
                             <p class="mt-2 font-weight-bold">
                                 {{ rep.repName }}
                             </p>

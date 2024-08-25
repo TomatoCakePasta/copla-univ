@@ -183,7 +183,7 @@
                     <v-list-item link to="" class="rounded-xl" @click="postDialog = true">
                         <div class="flex">
                             <v-icon size="40">{{ mdiPencilOutline }}</v-icon>
-                            <p class="ml-5 v-center flex" v-if="!isLessHalf">投稿 HomeContentの右上にする? SOCKET TESTボタンの右端のイメージ?右利きだとマウスが画面中央より右にい勝ち?</p>
+                            <p class="ml-5 v-center flex" v-if="!isLessHalf">投稿</p>
                         </div>
                     </v-list-item>
 
