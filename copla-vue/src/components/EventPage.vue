@@ -197,7 +197,7 @@
             :menus = "menus"
         />
 
-        <!-- <AnalysisPage v-else/> -->
+        <AnalysisPage v-else/>
     </div>
 </template>
 
