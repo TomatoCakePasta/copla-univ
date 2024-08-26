@@ -1,81 +1,139 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import { RouterView, useRouter } from 'vue-router';
-import { mdiMagnify } from '@mdi/js';
-import MenuPage from "./MenuPage.vue";
-import AnalysisPage from "./AnalysisPage.vue";
+    import { onMounted, ref } from "vue";
+    import { RouterView, useRouter } from 'vue-router';
+    import { mdiMagnify } from '@mdi/js';
+    import MenuPage from "./MenuPage.vue";
+    import AnalysisPage from "./AnalysisPage.vue";
+    import axios from "axios";
 
-const trend = ref(["カレー", "日替わり", "自炊"]);
+    const trend = ref(["カレー", "日替わり", "自炊"]);
 
-// 本来はDB
-// genre(number)でmenus[genre]に突っ込んでいくイメージ?
-const menus = ref([
-    // 学食
-    [
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-        ["カレー", "やさしい味", "250"], 
-        ["日替わり", "今日は〇〇", "500"],
-    ],
-    // 学内カフェ
-    [
-        ["たらこパスタ", "安定のおいしさ", "400"], 
-        ["ミートソースパスタ", "安定のおいしさ", "400"], 
-        ["カレー", "絶品の中辛!", "360"],
-        ["たらこパスタ", "安定のおいしさ", "400"], 
-        ["ミートソースパスタ", "安定のおいしさ", "400"], 
-        ["カレー", "絶品の中辛!", "360"],
-        ["たらこパスタ", "安定のおいしさ", "400"], 
-        ["ミートソースパスタ", "安定のおいしさ", "400"], 
-        ["カレー", "絶品の中辛!", "360"],
-        ["たらこパスタ", "安定のおいしさ", "400"], 
-        ["ミートソースパスタ", "安定のおいしさ", "400"], 
-        ["カレー", "絶品の中辛!", "360"],
-        ["たらこパスタ", "安定のおいしさ", "400"], 
-        ["ミートソースパスタ", "安定のおいしさ", "400"], 
-        ["カレー", "絶品の中辛!", "360"],
-    ],
-    // キッチンカー
-    [
-        ["ケバブ", "4種のソースが最高", "500-700"], 
-        ["からあげ", "驚きのボリューム", "400-600"]
-    ],
-    // 周辺
-    [
-        ["コンビニ", "忙しいあなたに", "100-1000"], 
-        ["自炊", "節約上手!", "0-500"], 
-        ["昼抜き", "せめて水だけでも...", "?"]
-    ]
-]);
+    // 本来はDB
+    // genre(number)でmenus[genre]に突っ込んでいくイメージ?
+    const menus = ref([]);
+    /*
+    ref([
+        // 学食
+        [
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+            ["カレー", "やさしい味", "250"], 
+            ["日替わり", "今日は〇〇", "500"],
+        ],
+        // 学内カフェ
+        [
+            ["たらこパスタ", "安定のおいしさ", "400"], 
+            ["ミートソースパスタ", "安定のおいしさ", "400"], 
+            ["カレー", "絶品の中辛!", "360"],
+            ["たらこパスタ", "安定のおいしさ", "400"], 
+            ["ミートソースパスタ", "安定のおいしさ", "400"], 
+            ["カレー", "絶品の中辛!", "360"],
+            ["たらこパスタ", "安定のおいしさ", "400"], 
+            ["ミートソースパスタ", "安定のおいしさ", "400"], 
+            ["カレー", "絶品の中辛!", "360"],
+            ["たらこパスタ", "安定のおいしさ", "400"], 
+            ["ミートソースパスタ", "安定のおいしさ", "400"], 
+            ["カレー", "絶品の中辛!", "360"],
+            ["たらこパスタ", "安定のおいしさ", "400"], 
+            ["ミートソースパスタ", "安定のおいしさ", "400"], 
+            ["カレー", "絶品の中辛!", "360"],
+        ],
+        // キッチンカー
+        [
+            ["ケバブ", "4種のソースが最高", "500-700"], 
+            ["からあげ", "驚きのボリューム", "400-600"]
+        ],
+        // 周辺
+        [
+            ["コンビニ", "忙しいあなたに", "100-1000"], 
+            ["自炊", "節約上手!", "0-500"], 
+            ["昼抜き", "せめて水だけでも...", "?"]
+        ]
+    ]);
+    */
 
-const router = useRouter();
-const menuID = ref(0);
+    const router = useRouter();
+    const menuID = ref(-1);
 
-const keyContent = ref("");
-const loading = ref(false);
+    const keyContent = ref("");
+    const loading = ref(false);
 
-const onMenu = (id) => {
+    onMounted(() => {
+        getMenus();
+    })
 
-    menuID.value = id;
+    const onMenu = (id) => {
 
-    return;
-}
+        menuID.value = id;
+
+        // getMenus();
+
+        return;
+    }
+
+    const getMenus = () => {
+        let datas;
+        console.log("メニュー取得");
+
+        axios.get("/api/menus", { withCredentials: true })
+            .then((res) => {
+                if (res.data.flag) {
+                    datas = res.data.menus;
+                    console.log(datas);
+                    console.log(datas.length);
+                    console.log(datas[0].genre);
+
+                    // データを整理して格納
+                    openDatas(datas);
+                    console.log("取得結果");
+                    console.log(menus);
+
+                    onMenu(0);
+                }
+                else {
+                    console.log("Failed to get menus");
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get menus", err);
+                return;
+            })
+    }
+
+    const openDatas = (datas) => {
+        // console.log("データ展開", datas);
+        const initMenus = [];
+        for (let idx in datas) {
+            // console.log(datas[idx].genre);
+            if (!initMenus[datas[idx].genre]) {
+                initMenus[datas[idx].genre] = [];
+            }
+
+            initMenus[datas[idx].genre].push(datas[idx]);
+            // console.log(menus);
+        }
+
+        console.log(initMenus);
+        console.log("展開後");
+        menus.value = initMenus;
+        console.log(menus);
+    }
 </script>
 
 <template>
@@ -134,11 +192,12 @@ const onMenu = (id) => {
         <!-- propsで全ジャンルの全メニューと選択中のジャンルを渡す -->
         <MenuPage
             v-if="menuID >= 0"
+            :key="menuID"
             :menuID = "menuID"
             :menus = "menus"
         />
 
-        <AnalysisPage v-else/>
+        <!-- <AnalysisPage v-else/> -->
     </div>
 </template>
 

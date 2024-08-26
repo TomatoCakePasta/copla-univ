@@ -1,5 +1,5 @@
 <script setup>
-    import { onMounted, ref, watch } from 'vue';
+    import { onMounted, onUnmounted, ref, watch } from 'vue';
     import { useRoute } from 'vue-router';
 
     const props = defineProps({
@@ -15,41 +15,58 @@
 
     const genre = ref(+props.menuID);
 
-    // 一度だけ全ジャンルの全メニューを取得
-    const menus = ref(props.menus);
+    const menus = ref();
 
     onMounted(() => {
+        console.log("全メニュー");
+        menus.value = props.menus;
+        console.log(menus);
         genre.value = +props.menuID;
     })
 
-    watch(() => props.menuID, (newID) => {
-        console.log(+newID);
-        // 念のためキャスト
-        genre.value = +newID;
-    });
+    onUnmounted(() => {
+        console.log("さよなら");
+    })
+
+    // watch(() => props.menus, (newMenus) => {
+    //     menus.value = newMenus;
+    //     console.log("メニュー更新");
+    //     console.log(menus);
+    // })
+
+    // watch(() => props.menuID, (newID) => {
+    //     console.log(+newID);
+    //     // 念のためキャスト
+    //     genre.value = +newID;
+    // });
+
 </script>
 
 <template>
     <div>
         <!-- {{ props.menus[genre.value] }} -->
         <!-- <h1>メニュー {{  genre }} {{ menus[genre] }}</h1> -->
-
-        <v-container>
+        <!-- {{ genre }} {{ menus ? menus[genre] : "" }} -->
+        <v-container v-if="menus">
             <v-row>
                 <!-- そのジャンルのメニューの料理を取得 -->
                 <v-col v-for="(menu, index) in menus[genre]" :key="index" cols="6" sm="3">
                     <!-- 各料理でカードを作成 -->
-                    <!-- {{ menu }} -->
                     <v-card link>
                         <!-- 画像 -->
                         <v-img
-                            :src="`/menus/menu${Math.floor(Math.random() * 12) + 1}.jpg`"
+                            :src="`/menus/${menu.image}`"
                             class="align-end"
                         >
                         </v-img>
-                        <p v-for="(detail, index2) in menu" :key="index2">
-                            {{ detail }}{{ index2 === 2 ? "円" : ""}}
-                        </p>
+
+                        <div class="ml-2">
+                            <div class="flex">
+                                <p>{{ menu.menuName }}</p>
+                                <p class="ml-auto mr-2">{{ menu.price }}円</p>
+                            </div>
+                            <p>{{ menu.comment }}</p>
+                        </div>
                     </v-card>
                 </v-col>
             </v-row>
@@ -58,4 +75,7 @@
 </template>
 
 <style scoped>
+.flex {
+    display: flex;
+}
 </style>

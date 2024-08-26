@@ -551,6 +551,19 @@ app.post("/reply/add-fav", (req, res) => {
     });
 });
 
+// メニュー取得
+app.get("/menus", (req, res) => {
+    console.log("メニュー取得");
+    con.query(`SELECT * FROM menus ORDER BY genre ASC`, (err, results) => {
+        if (results) {
+            res.send({ flag: true, menus: results });
+        }
+        else {
+            res.send({ flag: false });
+        }
+    });
+})
+
 app.listen(PORT, () => {
     console.log(`Server is running http://localhost:${ PORT }`);
 });
