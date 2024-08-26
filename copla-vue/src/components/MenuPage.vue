@@ -72,6 +72,7 @@
                             :src="`/menus/${menu.image}`"
                             class="align-end"
                         >
+                            <p class="vote pl-1 pr-1">{{ menu.fav }} 票</p>
                         </v-img>
 
                         <div class="ml-2">
@@ -99,6 +100,7 @@
                             :src="`/menus/${singleMenu.image}`"
                             class="align-end"
                         >
+                        <p class="vote pl-1 pr-1">{{ singleMenu.fav }} 票</p>
                     </v-img>
 
                     <div class="ma-2">
@@ -146,6 +148,13 @@
 
 .w-100p {
     width: 80%;
+}
+
+.vote {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: rgba(255, 255, 255, 0.521);
 }
 
 .sub-info {
