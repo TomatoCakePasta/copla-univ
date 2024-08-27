@@ -1,6 +1,7 @@
 <script setup>
     import { onMounted, onUnmounted, ref, watch } from 'vue';
     import { useRoute } from 'vue-router';
+    import axios from 'axios';
 
     const props = defineProps({
         menuID: {
@@ -10,7 +11,11 @@
         menus: {
             type: Array,
             required: true
-        }
+        },
+        isVotedID: {
+            type: Number,
+            required: true 
+        },
     });
 
     const genre = ref(+props.menuID);
@@ -19,12 +24,16 @@
     const menuDialog = ref(false);
     const selectedMenu = ref(0);
     const singleMenu = ref([]);
+    const isVotedID = ref();
 
     onMounted(() => {
         console.log("全メニュー");
         menus.value = props.menus;
         console.log(menus);
         genre.value = +props.menuID;
+
+        isVotedID.value = props.isVotedID;
+        console.log(isVotedID.value, "に投票");
     })
 
     onUnmounted(() => {
@@ -43,12 +52,37 @@
     //     genre.value = +newID;
     // });
 
+    watch(() => props.isVotedID, (newID) => {
+        console.log(newID, "に投票済み menuPage");
+        isVotedID.value = newID;
+    })
+
     const openDialog = (id) => {
         console.log(id, "番目のメニュー");
         menuDialog.value = true;
         selectedMenu.value = id;
         console.log(menus.value[genre.value][id]);
         singleMenu.value = menus.value[genre.value][id];
+    }
+
+    const onVote = (id) => {
+        // 投票済みならメソッド実行ボタン自体が秘匿だから大丈夫なはず
+
+        console.log("新規投票");
+        // 新規投票
+        axios.post("/api/vote", { menuID: id }, { withCredentials: true })
+            .then((res) => {
+                isVotedID.value = id;
+                menuDialog.value = false;
+            })
+            .catch((err) => {
+                console.error("Failed to vote", err);
+            })
+    }
+
+    // 未投票の場合trueｓ
+    const isNotVoted = () => {
+        return isVotedID.value < 0;
     }
 
 </script>
@@ -95,7 +129,7 @@
                     max-width="400px"
                     class="w-100p"
                 >
-                    <!-- {{ singleMenu }} -->
+                    <!-- {{ singleMenu.menuID }} -->
                     <v-img
                             :src="`/menus/${singleMenu.image}`"
                             class="align-end"
@@ -118,7 +152,7 @@
                     <!-- <hr> -->
 
                     <div class="flex end ma-2">
-                        <p class="mt-auto sub-info">投票は1日1回</p>
+                        <p class="mt-auto sub-info" v-if="isNotVoted()">投票は1日1回</p>
 
                         <v-btn
                             text="閉じる"
@@ -131,6 +165,8 @@
                             text="投票!"
                             class="ml-5"
                             color="light-blue-accent-4"
+                            @click="onVote(singleMenu.menuID)"
+                            v-if="isNotVoted()"
                         ></v-btn>
                         <!-- @click="onPost(); postDialog = false; " -->
                     </div>

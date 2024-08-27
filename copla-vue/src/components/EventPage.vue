@@ -70,12 +70,14 @@
 
     const router = useRouter();
     const menuID = ref(-1);
+    const isVotedID = ref(-1);
 
     const keyContent = ref("");
     const loading = ref(false);
 
     onMounted(() => {
         getMenus();
+        isVoteRecorded();
     })
 
     const onMenu = (id) => {
@@ -116,6 +118,7 @@
             })
     }
 
+    // DBから取得したデータを整理
     const openDatas = (datas) => {
         // console.log("データ展開", datas);
         const initMenus = [];
@@ -134,6 +137,25 @@
         menus.value = initMenus;
         console.log(menus);
     }
+
+    // 投票済み確認
+    // 投票したメニューIDを取得 or -1
+    const isVoteRecorded = () => {
+        axios.get("/api/isVoted", { withCredentials: true })
+            .then((res) => {
+                if (res.data.flag) {
+                    console.log(res.data.menuID[0].menuID);
+                    isVotedID.value = res.data.menuID[0].menuID;
+                    console.log(`${isVotedID.value}に投票済み`);
+                }
+                else {
+                    console.log("新規ユーザです")
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to check voted user", err);
+            })
+    }
 </script>
 
 <template>
@@ -150,19 +172,20 @@
             <v-card-text
                 class="flex"
             >
-                <v-text-field
+                <!-- 余裕があればランチ検索フォームにしたいけど、バナーもあり -->
+                <!-- <v-text-field
                     :loading="loading"
                     density="compact"
                     label="検索 + Enter"
                     variant="solo"
                     hide-details
                     single-line
-                    v-model="keyContent"
-                    id="searchForm"
-                    @keydown.enter="onKeySearch()"
                 >
-                </v-text-field>
-                <v-btn color="primary" height="40" width="100"><v-icon color="white" size="30">{{ mdiMagnify }}</v-icon></v-btn>
+                </v-text-field> -->
+                <v-card height="40px" class="w-100 flex banner">
+                    <h1 class="mr-auto ml-auto">メニュー</h1>
+                </v-card>
+                <!-- <v-btn color="primary" height="40" width="100"><v-icon color="white" size="30">{{ mdiMagnify }}</v-icon></v-btn> -->
             </v-card-text>
 
             <div class="trend flex ml-5 mt-3 mb-3">
@@ -195,6 +218,7 @@
             :key="menuID"
             :menuID = "menuID"
             :menus = "menus"
+            :isVotedID = "isVotedID"
         />
 
         <AnalysisPage v-else/>
@@ -204,6 +228,10 @@
 <style scoped>
 .flex {
     display: flex;
+}
+
+.w-100 {
+    width: 100%;
 }
 
 .trend {
@@ -222,4 +250,11 @@
 .second {
     /* font-size: 1.1rem; */
 }
+
+.banner {
+    /* background-color:#ffac3f; */
+    background-color:#311B92;
+    color: rgb(255, 255, 255);
+}
+
 </style>

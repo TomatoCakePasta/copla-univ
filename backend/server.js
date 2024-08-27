@@ -61,7 +61,9 @@ const con = mysql.createConnection({
     // 外部変数?にした方がいい
     // envファイル, dotenv?
     password: "",
-    database : "copla_db"
+    database : "copla_db",
+    // 日本時間
+    timezone: "jst"
 });
 
 /**
@@ -562,6 +564,57 @@ app.get("/menus", (req, res) => {
             res.send({ flag: false });
         }
     });
+});
+
+// 新規投票
+app.post("/vote", (req, res) => {
+    const userID = req.session.user.userID;
+    const menuID = req.body.menuID;
+
+    con.query(`INSERT INTO votes(userID, menuID, voteDate) VALUES(?, ?, curdate())`,
+        [ userID, menuID ], (err) => {
+            if (err) {
+                console.error("Failed to add new vote", err);
+                res.send({ flag: false});
+            }
+            else {
+                // いいねを追加
+                con.query(`UPDATE menus SET fav = fav + 1 WHERE menuID = ?`,
+                    [ menuID ],
+                    (err) => {
+                        if (err) {
+                            console.error("Failed to add new fav", err);
+                            res.send({ flag: false });
+                        }
+                        else {
+                            console.log("新規投票を追加 : userID ", userID, ", menuID : ", menuID);
+                            res.send({ flag: true });
+                        }
+                    }
+                )
+            }
+        }
+    )
+})
+
+// 投票済み
+app.get("/isVoted", (req, res) => {
+    const userID = req.session.user.userID;
+
+    // 今日そのユーザが投票したか
+    con.query(`SELECT menuID FROM votes WHERE userID = ? AND voteDate = curdate();`,
+            [ userID ], 
+            (err, results) => {
+                if (results.length) {
+                    console.log("isVoted : ", results);
+                    res.send({ flag: true, menuID: results });
+                }
+                else {
+                    console.log("isNotVoted : ", results);
+                    res.send({ flag: false });
+                }
+            }
+    );
 })
 
 app.listen(PORT, () => {
