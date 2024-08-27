@@ -15,6 +15,8 @@ import HomeBase from '@/components/HomeBase.vue'
 import LoginPage from '@/components/LoginPage.vue'
 import SignUp from '@/components/SignUp.vue';
 import MyFavorite from '@/components/MyFavorite.vue';
+import AnalysisPage from '@/components/AnalysisPage.vue';
+import MenuPage from '@/components/MenuPage.vue';
 
 // ルーティング制御のファイルです
 const router = createRouter({
@@ -44,6 +46,26 @@ const router = createRouter({
           path: "/event",
           name: "event",
           component: EventPage,
+
+          // children: [
+          //   {
+          //     path:"analysis",
+          //     name: "analysis",
+          //     component: AnalysisPage,
+          //   },
+          //   {
+          //     path: "menu",
+
+          //     name: "menu",
+          //     component: MenuPage,
+
+          //     // FocusPostコンポーネントにクエリの値を渡します
+          //     // まだ上手く使いきれてないのでもう少し勉強します
+          //     props: (route) => ({
+          //       id: route.params.id
+          //     }),
+          //   }
+          // ],
         },
         {
           // trafficやaccessの方がいい?

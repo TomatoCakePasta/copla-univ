@@ -201,7 +201,7 @@
                             <!-- <v-icon size="40">{{ mdiAlertDecagramOutline }}</v-icon>
                             <p class="ml-5 v-center flex" v-if="!isLessHalf">Event</p> -->
                             <v-icon size="40">{{ mdiBusClock }}</v-icon>
-                            <p class="ml-5 v-center flex" v-if="!isLessHalf">D大バス</p>
+                            <p class="ml-5 v-center flex" v-if="!isLessHalf">大学バス</p>
                         </div>
                     </v-list-item>
 

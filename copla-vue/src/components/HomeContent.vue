@@ -43,6 +43,7 @@
     const postsImageData = ref();
 
     const loading = ref(false);
+    const getLoading = ref(false);
 
     const samplePost = ref({ id: postId.value++, userName: "Taro", content: "Hello1", replies: 
             [
@@ -80,9 +81,11 @@
     // 投稿を取得
     // 画面読み込み時, 一定間隔, ソケットイベント検知などのタイミングで呼出
     const getDatas = (genre = 0) => {
+        getLoading.value = true;
         // 以下のURLに投稿取得リクエストをします
         axios.get(`/api/get/genre/${genre}`, {withCredentials: true})
             .then((res) => {
+                getLoading.value = false;
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
                 // console.log(postsImageData);
                 // console.log("GET DATA");
@@ -291,11 +294,11 @@
                 <p class="ml-5 tag">#期末</p>
             </div>
 
-            <v-card>
-                <v-tabs
-                    bg-color="deep-purple-darken-4"
-                    center-active
-                >
+            <!-- <v-card> -->
+            <v-tabs
+                bg-color="deep-purple-darken-4"
+                center-active
+            >
                 <v-tab @click="onSearch('0')">ALL</v-tab>
                 <v-tab @click="onSearch('1')">授業</v-tab>
                 <v-tab @click="onSearch('2')">サークル</v-tab>
@@ -304,8 +307,8 @@
                 <v-tab @click="onSearch('5')">その他</v-tab>
                 <v-tab @click="onSearch('6')">イベント</v-tab>
                 <v-tab @click="onSearch('7')">記事</v-tab>
-                </v-tabs>
-            </v-card>
+            </v-tabs>
+            <!-- </v-card> -->
         </div>
 
         <!-- <router-link to="/articles">これはロード無しで飛べる</router-link><br>
@@ -318,6 +321,7 @@
             投稿のデザインの型はPostContentコンポーネントに作っているので
             値を渡しています
         -->
+        <!-- {{ getLoading ? "Now Loading ..." : "" }} -->
         <div v-for="post in postsImageData" :key="post.postID">
             <!-- Flagで投稿コンポーネントと記事コンポーネントを区別する? -->
 
