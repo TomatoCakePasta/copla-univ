@@ -1,5 +1,5 @@
 <script setup>
-    import { onMounted, ref } from "vue";
+    import { onMounted, provide, ref } from "vue";
     import { RouterView, useRouter } from 'vue-router';
     import { mdiMagnify } from '@mdi/js';
     import MenuPage from "./MenuPage.vue";
@@ -76,6 +76,7 @@
     const loading = ref(false);
 
     onMounted(() => {
+        console.log("EventPage読み込み");
         getMenus();
         isVoteRecorded();
     })
@@ -156,6 +157,8 @@
                 console.error("Failed to check voted user", err);
             })
     }
+
+    provide("isVotedID", isVotedID);
 </script>
 
 <template>
@@ -213,12 +216,14 @@
         <!-- 学食, カフェ, 大学周辺, その他 -->
         <!-- メニューカードをクリックしたら、[コレにする! のダイアログでボタン表示] (小文字で※投票は1日1回です.と書いておく) -->
         <!-- propsで全ジャンルの全メニューと選択中のジャンルを渡す -->
+        {{ menus.length ? menus[0][0] : "" }}
+        {{ isVotedID ? isVotedID : ""}}
         <MenuPage
             v-if="menuID >= 0"
             :key="menuID"
             :menuID = "menuID"
             :menus = "menus"
-            :isVotedID = "isVotedID"
+            :isVotedID="isVotedID"
         />
 
         <AnalysisPage v-else/>
