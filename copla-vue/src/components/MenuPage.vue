@@ -99,7 +99,8 @@
         <v-container v-if="menus">
             <v-row>
                 <!-- そのジャンルのメニューの料理を取得 -->
-                <v-col v-for="(menu, index) in menus[genre]" :key="index" cols="6" sm="3">
+                <!-- <v-col v-for="(menu, index) in menus[genre]" :key="index" cols="6" sm="3"> -->
+                <v-col v-for="(menu, index) in menus[genre]" :key="index" cols="6" sm="4">
                     <!-- 各料理でカードを作成 -->
                     <v-card 
                         link
