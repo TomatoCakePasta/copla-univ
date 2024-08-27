@@ -58,12 +58,12 @@
     //     isVotedID.value = newID;
     // })
 
-    const openDialog = (id) => {
+    const openDialog = (idx) => {
         // console.log(id, "番目のメニュー");
         menuDialog.value = true;
-        selectedMenu.value = id;
-        console.log(menus.value[genre.value][id]);
-        singleMenu.value = menus.value[genre.value][id];
+        selectedMenu.value = idx;
+        console.log(menus.value[genre.value][idx]);
+        singleMenu.value = menus.value[genre.value][idx];
     }
 
     const onVote = (id) => {
@@ -74,7 +74,8 @@
         // 新規投票
         axios.post("/api/vote", { menuID: id }, { withCredentials: true })
             .then((res) => {
-                isVotedID.value = selectedMenu.value;
+                isVotedID.value = id;
+
                 console.log(isVotedID.value, "に投票");
                 menus.value[genre.value][selectedMenu.value].fav += 1;
                 menuDialog.value = false;
@@ -102,6 +103,9 @@
                 <!-- <v-col v-for="(menu, index) in menus[genre]" :key="index" cols="6" sm="3"> -->
                 <v-col v-for="(menu, index) in menus[genre]" :key="index" cols="6" sm="4">
                     <!-- 各料理でカードを作成 -->
+                    <!-- {{ isVotedID }}
+                    {{ menu.menuID }} -->
+
                     <v-card 
                         link
                         @click="openDialog(index)"
@@ -111,7 +115,8 @@
                             :src="`/menus/${menu.image}`"
                             class="align-end"
                         >
-                            <p class="vote pl-1 pr-1">{{ menu.fav }} 票</p>
+                            <p class="vote pl-1 pr-1 yourself" v-if="menu.menuID === isVotedID">{{ menu.fav }} 票</p>
+                            <p class="vote pl-1 pr-1" v-else>{{ menu.fav }} 票</p>
                         </v-img>
 
                         <div class="ml-2">
@@ -139,7 +144,7 @@
                             :src="`/menus/${singleMenu.image}`"
                             class="align-end"
                         >
-                        <p class="vote pl-1 pr-1">{{ singleMenu.fav }} 票</p>
+                        <p class="vote pl-1 pr-1" :class="{ 'yourself' : singleMenu.menuID === isVotedID }">{{ singleMenu.fav }} 票</p>
                     </v-img>
 
                     <div class="ma-2">
@@ -158,7 +163,7 @@
 
                     <div class="flex end ma-2">
                         <p class="mt-auto sub-info" v-if="isVotedID < 0">投票は1日1回</p>
-
+                        <p class="mt-auto" v-if="singleMenu.menuID === isVotedID">今日はコレ!</p>
                         <v-btn
                             text="閉じる"
                             color="grey-lighten-4"
@@ -196,6 +201,11 @@
     top: 0px;
     right: 0px;
     background: rgba(255, 255, 255, 0.521);
+    /* background: rgba(255, 246, 73, 0.648); */
+}
+
+.yourself {
+   background: rgba(255, 246, 73, 0.648);
 }
 
 .sub-info {
