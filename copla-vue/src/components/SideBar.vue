@@ -205,12 +205,12 @@
                         </div>
                     </v-list-item>
 
-                    <v-list-item link to="/myfavorite" class="rounded-xl">
+                    <!-- <v-list-item link to="/myfavorite" class="rounded-xl">
                         <div class="flex">
                             <v-icon size="40">{{ mdiFileDocumentEditOutline }}</v-icon>
                             <p class="ml-5 v-center flex" v-if="!isLessHalf">ブックマーク</p>
                         </div>
-                    </v-list-item>
+                    </v-list-item> -->
 
                     <v-list-item link to="/mypage" class="rounded-xl">
                         <div class="flex">
@@ -219,12 +219,12 @@
                         </div>
                     </v-list-item>
 
-                    <v-list-item link to="settings" class="rounded-xl">
+                    <!-- <v-list-item link to="settings" class="rounded-xl">
                         <div class="flex">
                             <v-icon size="40">{{ mdiCogOutline }}</v-icon>
                             <p class="ml-5 v-center flex" v-if="!isLessHalf">設定</p>
                         </div>
-                    </v-list-item>
+                    </v-list-item> -->
 
                     <v-list-item link to="" class="rounded-xl" @click="onLogout">
                         <div class="flex">
@@ -296,32 +296,32 @@
         </v-app-bar> -->
         <v-bottom-navigation
             v-if="isMobile"
-            :height="50"
+            :height="60"
         >
             <div class="flex phoneMenu">
-                <v-list-item link to="/" exact title="" class="pa-0 ma-1 rounded-circle">
+                <v-list-item link to="/" exact title="" class="pa-0 ma-1 pa-1 rounded-circle">
                     <v-icon size="40">{{ mdiHome }}</v-icon>
                 </v-list-item>
 
-                <v-list-item link to="" title="" class="pa-0 ma-1 rounded-circle" @click="postDialog = true">
+                <v-list-item link to="" title="" class="pa-0 ma-1 pa-1 rounded-circle" @click="postDialog = true">
                     <v-icon size="40">{{ mdiPencilOutline }}</v-icon>
                 </v-list-item>
 
-                <v-list-item link to="/event" title="" class="pa-0 ma-1 rounded-circle">
+                <v-list-item link to="/event" title="" class="pa-0 ma-1 pa-1 rounded-circle">
                     <!-- <v-icon size="40">{{ mdiAlertDecagramOutline }}</v-icon> -->
                     <v-icon size="40">{{ mdiSilverwareForkKnife }}</v-icon>
                 </v-list-item>
 
-                <v-list-item link to="/myfavorite" title="" class="pa-0 ma-1 rounded-circle">
+                <!-- <v-list-item link to="/myfavorite" title="" class="pa-0 ma-1 pa-1 rounded-circle">
                     <v-icon size="40">{{ mdiFileDocumentEditOutline }}</v-icon>
-                </v-list-item>
+                </v-list-item> -->
 
-                <v-list-item link to="/bus" title="" class="pa-0 ma-1 rounded-circle">
+                <v-list-item link to="/bus" title="" class="pa-0 ma-1 pa-1 rounded-circle">
                     <v-icon size="40">{{ mdiBusClock }}</v-icon>
                 </v-list-item>
 
                 <!-- マイページはトップバーとかにする? -->
-                <v-list-item link to="mypage" title="" class="pa-0 ma-1 rounded-circle">
+                <v-list-item link to="mypage" title="" class="pa-0 ma-1 pa-1 rounded-circle">
                     <v-icon size="40">{{ mdiAccountSchoolOutline }}</v-icon>
                 </v-list-item>
 
@@ -330,7 +330,7 @@
                     <v-icon size="40">{{ mdiCogOutline }}</v-icon>
                 </v-list-item> -->
     
-                <v-list-item link to="" title="" @click="onLogout" class="pa-0 ma-1 rounded-circle">
+                <v-list-item link to="" title="" @click="onLogout" class="pa-0 ma-1 pa-1 rounded-circle">
                     <v-icon size="40">{{ mdiLogout }}</v-icon>
                 </v-list-item>
             </div>
@@ -342,6 +342,10 @@
 
 .flex {
     display: flex;
+}
+
+.bottom-nav {
+    display: block;
 }
 
 .w-100p {
@@ -388,6 +392,6 @@ img {
 }
 
 .phoneMenu {
-    justify-content: space-between;
+    justify-content: space-around;
 }
 </style>
