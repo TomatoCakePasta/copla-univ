@@ -534,6 +534,27 @@ app.get("/replies/faved", (req, res) => {
 
 });
 
+// ブックマーク済み投稿の取得
+app.get("/bookmarks", (req, res) => {
+    const userID = req.session.user.userID;
+
+    con.query(`SELECT 
+                    postID
+                FROM bookmarks
+                WHERE userID = ?
+                ORDER BY bookmarkID ASC`, [userID], (err, results) => {
+        if (err) {
+            console.error("DB query error:", err);
+            return;
+        }
+        else {
+            console.log(results.length);
+            res.status(200).send({flag: true, postIDs: results, bookmarks: results.length });
+        }
+    });
+
+});
+
 // 投稿いいね押下
 app.post("/post/add-fav", (req, res) => {
     const postID = req.body.postID;
@@ -589,6 +610,44 @@ app.post("/reply/add-fav", (req, res) => {
         }
     });
 });
+
+// ブックマーク追加
+app.post("/bookmark/add", (req, res) => {
+    const postID = req.body.postID;
+    const userID = req.session.user.userID;
+
+    // bookmarksで誰がどの投稿にブックマークしたか追加
+    con.query(`INSERT INTO bookmarks(postID, userID) VALUES(?, ?)`, 
+                [postID, userID],
+                (err) => {
+        if (err) {
+            console.error("Failed to add bookmark", err);
+            res.status(200).send({ flag: false });
+        }
+        else {
+            res.send({ flag: true });
+        }
+    });
+});
+
+app.delete("/bookmark/del", (req, res) => {
+    const postID = req.body.postID;
+    const userID = req.session.user.userID;
+    console.log("削除", postID, userID);
+
+    // bookmarksで誰がどの投稿にブックマーク削除したか
+    con.query(`DELETE FROM bookmarks WHERE postID = ? AND userID = ?`, 
+                [postID, userID],
+                (err) => {
+        if (err) {
+            console.error("Failed to delete bookmark", err);
+            res.status(200).send({ flag: false });
+        }
+        else {
+            res.send({ flag: true });
+        }
+    });
+})
 
 // メニュー取得
 app.get("/menus", (req, res) => {

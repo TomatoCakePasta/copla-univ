@@ -26,6 +26,9 @@
         // いいねを取得
         getPostsFaved();
         getRepFaved();
+
+        // ブックマーク取得
+        getBookmarks();
     });
 
     // 投稿をaxiosで送ります
@@ -46,6 +49,7 @@
     // propsで渡す
     const postFavs = ref({});
     const repFavs = ref({});
+    const bookmarks = ref({});
 
     // 投稿ボタンが押された場合
     const onSubmit = () => {
@@ -202,6 +206,26 @@
             });
     }
 
+    // ブックマーク投稿取得
+    const getBookmarks = () => {
+        axios.get("/api/bookmarks", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.bookmarks > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.postIDs.forEach(postID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        bookmarks.value[postID.postID] = true;
+                    });
+                    console.log("ブックマークした投稿ID");
+                    console.log(bookmarks);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get bookmark posts", err);
+                // alert("Failed to get posts faved", err);
+            });
+    }
+
     const onKeySearch = () => {
         if (keyContent.value === "") {
             alert("検索ワードを入力してください");
@@ -330,6 +354,7 @@
                 :socket="props.socket"
                 :postFavs="postFavs"
                 :repFavs="repFavs"
+                :bookmarks = "bookmarks"
             />
 
             <!-- 通常投稿 -->
@@ -340,9 +365,8 @@
                 :socket="props.socket"
                 :postFavs="postFavs"
                 :repFavs="repFavs"
+                :bookmarks="bookmarks"
             />
-
-            <!-- 記事の場合 -->
         </div>
     </div>
 </template>

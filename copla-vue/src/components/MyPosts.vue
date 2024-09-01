@@ -19,6 +19,7 @@
     // propsで渡す
     const postFavs = ref({});
     const repFavs = ref({});
+    const bookmarks = ref({});
 
     // 画面読み込み時
     onMounted(() => {
@@ -28,6 +29,9 @@
         // いいねを取得
         getPostsFaved();
         getRepFaved();
+
+        // ブックマーク取得
+        getBookmarks();
     });
 
     const getDatas = (genre = 0) => {
@@ -144,6 +148,26 @@
                 // alert("Failed to get posts faved", err);
             });
     }
+
+    // ブックマーク投稿取得
+    const getBookmarks = () => {
+        axios.get("/api/bookmarks", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.bookmarks > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.postIDs.forEach(postID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        bookmarks.value[postID.postID] = true;
+                    });
+                    console.log("ブックマークした投稿ID");
+                    console.log(bookmarks);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get bookmark posts", err);
+                // alert("Failed to get posts faved", err);
+            });
+    }
 </script>
 
 <template>
@@ -165,6 +189,7 @@
                 :socket="props.socket"
                 :postFavs="postFavs"
                 :repFavs="repFavs"
+                :bookmarks="bookmarks"
             />
 
             <!-- 通常投稿 -->
@@ -175,6 +200,7 @@
                 :socket="props.socket"
                 :postFavs="postFavs"
                 :repFavs="repFavs"
+                :bookmarks="bookmarks"
             />
 
             <!-- 記事の場合 -->
