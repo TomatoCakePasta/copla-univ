@@ -326,8 +326,8 @@
                     <div class="ml-3 flex">
                         <v-icon size="30" @click.stop="onPostFav(post.postID)" :ripple="false" color="red" class="on-good rounded-circle pa-1">{{ everPostFaved(post.postID) ? mdiHeart : mdiHeartOutline }}</v-icon>
                         <!-- postFavで既に自分も押されている場合,getPostFavStatusで自分が重複加算される -->
-                        <p>{{ post.postFav + getPostFavStatus(post.postID) }}, postID = </p>
-                        {{ post.postID }}
+                        <p>{{ post.postFav + getPostFavStatus(post.postID) }}</p>
+                        <!-- , postID = {{ post.postID }} -->
                     </div>
                 </v-card-item>
 
@@ -370,8 +370,8 @@
                 <v-card-item class="pt-0">
                     <div class="ml-3 flex">
                         <v-icon size="30" @click.stop="onRepFav(rep.repID)" color="red" class="on-good rounded-circle pa-1">{{ everRepFaved(rep.repID) ? mdiHeart : mdiHeartOutline }}</v-icon>
-                        <p>{{ rep.repFav + getRepFavStatus(rep.repID) }}, postID = </p>
-                        {{ rep.repID }}
+                        <p>{{ rep.repFav + getRepFavStatus(rep.repID) }}</p>
+                        <!-- , postID = {{ rep.repID }} -->
                     </div>
                 </v-card-item>
             </div>

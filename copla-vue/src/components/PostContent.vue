@@ -266,8 +266,8 @@
                 >
                     <div class="ml-3 flex">
                         <v-icon size="30" @click.stop="onPostFav(props.post.postID)" :ripple="false" color="red" class="on-good rounded-circle pa-1">{{ everPostFaved(props.post.postID) ? mdiHeart : mdiHeartOutline }}</v-icon>
-                        <p>{{ props.post.postFav + getPostFavStatus(props.post.postID) }}, postID = </p>
-                        {{ props.post.postID }}
+                        <p>{{ props.post.postFav + getPostFavStatus(props.post.postID) }}</p>
+                        <!-- , postID = {{ props.post.postID }} -->
                     </div>
                 </v-card-item>
 
@@ -325,8 +325,8 @@
                     <v-card-item class="pt-0">
                         <div class="ml-3 flex">
                             <v-icon size="30" @click.stop="onRepFav(rep.repID)" color="red" class="on-good rounded-circle pa-1">{{ everRepFaved(rep.repID) ? mdiHeart : mdiHeartOutline }}</v-icon>
-                            <p>{{ rep.repFav + getRepFavStatus(rep.repID) }}, postID = </p>
-                            {{ rep.repID }}
+                            <p>{{ rep.repFav + getRepFavStatus(rep.repID) }}</p>
+                            <!-- , postID = {{ rep.repID }} -->
                         </div>
                     </v-card-item>
                 </div>

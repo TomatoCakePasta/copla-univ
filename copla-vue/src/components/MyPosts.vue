@@ -23,7 +23,7 @@
     // 画面読み込み時
     onMounted(() => {
         // 投稿を取得
-        // getDatas();
+        getDatas();
 
         // いいねを取得
         getPostsFaved();
@@ -33,7 +33,7 @@
     const getDatas = (genre = 0) => {
         getLoading.value = true;
         // 以下のURLに投稿取得リクエストをします
-        axios.get(`/api/get/myfavorite`, {withCredentials: true})
+        axios.get(`/api/get/myposts`, {withCredentials: true})
             .then((res) => {
                 getLoading.value = false;
                 postsImageData.value = nestPostsAndReplies(res.data.posts);

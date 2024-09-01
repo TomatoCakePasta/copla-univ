@@ -310,6 +310,43 @@ app.get("/get/genre/:id", (req, res) => {
     });
 });
 
+// 自分の投稿
+app.get("/get/myposts", (req, res) => {
+    console.log("get my posts");
+    console.log(req.session);
+
+    const userID = req.session.user.userID;
+
+    let query = `SELECT 
+                    p.postID, 
+                    p.genre, 
+                    p.title,
+                    u.userName AS postName, 
+                    u.icon AS postUserIcon,
+                    p.body AS postContent, 
+                    p.datetime AS postTime, 
+                    p.fav AS postFav,
+                    r.repID,
+                    u2.userName AS repName,
+                    u2.icon AS repUserIcon,
+                    r.body AS repContent,
+                    r.datetime AS repTime,
+                    r.fav AS repFav
+                FROM posts p
+                LEFT JOIN users u ON p.userID = u.userID 
+                LEFT JOIN replies r ON p.postID = r.postID
+                LEFT JOIN users u2 ON r.userID = u2.userID
+                WHERE p.userID = ? ORDER BY p.postID DESC`;
+
+    con.query(query, [ userID ], (err, results) => {
+        if (err) {
+            console.error("DB query error:", err);
+            return;
+        }
+        res.status(200).send({flag: true, posts: results});
+    });
+});
+
 // 検索投稿取得
 app.post("/search", (req, res) => {
     let rowWords = req.body.words;

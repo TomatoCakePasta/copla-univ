@@ -17,7 +17,7 @@ import { useRouter } from "vue-router";
     const router = useRouter();
 
     onMounted(() => {
-        router.push({ path: "mypage/timetable" });
+        router.push({ name: "timetable" });
     });
 </script>
 
@@ -45,7 +45,8 @@ import { useRouter } from "vue-router";
                 center-active
             >
                 <v-tab to="/mypage/timetable">予定表</v-tab>
-                <v-tab>お気に入り</v-tab>
+                <v-tab to="/mypage/myfavorite">お気に入り</v-tab>
+                <v-tab to="/mypage/myposts">自分の投稿</v-tab>
                 <v-tab to="/mypage/settings">設定</v-tab>
             </v-tabs>
             <!-- </v-card> -->

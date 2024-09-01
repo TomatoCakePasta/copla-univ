@@ -36,21 +36,12 @@
 
     const chatContent = ref("");
     const keyContent = ref("");
-    const postId = ref(1);
-    const repId = ref(1);
     const getMsg = ref();
 
     const postsImageData = ref();
 
     const loading = ref(false);
     const getLoading = ref(false);
-
-    const samplePost = ref({ id: postId.value++, userName: "Taro", content: "Hello1", replies: 
-            [
-                {id: repId.value++, userName: "Taro", content: "返信"}, 
-                {id: repId.value++, userName: "Shimizu", content: "返信2"}
-            ] 
-        });
 
     // propsで渡す
     const postFavs = ref({});
