@@ -4,7 +4,9 @@
     import { 
             mdiChatOutline,
             mdiHeartOutline,
-            mdiHeart
+            mdiHeart,
+            mdiStarPlusOutline,
+            mdiStarPlus
             } from "@mdi/js";
     import axios from "axios";
     // const props = defineProps({
@@ -16,7 +18,7 @@
 
     // propsを取得します
     // postという名前で渡されたので、それを指定しています
-    const props = defineProps(["post", "socket", "postFavs", "repFavs"]);
+    const props = defineProps(["post", "socket", "postFavs", "repFavs", "bookmarks"]);
 
     // 以下の記述だとpostは静的なので、新規投稿が反映されない
     // const post = props.post;
@@ -138,6 +140,34 @@
             }); 
     }
 
+    const onBookmark = (postID) => {
+        // 取り消し
+        if (props.bookmarks[postID]) {
+            // deleteリクエスト
+            axios.delete("/api/bookmark/del", {
+                data: { postID: postID },
+                withCredentials: true
+                })
+            .then((res) => {
+                delBookmark(postID);
+            })
+            .catch((err) => {
+
+            });
+        }
+        // 追加
+        else {
+            // postリクエスト
+            axios.post("/api/bookmark/add", { postID: postID }, { withCredentials: true })
+            .then((res) => {
+                addBookmark(postID);
+            })
+            .catch((err) => {
+
+            });
+        }
+    }
+
     // textareaでEnterが押された時の処理
     // (他の動作と干渉しないように用意しただけです)
     const handleEnterKey = (event) => {
@@ -179,6 +209,11 @@
         return ret;
     }
 
+    const everBookmarked = (postID) => {
+        const ret = props.bookmarks[postID] === true ? true : false;
+        return ret;
+    }
+
     // ローカルで投稿いいね押下の見た目処理
     const addPostFav = (postID) => {
         props.postFavs[postID] = 2;
@@ -188,6 +223,16 @@
     const addRepFav = (repID) => {
         props.repFavs[repID] = 2;
         console.log(props.repFavs);
+    }
+
+    const addBookmark  = (postID) => {
+        props.bookmarks[postID] = true;
+        console.log("ブックマークに追加: ", postID);
+    }
+
+    const delBookmark = (postID) => {
+        props.bookmarks[postID] = false;
+        console.log("ブックマークを削除: ", postID);
     }
 </script>
 
@@ -240,6 +285,7 @@
                     <div class="ml-3 flex">
                         <v-icon size="30" @click.stop="onPostFav(props.post.postID)" :ripple="false" color="red" class="on-good rounded-circle pa-1">{{ everPostFaved(props.post.postID) ? mdiHeart : mdiHeartOutline }}</v-icon>
                         <p>{{ props.post.postFav + getPostFavStatus(props.post.postID) }}</p>
+                        <v-icon size="30" @click.stop="onBookmark(props.post.postID)" :ripple="false" color="orange" class="on-bookmark rounded-circle">{{ everBookmarked(props.post.postID) ? mdiStarPlus : mdiStarPlusOutline }}</v-icon>
                         <!-- post ID = {{ props.post.postID }} -->
                         <p class="ml-auto">返信 {{ props.post.replies.length }} 件</p>
                     </div>
@@ -263,6 +309,10 @@
 
 .on-good:hover {
     background-color: rgb(249, 181, 181);
+}
+
+.on-bookmark:hover {
+    background-color: rgb(249, 228, 181);
 }
 
 .good-icon {

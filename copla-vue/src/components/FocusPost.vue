@@ -1,13 +1,19 @@
 <script setup>
     import { computed, ref, onMounted, onBeforeMount } from "vue";
     import { useRoute } from "vue-router";
-    import { mdiHeart, mdiHeartOutline } from "@mdi/js";
+    import { 
+            mdiHeart, 
+            mdiHeartOutline,
+            mdiStarPlusOutline,
+            mdiStarPlus
+         } from "@mdi/js";
     import axios from "axios";
 
     const route = useRoute();
 
     const postFavs = ref({});
     const repFavs = ref({});
+    const bookmarks = ref({});
 
     // クエリに渡されたidの値を取得
     console.log(route.params.id + "の投稿を抽出");
@@ -35,6 +41,9 @@
         // いいねを取得
         getPostsFaved();
         getRepFaved();
+
+        // ブックマーク取得
+        getBookmarks();
 
         isLoading.value = true;
     })
@@ -156,6 +165,35 @@
             });
     };
 
+    // ブックマーク押下
+    const onBookmark = (postID) => {
+        // 取り消し
+        if (bookmarks.value[postID]) {
+            // deleteリクエスト
+            axios.delete("/api/bookmark/del", {
+                data: { postID: postID },
+                withCredentials: true
+                })
+            .then((res) => {
+                delBookmark(postID);
+            })
+            .catch((err) => {
+
+            });
+        }
+        // 追加
+        else {
+            // postリクエスト
+            axios.post("/api/bookmark/add", { postID: postID }, { withCredentials: true })
+            .then((res) => {
+                addBookmark(postID);
+            })
+            .catch((err) => {
+
+            });
+        }
+    }
+
     // ログイン後にいいねを押したか
     const getPostFavStatus = (postID) => {
         const ret = postFavs.value[postID] > 1 ? 1 : 0;
@@ -179,6 +217,12 @@
         return ret;
     }
 
+    const everBookmarked = (postID) => {
+        const ret = bookmarks.value[postID] === true ? true : false;
+        console.log("bookmark post: ", bookmarks.value[postID]);
+        return ret;
+    }
+
     // ローカルで投稿いいね押下の見た目処理
     const addPostFav = (postID) => {
         postFavs.value[postID] = 2;
@@ -189,6 +233,16 @@
         repFavs.value[repID] = 2;
         console.log(repFavs);
     };
+
+    const addBookmark  = (postID) => {
+        bookmarks.value[postID] = true;
+        console.log("ブックマークに追加: ", postID);
+    }
+
+    const delBookmark = (postID) => {
+        bookmarks.value[postID] = false;
+        console.log("ブックマークを削除: ", postID);
+    }
 
     const onReply = () => {
         console.log("onReply", id.value);
@@ -275,6 +329,26 @@
                 // alert("Failed to get posts faved", err);
             });
     }
+
+    // ブックマーク投稿取得
+    const getBookmarks = () => {
+        axios.get("/api/bookmarks", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.bookmarks > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.postIDs.forEach(postID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        bookmarks.value[postID.postID] = true;
+                    });
+                    console.log("ブックマークした投稿ID");
+                    console.log(bookmarks);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get bookmark posts", err);
+                // alert("Failed to get posts faved", err);
+            });
+    }
 </script>
 
 <template>
@@ -327,6 +401,7 @@
                         <v-icon size="30" @click.stop="onPostFav(post.postID)" :ripple="false" color="red" class="on-good rounded-circle pa-1">{{ everPostFaved(post.postID) ? mdiHeart : mdiHeartOutline }}</v-icon>
                         <!-- postFavで既に自分も押されている場合,getPostFavStatusで自分が重複加算される -->
                         <p>{{ post.postFav + getPostFavStatus(post.postID) }}</p>
+                        <v-icon size="30" @click.stop="onBookmark(post.postID)" :ripple="false" color="orange" class="on-bookmark rounded-circle">{{ everBookmarked(post.postID) ? mdiStarPlus : mdiStarPlusOutline }}</v-icon>
                         <!-- , postID = {{ post.postID }} -->
                     </div>
                 </v-card-item>
@@ -386,6 +461,10 @@
 
 .on-good:hover {
     background-color: rgb(249, 181, 181);
+}
+
+.on-bookmark:hover {
+    background-color: rgb(249, 228, 181);
 }
 
 .icon {
