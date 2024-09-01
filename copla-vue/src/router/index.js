@@ -17,6 +17,7 @@ import SignUp from '@/components/SignUp.vue';
 import MyFavorite from '@/components/MyFavorite.vue';
 import AnalysisPage from '@/components/AnalysisPage.vue';
 import MenuPage from '@/components/MenuPage.vue';
+import TimeTable from '@/components/TimeTable.vue';
 
 // ルーティング制御のファイルです
 const router = createRouter({
@@ -82,12 +83,24 @@ const router = createRouter({
           path: "/mypage",
           name: "mypage",
           component: MyPage,
+          children: [
+            {
+              path: "timetable",
+              name: "timetable",
+              component: TimeTable,
+            },
+            {
+              path: "settings",
+              name: "settings",
+              component: SettingsPage,
+            }
+          ],
         },
-        {
-          path: "/settings",
-          name: "settings",
-          component: SettingsPage,
-        },
+        // {
+        //   path: "/settings",
+        //   name: "settings",
+        //   component: SettingsPage,
+        // },
         {
           // シングルポストのルートです
           path: "/post/:id",

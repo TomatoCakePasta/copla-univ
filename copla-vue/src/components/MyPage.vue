@@ -1,6 +1,7 @@
 <script setup>
-    import { ref } from "vue";
+    import { onMounted, ref } from "vue";
     import TimeTable from "./TimeTable.vue";
+import { useRouter } from "vue-router";
 
     const week = ["月", "火", "水", "木", "金"];
     const classes = ref([
@@ -12,6 +13,12 @@
     ]);
     
     const editFlag = ref(false);
+
+    const router = useRouter();
+
+    onMounted(() => {
+        router.push({ path: "mypage/timetable" });
+    });
 </script>
 
 <template>
@@ -37,17 +44,19 @@
                 bg-color="deep-purple-darken-4"
                 center-active
             >
-                <v-tab>予定表</v-tab>
+                <v-tab to="/mypage/timetable">予定表</v-tab>
                 <v-tab>お気に入り</v-tab>
-                <v-tab>設定</v-tab>
+                <v-tab to="/mypage/settings">設定</v-tab>
             </v-tabs>
             <!-- </v-card> -->
         </div>
 
         <!-- あとでRouterViewにする -->
-        <TimeTable 
+        <!-- <TimeTable 
             :editFlag = "editFlag"
-        />
+        /> -->
+
+        <RouterView :editFlag = "editFlag" />
     </div>
 </template>
 
