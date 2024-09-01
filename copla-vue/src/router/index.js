@@ -15,8 +15,10 @@ import HomeBase from '@/components/HomeBase.vue'
 import LoginPage from '@/components/LoginPage.vue'
 import SignUp from '@/components/SignUp.vue';
 import MyFavorite from '@/components/MyFavorite.vue';
+import MyPosts from '@/components/MyPosts.vue';
 import AnalysisPage from '@/components/AnalysisPage.vue';
 import MenuPage from '@/components/MenuPage.vue';
+import TimeTable from '@/components/TimeTable.vue';
 
 // ルーティング制御のファイルです
 const router = createRouter({
@@ -73,21 +75,43 @@ const router = createRouter({
           name: "bus",
           component: BusPage,
         },
-        {
-          path: "/myfavorite",
-          name: "myfavorite",
-          component: MyFavorite,
-        },
+        // {
+        //   path: "/myfavorite",
+        //   name: "myfavorite",
+        //   component: MyFavorite,
+        // },
         {
           path: "/mypage",
           name: "mypage",
           component: MyPage,
+          children: [
+            {
+              path: "timetable",
+              name: "timetable",
+              component: TimeTable,
+            },
+            {
+              path: "myfavorite",
+              name: "myfavorite",
+              component: MyFavorite,
+            },
+            {
+              path: "myposts",
+              name: "myposts",
+              component: MyPosts,
+            },
+            {
+              path: "settings",
+              name: "settings",
+              component: SettingsPage,
+            }
+          ],
         },
-        {
-          path: "/settings",
-          name: "settings",
-          component: SettingsPage,
-        },
+        // {
+        //   path: "/settings",
+        //   name: "settings",
+        //   component: SettingsPage,
+        // },
         {
           // シングルポストのルートです
           path: "/post/:id",
