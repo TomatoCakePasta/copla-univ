@@ -534,7 +534,7 @@ app.get("/replies/faved", (req, res) => {
 
 });
 
-// ブックマーク済み投稿の取得
+// ブックマーク済み投稿IDの取得
 app.get("/bookmarks", (req, res) => {
     const userID = req.session.user.userID;
 
@@ -550,6 +550,47 @@ app.get("/bookmarks", (req, res) => {
         else {
             console.log(results.length);
             res.status(200).send({flag: true, postIDs: results, bookmarks: results.length });
+        }
+    });
+
+});
+
+// ブックマーク済み投稿要素全体の取得
+app.get("/bookmark-posts", (req, res) => {
+    const query = `SELECT 
+                        book.postID, 
+                        p.genre, 
+                        p.title,
+                        u.userName AS postName, 
+                        u.icon AS postUserIcon,
+                        p.body AS postContent, 
+                        p.datetime AS postTime, 
+                        p.fav AS postFav,
+                        r.repID,
+                        u2.userName AS repName,
+                        u2.icon AS repUserIcon,
+                        r.body AS repContent,
+                        r.datetime AS repTime,
+                        r.fav AS repFav
+                    FROM bookmarks book
+                    LEFT JOIN posts p ON book.postID = p.postID
+                    LEFT JOIN users u ON book.userID = u.userID 
+                    LEFT JOIN replies r ON book.postID = r.postID
+                    LEFT JOIN users u2 ON r.userID = u2.userID
+                    WHERE book.userID = ?
+                    ORDER BY book.postID DESC`;
+
+    const userID = req.session.user.userID;
+
+    con.query(query, [ userID ], (err, results) => {
+        if (err) {
+            console.error("DB query error:", err);
+            return;
+        }
+        else {
+            console.log("お気に入り");
+            console.log(results);
+            res.status(200).send({flag: true, posts: results});
         }
     });
 
@@ -630,6 +671,7 @@ app.post("/bookmark/add", (req, res) => {
     });
 });
 
+// ブックマーク削除
 app.delete("/bookmark/del", (req, res) => {
     const postID = req.body.postID;
     const userID = req.session.user.userID;
@@ -647,7 +689,7 @@ app.delete("/bookmark/del", (req, res) => {
             res.send({ flag: true });
         }
     });
-})
+});
 
 // メニュー取得
 app.get("/menus", (req, res) => {
