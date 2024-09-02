@@ -133,7 +133,20 @@ app.post("/signup", (req, res) => {
                         console.error("Failed to signup", err);
                     }
                     else {
-                        res.status(200).send({ flag: true });
+                        // 時間割の枠を作成
+                        let count = 0;
+                        for (let i = 0; i < 5; i++) {
+                            for (let j = 0; j < 5; j++) {
+                                con.query(`INSERT INTO timetable(userID, dayID, periodID) VALUES(?, ?, ?)`, [ nextID, i, j ], (err) => {
+                                    if (err) {
+
+                                    }
+                                    else if (++count === 25) {
+                                        res.status(200).send({ flag: true });
+                                    }
+                                })
+                            }
+                        }
                     }
                 });
             });
@@ -733,7 +746,7 @@ app.post("/vote", (req, res) => {
             }
         }
     )
-})
+});
 
 // 投票済み
 app.get("/isVoted", (req, res) => {
@@ -753,7 +766,58 @@ app.get("/isVoted", (req, res) => {
                 }
             }
     );
+});
+
+// 時間割取得
+app.get("/timetable", (req, res) => {
+    const userID = req.session.user.userID;
+
+    con.query(`SELECT 
+                    className,
+                    dayID,
+                    periodID
+                FROM timetable
+                WHERE userID = ?
+                ORDER BY dayID DESC, periodID DESC`,
+            [ userID ],
+            (err, results) => {
+                if (err) {
+                    res.send({ flag: false });
+                }
+                else {
+                    // console.log(results);
+                    res.send({ flag: true, timetable: results });
+                }
+            });
 })
+
+// 時間割更新
+app.post("/set/timetable", (req, res) => {
+    const userID = req.session.user.userID;
+    const timetable = req.body.classes;
+    // console.log(timetable);
+
+    let count = 0;
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+            con.query(`UPDATE timetable 
+                        SET className = ?
+                        WHERE userID = ? AND dayID = ? AND periodID = ?`,
+                        [ timetable[i][j], userID, i, j ],
+                        (err) => {
+                            if (err) {
+                                console.error("Failed to set new timetable", err);
+                                res.send({ flag: false });
+                            }
+                            else if (++count === 25) {
+                                res.send({ flag: true });
+                            }
+                        }
+
+            )
+        }
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running http://localhost:${ PORT }`);
