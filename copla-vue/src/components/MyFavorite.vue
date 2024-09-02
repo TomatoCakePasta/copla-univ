@@ -15,31 +15,38 @@
 
     const loading = ref(false);
     const getLoading = ref(false);
+    
+    const bookmarkNums = ref(0);
 
     // propsで渡す
     const postFavs = ref({});
     const repFavs = ref({});
+    const bookmarks = ref({});
 
     // 画面読み込み時
     onMounted(() => {
         // 投稿を取得
-        // getDatas();
+        getDatas();
 
         // いいねを取得
         getPostsFaved();
         getRepFaved();
+
+        // ブックマークを取得
+        getBookmarks();
     });
 
     const getDatas = (genre = 0) => {
         getLoading.value = true;
         // 以下のURLに投稿取得リクエストをします
-        axios.get(`/api/get/myfavorite`, {withCredentials: true})
+        axios.get(`/api/bookmark-posts`, {withCredentials: true})
             .then((res) => {
                 getLoading.value = false;
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
-                // console.log(postsImageData);
-                // console.log("GET DATA");
+                console.log("GET Favorite");
 
+                console.log("件数: ", postsImageData.value.length);
+                bookmarkNums.value = postsImageData.value.length;
                 // 以下はソケットが動けば不要?
                 getPostsFaved();
                 getRepFaved();
@@ -144,10 +151,33 @@
                 // alert("Failed to get posts faved", err);
             });
     }
+
+    // ブックマーク投稿取得
+    const getBookmarks = () => {
+        axios.get("/api/bookmarks", { withCredentials: true} )
+            .then((res) => {
+                if (res.data.flag && res.data.bookmarks > 0) {
+                    // console.log(res.data.postIDs);
+                    res.data.postIDs.forEach(postID => {
+                        // console.log("いいね投稿ID", postID.postID);
+                        bookmarks.value[postID.postID] = true;
+                    });
+                    console.log("ブックマークした投稿ID");
+                    console.log(bookmarks);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to get bookmark posts", err);
+                // alert("Failed to get posts faved", err);
+            });
+    }
 </script>
 
 <template>
     <div>
+        <div class="flex">
+            <p class="ml-auto pb-0 pr-5 pt-2">{{ bookmarkNums }}件</p>
+        </div>
         <div v-for="post in postsImageData" :key="post.postID">
             <!-- Flagで投稿コンポーネントと記事コンポーネントを区別する? -->
 
@@ -165,6 +195,7 @@
                 :socket="props.socket"
                 :postFavs="postFavs"
                 :repFavs="repFavs"
+                :bookmarks="bookmarks"
             />
 
             <!-- 通常投稿 -->
@@ -175,6 +206,7 @@
                 :socket="props.socket"
                 :postFavs="postFavs"
                 :repFavs="repFavs"
+                :bookmarks="bookmarks"
             />
 
             <!-- 記事の場合 -->
@@ -183,4 +215,8 @@
 </template>
 
 <style scoped>
+.flex {
+    display: flex;
+}
+
 </style>
