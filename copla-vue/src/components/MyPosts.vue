@@ -15,6 +15,7 @@
 
     const loading = ref(false);
     const getLoading = ref(false);
+    const bookmarkNums = ref(0);
 
     // propsで渡す
     const postFavs = ref({});
@@ -43,6 +44,8 @@
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
                 // console.log(postsImageData);
                 // console.log("GET DATA");
+
+                bookmarkNums.value = postsImageData.value.length;
 
                 // 以下はソケットが動けば不要?
                 getPostsFaved();
@@ -172,6 +175,9 @@
 
 <template>
     <div>
+        <div class="flex">
+            <p class="ml-auto pb-0 pr-5 pt-2">{{ bookmarkNums }}件</p>
+        </div>
         <div v-for="post in postsImageData" :key="post.postID">
             <!-- Flagで投稿コンポーネントと記事コンポーネントを区別する? -->
 
@@ -209,4 +215,7 @@
 </template>
 
 <style scoped>
+.flex {
+    display: flex;
+}
 </style>
