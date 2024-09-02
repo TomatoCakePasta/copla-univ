@@ -1,7 +1,7 @@
 <script setup>
     import { onMounted, ref } from "vue";
     import TimeTable from "./TimeTable.vue";
-import { useRouter } from "vue-router";
+    import { useRouter } from "vue-router";
 
     const week = ["月", "火", "水", "木", "金"];
     const classes = ref([
@@ -33,11 +33,6 @@ import { useRouter } from "vue-router";
                 <!-- <v-btn color="primary" height="40" width="100"><v-icon color="white" size="30">{{ mdiMagnify }}</v-icon></v-btn> -->
             </v-card-text>
             Copla Newsを自分のメモに変えたり
-            <div class="trend flex ml-5 mt-3 mb-3">
-                <h4 class="mt-auto mb-auto"></h4>
-                <!-- 編集ボタン押したら全部フォームに変わるとか -->
-                <v-btn class="ml-auto" @click="editFlag = !editFlag">{{ editFlag ? "保存" : "編集" }}</v-btn>
-            </div>
 
             <!-- <v-card> -->
             <v-tabs
@@ -57,7 +52,7 @@ import { useRouter } from "vue-router";
             :editFlag = "editFlag"
         /> -->
 
-        <RouterView :editFlag = "editFlag" />
+        <RouterView />
     </div>
 </template>
 
