@@ -78,6 +78,7 @@
                     postName: item.postName,
                     postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
+                    postPicUrl: item.picUrl,
                     // postUserIcon: 0,
                     postFav: item.postFav,
                     postTime: item.postTime,
@@ -392,6 +393,11 @@
                 <v-card-item class="pt-0">
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
                         <h1>{{ post.postTitle }}</h1>
+                    </v-card-text>
+                    <div class="flex">
+                        <img :src="post.postPicUrl" alt="" v-if="post.postPicUrl" class="ceter mr-auto ml-auto">
+                    </div>
+                    <v-card-text class="pt-0" style="white-space: pre-wrap;">
                         {{ post.postContent }}
                     </v-card-text>
                 </v-card-item>
@@ -465,6 +471,11 @@
 
 .on-bookmark:hover {
     background-color: rgb(249, 228, 181);
+}
+
+img {
+    position: relative;
+    max-width: 60%;
 }
 
 .icon {
