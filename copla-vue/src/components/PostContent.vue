@@ -274,6 +274,9 @@
 
                 <!-- 投稿本文 -->
                 <v-card-item class="pt-0">
+                    <div class="flex">
+                        <img :src="props.post.postPicUrl" alt="" v-if="props.post.postPicUrl" class="ceter mr-auto ml-auto">
+                    </div>
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
                         {{ props.post.postContent }}
                     </v-card-text>
@@ -385,6 +388,12 @@
 textarea {
     width: 100%;
     margin: 0px 5px;
+}
+
+img {
+    position: relative;
+    width: 50%;
+    height: 50%;
 }
 
 .flex {

@@ -38,6 +38,8 @@
     const chatContent = ref("");
     const chatTitle = ref("");
 
+    const imageFile = ref(null);
+
     const router = useRouter();
 
     // -1ならAllジャンル
@@ -90,16 +92,62 @@
     //     console.log("isMobile : " + isMobile.value + "Half : " + isLessHalf.value);
     // })
 
+    const onTest = (beforeImage) => {
+        if (true) {
+            let formData = new FormData();
+            console.log("before ", beforeImage);
+
+            // UTF-8を別の形式に変換,(エンコードする)
+            if (beforeImage) {
+                formData.append("image", beforeImage, encodeURIComponent(`${beforeImage.name}`));
+            }
+            console.log(formData);
+
+
+            const config = {
+                header: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+
+            axios
+                .post("/api/image-post", formData, config)
+                .then((res) => {
+
+                })
+                .catch((err) => {
+
+                });
+        }
+        else {
+            alert("Input an image");
+        }
+    }
+
     const onPostForm = () => {
         console.log("open post form");
         postFormFlag.value = true;
     }
 
-    const onPost = () => {
+    const onPost = (postImg) => {
         if (chatContent.value === "") {
             alert("投稿内容を入力してください");
             return;
         }
+
+        let formData = new FormData();
+
+        // 画像が添付された場合
+        if (postImg) {
+            formData.append("image", postImg, encodeURIComponent(`${postImg.name}`));
+        }
+
+        const config = {
+                header: {
+                    "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+            };
 
         const postTime = getTime();
 
@@ -110,8 +158,15 @@
             title: chatTitle.value
         };
 
+        // 直接オブジェクトを送れないので
+        // Jsonに変換して渡す
+        formData.append("data", JSON.stringify(data));
+
+        console.log("以下で送信");
+        console.log(formData);
+
         // postリクエスト
-        axios.post("/api/post", data, { withCredentials: true })
+        axios.post("/api/post", formData, config)
             .then((res) => {
                 if (res.data.flag) {
                     // フォームを閉じる
@@ -255,6 +310,13 @@
                         <v-text-field variant="outlined" v-if="selectedKey === 7" placeholder="タイトル" v-model.trim="chatTitle"></v-text-field>
                         <v-textarea variant="outlined" placeholder="投稿内容" class="area" v-model.trim="chatContent"></v-textarea>
 
+                        <!-- 画像アップロード -->
+                        <v-file-input
+                            accept="image/*"
+                            label="File"
+                            v-model="imageFile"
+                        ></v-file-input>
+
                         <v-select
                             v-model="selectedKey"
                             :items="items"
@@ -277,7 +339,7 @@
     
                         <v-btn
                             text="送信"
-                            @click="onPost"
+                            @click="onPost(imageFile)"
                             class="ml-5"
                         ></v-btn>
                         <!-- @click="onPost(); postDialog = false; " -->

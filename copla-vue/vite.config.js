@@ -23,6 +23,13 @@ export default defineConfig({
         // /api プレフィックスを削除して転送
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/images" : {
+        // バックエンドサーバのURL
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        // /api プレフィックスを削除して転送
+        rewrite: (path) => path.replace(/^\/imgaes/),
+      },
     },
   },
 });
