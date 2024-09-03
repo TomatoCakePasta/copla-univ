@@ -9,6 +9,8 @@ import session from "express-session";
 // import MemoryStore from "memorystore";
 import bcrypt from "bcrypt";
 import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 const PORT = 3000;
@@ -35,6 +37,13 @@ app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
 // app.use(session(session_opt));
 // app.use(logger('dev'));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 静的ファイルを提供
+// パス名はカレントディレクトリにimagesを追記したパス
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 // JSONデータを解析
 app.use(bodyParser.json());
@@ -311,6 +320,7 @@ app.get("/get/genre/:id", (req, res) => {
                     u.userName AS postName, 
                     u.icon AS postUserIcon,
                     p.body AS postContent, 
+                    p.pic AS postPic,
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
@@ -338,7 +348,15 @@ app.get("/get/genre/:id", (req, res) => {
             console.error("DB query error:", err);
             return;
         }
-        res.status(200).send({flag: true, posts: results});
+
+        // 結果に画像URLを追加
+        // 要素をスプレッド構文で展開して要素の末尾にpicUrlを追加
+        const postsWithImageUrls = results.map(post => ({
+            ...post,
+            picUrl: post.postPic ? `/images/${post.postPic}` : null
+        }));
+
+        res.status(200).send({ flag: true, posts: postsWithImageUrls });
     });
 });
 
