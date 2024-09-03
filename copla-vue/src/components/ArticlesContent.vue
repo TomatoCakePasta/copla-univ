@@ -330,6 +330,11 @@ textarea {
     margin: 0px 5px;
 }
 
+img {
+    position: relative;
+    max-width: 60%;
+}
+
 .flex {
     display: flex;
 }

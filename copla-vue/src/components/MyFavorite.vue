@@ -69,6 +69,7 @@
                     postName: item.postName,
                     postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
+                    postPicUrl: item.picUrl,
                     // postUserIcon: 0,
                     postFav: item.postFav,
                     postTime: item.postTime,
@@ -217,6 +218,11 @@
 <style scoped>
 .flex {
     display: flex;
+}
+
+img {
+    position: relative;
+    max-width: 60%;
 }
 
 </style>
