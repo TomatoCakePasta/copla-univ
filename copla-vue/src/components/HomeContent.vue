@@ -84,6 +84,8 @@
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
                 // console.log(postsImageData);
                 // console.log("GET DATA");
+                console.log("投稿取得");
+                console.log(postsImageData.value);
 
                 // 以下はソケットが動けば不要?
                 getPostsFaved();
@@ -115,6 +117,7 @@
                     postName: item.postName,
                     postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
+                    postPicUrl: item.picUrl,
                     // postUserIcon: 0,
                     postFav: item.postFav,
                     postTime: item.postTime,
