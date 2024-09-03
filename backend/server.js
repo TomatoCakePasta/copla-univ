@@ -8,9 +8,28 @@ import session from "express-session";
 // import logger from "morgan";
 // import MemoryStore from "memorystore";
 import bcrypt from "bcrypt";
+import multer from "multer";
 
 const app = express();
 const PORT = 3000;
+
+const storage = multer.diskStorage({
+    // cbはcall backの略
+    destination: (req, file, cb) => {
+        cb(null, "images/");
+    },
+    filename: (req, file, cb) => {
+        console.log("画像格納");
+        console.log(req.session.user.userID);
+        // 先頭にユーザID, 時刻を追加
+        // 別の形式に変換されたものを元に戻す(デコード)
+        const decodeName = req.session.user.userID + "_" + Date.now() + "_" + decodeURIComponent(file.originalname);
+        cb(null, decodeName);
+    },
+});
+
+// multerインスタンス
+const upload = multer({ storage: storage });
 
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
@@ -462,16 +481,29 @@ app.get("/get/:id", (req, res) => {
 });
 
 // 新規投稿
-app.post("/post", (req, res) => {
+app.post("/post", upload.single("image"), (req, res) => {
     // セッションからuserIDを取得
     const userID = req.session.user.userID;
-    const { content, genre, datetime, title } = req.body;
+    const data = JSON.parse(req.body.data)
+    let { content, genre, datetime, title } = data;
+
+    let pic = "";
+
+    console.log("get post info: ", content, genre, datetime, title);
 
     console.log("New POST");
     console.log(userID);
 
-    con.query(`INSERT INTO posts(userID, genre, body, datetime, title) VALUES(?, ?, ?, ?, ?)`, 
-                [userID, genre, content, datetime, title],
+    if (req.file) {
+        pic = req.file.filename;
+        console.log("pic: ", pic);
+    }
+
+    console.log("---------data-----------");
+    console.log(data);
+
+    con.query(`INSERT INTO posts(userID, genre, body, pic, datetime, title) VALUES(?, ?, ?, ?, ?, ?)`, 
+                [userID, genre, content, pic, datetime, title],
                 (err) => {
         if (err) {
             console.error("Failed to post", err);
@@ -502,6 +534,21 @@ app.post("/reply", (req, res) => {
             res.status(200).send({ flag: true });
         }
     })
+});
+
+// テスト画像投稿本来は新規投稿API内でやる
+app.post("/image-post", upload.single("image"), (req, res) => {
+    // 別の形式に変換されたものを元に戻す(デコード)
+
+    if (req.file) {
+        console.log("画像格納");
+    }
+    else {
+        console.log("無視");
+    }
+
+    // 画像を格納
+    res.send({ flag: true });
 });
 
 // いいね済み投稿の取得
