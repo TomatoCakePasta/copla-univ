@@ -21,8 +21,8 @@ const storage = multer.diskStorage({
         cb(null, "images/");
     },
     filename: (req, file, cb) => {
-        console.log("画像格納");
-        console.log(req.session.user.userID);
+        // console.log("画像格納");
+        // console.log(req.session.user.userID);
         // 先頭にユーザID, 時刻を追加
         // 別の形式に変換されたものを元に戻す(デコード)
         const decodeName = req.session.user.userID + "_" + Date.now() + "_" + decodeURIComponent(file.originalname);
@@ -374,6 +374,7 @@ app.get("/get/myposts", (req, res) => {
                     u.userName AS postName, 
                     u.icon AS postUserIcon,
                     p.body AS postContent, 
+                    p.pic AS postPic,
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
@@ -393,7 +394,13 @@ app.get("/get/myposts", (req, res) => {
             console.error("DB query error:", err);
             return;
         }
-        res.status(200).send({flag: true, posts: results});
+
+        const postsWithImageUrls = results.map(post => ({
+            ...post,
+            picUrl: post.postPic ? `/images/${post.postPic}` : null
+        }));
+
+        res.status(200).send({ flag: true, posts: postsWithImageUrls });
     });
 });
 
@@ -412,6 +419,7 @@ app.post("/search", (req, res) => {
                     u.userName AS postName, 
                     u.icon AS postUserIcon,
                     p.body AS postContent, 
+                    p.pic AS postPic,
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
@@ -450,7 +458,7 @@ app.post("/search", (req, res) => {
         query += ` ORDER BY p.datetime DESC`;
     }
 
-    console.log(genre, queryWords, query);
+    // console.log(genre, queryWords, query);
 
     con.query(query, (err, results) => {
         if (err) {
@@ -458,8 +466,12 @@ app.post("/search", (req, res) => {
             res.send({ flag: false, msg: "Internal Server Error" });
         }
         else {
-            console.log(results);
-            res.send({ flag: true, posts: results });
+            // console.log(results);
+            const postsWithImageUrls = results.map(post => ({
+                ...post,
+                picUrl: post.postPic ? `/images/${post.postPic}` : null
+            }));
+            res.send({ flag: true, posts: postsWithImageUrls });
         }
     });
 
@@ -468,7 +480,7 @@ app.post("/search", (req, res) => {
 // シングルポスト表示
 app.get("/get/:id", (req, res) => {
     const id = +req.params.id;
-    console.log(`single post id = ${id}`);
+    // console.log(`single post id = ${id}`);
     con.query(`SELECT 
                     p.postID, 
                     p.genre, 
@@ -476,6 +488,7 @@ app.get("/get/:id", (req, res) => {
                     u.userName AS postName, 
                     u.icon AS postUserIcon,
                     p.body AS postContent, 
+                    p.pic AS postPic,
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
@@ -494,7 +507,13 @@ app.get("/get/:id", (req, res) => {
             console.error("DB query error:", err);
             return;
         }
-        res.status(200).send({posts: results});
+
+        const postsWithImageUrls = results.map(post => ({
+            ...post,
+            picUrl: post.postPic ? `/images/${post.postPic}` : null
+        }));
+
+        res.status(200).send({ posts: postsWithImageUrls });
     });
 });
 
@@ -507,18 +526,18 @@ app.post("/post", upload.single("image"), (req, res) => {
 
     let pic = "";
 
-    console.log("get post info: ", content, genre, datetime, title);
+    // console.log("get post info: ", content, genre, datetime, title);
 
-    console.log("New POST");
-    console.log(userID);
+    // console.log("New POST");
+    // console.log(userID);
 
     if (req.file) {
         pic = req.file.filename;
-        console.log("pic: ", pic);
+        // console.log("pic: ", pic);
     }
 
-    console.log("---------data-----------");
-    console.log(data);
+    // console.log("---------data-----------");
+    // console.log(data);
 
     con.query(`INSERT INTO posts(userID, genre, body, pic, datetime, title) VALUES(?, ?, ?, ?, ?, ?)`, 
                 [userID, genre, content, pic, datetime, title],
@@ -538,8 +557,8 @@ app.post("/reply", (req, res) => {
     const userID = req.session.user.userID;
     const { postID, repContent, datetime } = req.body;
 
-    console.log("New Reply");
-    console.log(userID);
+    // console.log("New Reply");
+    // console.log(userID);
 
     con.query(`INSERT INTO replies(postID, userID, body, datetime) VALUES(?, ?, ?, ?)`, 
                 [postID, userID, repContent, datetime],
@@ -552,21 +571,6 @@ app.post("/reply", (req, res) => {
             res.status(200).send({ flag: true });
         }
     })
-});
-
-// テスト画像投稿本来は新規投稿API内でやる
-app.post("/image-post", upload.single("image"), (req, res) => {
-    // 別の形式に変換されたものを元に戻す(デコード)
-
-    if (req.file) {
-        console.log("画像格納");
-    }
-    else {
-        console.log("無視");
-    }
-
-    // 画像を格納
-    res.send({ flag: true });
 });
 
 // いいね済み投稿の取得
@@ -583,7 +587,7 @@ app.get("/posts/faved", (req, res) => {
             return;
         }
         else {
-            console.log(results.length);
+            // console.log(results.length);
             res.status(200).send({flag: true, postIDs: results, favs: results.length });
         }
     });
@@ -594,7 +598,7 @@ app.get("/posts/faved", (req, res) => {
 app.get("/replies/faved", (req, res) => {
     const userID = req.session.user.userID;
 
-    console.log("rep fav");
+    // console.log("rep fav");
     con.query(`SELECT 
                     repID
                 FROM reply_likes
@@ -605,7 +609,7 @@ app.get("/replies/faved", (req, res) => {
             return;
         }
         else {
-            console.log(results.length);
+            // console.log(results.length);
             res.status(200).send({flag: true, repIDs: results, favs: results.length });
         }
     });
@@ -626,7 +630,7 @@ app.get("/bookmarks", (req, res) => {
             return;
         }
         else {
-            console.log(results.length);
+            // console.log(results.length);
             res.status(200).send({flag: true, postIDs: results, bookmarks: results.length });
         }
     });
@@ -642,6 +646,7 @@ app.get("/bookmark-posts", (req, res) => {
                         u.userName AS postName, 
                         u.icon AS postUserIcon,
                         p.body AS postContent, 
+                        p.pic AS postPic,
                         p.datetime AS postTime, 
                         p.fav AS postFav,
                         r.repID,
@@ -666,9 +671,15 @@ app.get("/bookmark-posts", (req, res) => {
             return;
         }
         else {
-            console.log("お気に入り");
-            console.log(results);
-            res.status(200).send({flag: true, posts: results});
+            // console.log("お気に入り");
+            // console.log(results);
+
+            const postsWithImageUrls = results.map(post => ({
+                ...post,
+                picUrl: post.postPic ? `/images/${post.postPic}` : null
+            }));
+
+            res.status(200).send({ flag: true, posts: postsWithImageUrls });
         }
     });
 
@@ -753,7 +764,7 @@ app.post("/bookmark/add", (req, res) => {
 app.delete("/bookmark/del", (req, res) => {
     const postID = req.body.postID;
     const userID = req.session.user.userID;
-    console.log("削除", postID, userID);
+    // console.log("削除", postID, userID);
 
     // bookmarksで誰がどの投稿にブックマーク削除したか
     con.query(`DELETE FROM bookmarks WHERE postID = ? AND userID = ?`, 
@@ -771,7 +782,7 @@ app.delete("/bookmark/del", (req, res) => {
 
 // メニュー取得
 app.get("/menus", (req, res) => {
-    console.log("メニュー取得");
+    // console.log("メニュー取得");
     con.query(`SELECT * FROM menus ORDER BY genre ASC`, (err, results) => {
         if (results) {
             res.send({ flag: true, menus: results });
@@ -803,7 +814,7 @@ app.post("/vote", (req, res) => {
                             res.send({ flag: false });
                         }
                         else {
-                            console.log("新規投票を追加 : userID ", userID, ", menuID : ", menuID);
+                            // console.log("新規投票を追加 : userID ", userID, ", menuID : ", menuID);
                             res.send({ flag: true });
                         }
                     }
@@ -822,11 +833,11 @@ app.get("/isVoted", (req, res) => {
             [ userID ], 
             (err, results) => {
                 if (results.length) {
-                    console.log("isVoted : ", results);
+                    // console.log("isVoted : ", results);
                     res.send({ flag: true, menuID: results });
                 }
                 else {
-                    console.log("isNotVoted : ", results);
+                    // console.log("isNotVoted : ", results);
                     res.send({ flag: false });
                 }
             }

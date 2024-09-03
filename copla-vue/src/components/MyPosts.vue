@@ -69,6 +69,7 @@
                     postName: item.postName,
                     postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
+                    postPicUrl: item.picUrl,
                     // postUserIcon: 0,
                     postFav: item.postFav,
                     postTime: item.postTime,
