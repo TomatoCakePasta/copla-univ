@@ -44,12 +44,12 @@
     const selectedKey = ref(0);
 
     const time = ref({
-        hours: new Date().getHours(),
-        minutes: new Date().getMinutes()
+        h: new Date().getHours(),
+        m: new Date().getMinutes()
     });
 
     const busOffset = ref(0);
-    const busLimit = ref(2);
+    const busLimit = ref(4);
 
     // 行先を変更して一覧表示
     const onBus = (key) => {
@@ -60,7 +60,7 @@
     // A,B,C駅ごとに2次配列を作って、それを大元に入れると分かりやすい?
 
     const toUni = () => {
-        console.log(timeTable);
+        // console.log(timeTable);
         return timeTable.value[selectedKey.value][0] ? timeTable.value[selectedKey.value][0] : null;
     }
 
@@ -70,21 +70,27 @@
 
     // 指定時刻で早い順
     const timeSort = () => {
-        console.log("ソート", time);
+        console.log("ソート", time.value);
+
+        const targetTime = getTimeFromRef(time.value);
 
         // 駅数分ソート
         for (let i = 0; i < timeTable.value.length; i++) {
             // 大学行と駅行
             for (let j = 0; j < 2; j++) {
                 // 指定時間より前の要素で降順ソート
-                const beforeTarget = timeTable.value.filter(table => table < time.value).sort((a, b) => a - b);
+                const beforeTarget = timeTable.value[i][j]
+                    .filter((table) => new Date(table.depTime) < targetTime)
+                    .sort((a, b) => new Date(a.depTime) - new Date(b.depTime));
 
                 // 指定時間以降の要素で降順ソート
-                const afterTarget = timeTable.value.filter(table => time >= time.value).sort((a, b) => a - b);
+                const afterTarget = timeTable.value[i][j]
+                    .filter((table) => new Date(table.depTime) >= targetTime)
+                    .sort((a, b) => new Date(a.depTime) - new Date(b.depTime));
 
-                afterTarget.concat(beforeTarget);
+                const ret = afterTarget.concat(beforeTarget);
 
-                timeTable.value[i][j] = afterTarget;
+                timeTable.value[i][j] = ret;
 
                 if (i === 0 && j === 0) {
                     console.log("beforeTarget", beforeTarget);
@@ -126,8 +132,8 @@
     const openTable = (tableDatas) => {
         let retArray = [];
 
-        console.log("openTable");
-        console.log(tableDatas);
+        // console.log("openTable");
+        // console.log(tableDatas);
 
         for (let idx in tableDatas) {
             const data = tableDatas[idx];
@@ -142,6 +148,9 @@
                 retArray[station][dest] = [];
             }
 
+            data.depTime = formatDate(data.depTime);
+            data.endTime = formatDate(data.endTime);
+
             retArray[data.station][data.dest].push(data);
         }
 
@@ -149,6 +158,40 @@
         console.log(retArray);
 
         return retArray;
+    }
+
+    // 文字列のHH:MM:SSをDate型に変える
+    const formatDate = (timeString) => {
+        // "MM:HH:SS"を:で区切って、Number型にする
+        const [ h, m, s ] = timeString.split(":").map(Number);
+
+        const date = new Date();
+
+        date.setHours(h);
+        date.setMinutes(m);
+
+        // console.log(date);
+        
+        return date;
+    }
+
+    // 時間表示
+    const dispTime = (datetime) => {
+        // console.log(datetime.getHours());
+        const h = String(datetime.getHours()).padStart(2, "0");
+        const m = String(datetime.getMinutes()).padStart(2, "0");
+
+        return `${h}:${m}`;
+    }
+
+    // 時間をDateオブジェクトに変換
+    const getTimeFromRef = (timeRef) => {
+        const ret = new Date();
+        ret.setHours(timeRef.hours);
+        ret.setMinutes(timeRef.minutes);
+
+        console.log(ret);
+        return ret;
     }
 
     onMounted(() => {
@@ -213,7 +256,7 @@
                         v-if="busOffset <= index & index < busLimit"
                         class="ml-5 mr-5 mb-5 pa-5" 
                         link>
-                        {{ uniBus.depTime }}発 - {{ uniBus.endTime }}着
+                        {{ dispTime(uniBus.depTime) }}発 - {{ dispTime(uniBus.endTime) }}着
                     </v-card>
                 </div>
 
@@ -240,7 +283,7 @@
                     <h1 class="ml-auto mr-auto">{{ stations[selectedKey] }}駅行</h1>
                 </div>
                 <v-card v-for="stationBus in toStation()" :key="stationBus.departID" class="ml-5 mr-5 mb-5 pa-5" link>
-                    {{ stationBus.depTime }}発 - {{ stationBus.endTime }}着
+                    {{ dispTime(stationBus.depTime) }}発 - {{ dispTime(stationBus.endTime) }}着
                 </v-card>
 
                 <!-- <v-timeline side="end">
