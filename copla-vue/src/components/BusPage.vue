@@ -41,6 +41,11 @@
 
     const timeTable = ref([[]]);
 
+    const INVALID_DATE = new Date("invalid date");
+
+    const defaultTable = ref([[]]);
+    // let rawTable;
+
     const selectedKey = ref(0);
 
     const time = ref({
@@ -49,7 +54,7 @@
     });
 
     const busOffset = ref(0);
-    const busLimit = ref(4);
+    const busLimit = ref(7);
 
     // 行先を変更して一覧表示
     const onBus = (key) => {
@@ -72,33 +77,45 @@
     const timeSort = () => {
         console.log("ソート", time.value);
 
-        const targetTime = getTimeFromRef(time.value);
+        let targetTime = getTimeFromRef(time.value);
+
+        // 配列をコピーして編集
+        // timeTable.value = JSON.parse(JSON.stringify(defaultTable.value));
+        // timeTable.value = openTable(rawTable);
+
+        console.log("timeTable", timeTable.value.length, timeTable);
 
         // 駅数分ソート
         for (let i = 0; i < timeTable.value.length; i++) {
             // 大学行と駅行
             for (let j = 0; j < 2; j++) {
                 // 指定時間より前の要素で降順ソート
+                console.log(`${i} ${j}`, timeTable.value[i][j]);
                 const beforeTarget = timeTable.value[i][j]
                     .filter((table) => new Date(table.depTime) < targetTime)
                     .sort((a, b) => new Date(a.depTime) - new Date(b.depTime));
 
                 // 指定時間以降の要素で降順ソート
-                const afterTarget = timeTable.value[i][j]
+                let afterTarget = timeTable.value[i][j]
                     .filter((table) => new Date(table.depTime) >= targetTime)
                     .sort((a, b) => new Date(a.depTime) - new Date(b.depTime));
 
+                // if (i === 0 && j === 0) {
+                //     console.log("afterTarget-", afterTarget);
+                // }
                 const ret = afterTarget.concat(beforeTarget);
 
                 timeTable.value[i][j] = ret;
 
-                if (i === 0 && j === 0) {
-                    console.log("beforeTarget", beforeTarget);
-                    console.log("afterTarget", afterTarget);
-                    console.log(timeTable.value[i][j]);
-                }
+                // if (i === 0 && j === 0) {
+                //     console.log("beforeTarget", beforeTarget);
+                //     console.log("afterTarget", afterTarget);
+                //     console.log("timeTable", timeTable.value[i][j]);
+                // }
             }
         }
+
+        console.log("指定時間以降", timeTable.value);
     }
 
     const onNext = () => {
@@ -118,9 +135,16 @@
             .get("/api/bus-table", { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
+                    // デフォルト値を保持
+                    // rawTable = res.data.timetable;
+                    // console.log("rawTable", rawTable);
+                    // console.log("res.data.timetable", res.data.timetable);
+
                     timeTable.value = openTable(res.data.timetable);
+
                     // console.log("時刻表");
                     // console.log(timeTable.value);
+                    // defaultTable.value = timeTable.value;
                 }
             })
             .catch((err) => {
@@ -132,13 +156,14 @@
     const openTable = (tableDatas) => {
         let retArray = [];
 
-        // console.log("openTable");
-        // console.log(tableDatas);
+        console.log("openTable");
+        console.log(tableDatas);
 
         for (let idx in tableDatas) {
             const data = tableDatas[idx];
             const station = data.station;
             const dest = data.dest;
+            // console.log(data);
 
             if (!retArray[station]) {
                 retArray[station] = [];
@@ -148,8 +173,10 @@
                 retArray[station][dest] = [];
             }
 
+            // console.log("引数", data.depTime);
             data.depTime = formatDate(data.depTime);
             data.endTime = formatDate(data.endTime);
+            // console.log("戻り値", data.depTime);
 
             retArray[data.station][data.dest].push(data);
         }
@@ -162,8 +189,10 @@
 
     // 文字列のHH:MM:SSをDate型に変える
     const formatDate = (timeString) => {
+        // console.log("timeString: ", timeString);
+
         // "MM:HH:SS"を:で区切って、Number型にする
-        const [ h, m, s ] = timeString.split(":").map(Number);
+        const [ h, m ] = String(timeString).split(":").map(Number);
 
         const date = new Date();
 
@@ -178,15 +207,21 @@
     // 時間表示
     const dispTime = (datetime) => {
         // console.log(datetime.getHours());
+        // getHours,Minutesは数値なので文字列にしてpadStartを使えるようにする
         const h = String(datetime.getHours()).padStart(2, "0");
         const m = String(datetime.getMinutes()).padStart(2, "0");
 
+        // console.log(datetime);
+        // console.log(typeof(datetime));
+
         return `${h}:${m}`;
+        return datetime;
     }
 
     // 時間をDateオブジェクトに変換
     const getTimeFromRef = (timeRef) => {
         const ret = new Date();
+        console.log("timeref", timeRef);
         ret.setHours(timeRef.hours);
         ret.setMinutes(timeRef.minutes);
 
@@ -196,16 +231,16 @@
 
     onMounted(() => {
         onGetTable();
+        // timeSort();
     })
 </script>
 
 <template>
     <div>
         <div>
-            {{ busOffset }} {{ busLimit }}
+            <!-- {{ busOffset }} {{ busLimit }}
             <v-btn @click="onNext">Next</v-btn>
-            <v-btn @click="onPrev">Prev</v-btn>
-            <v-btn @click="timeSort">Sort</v-btn>
+            <v-btn @click="onPrev">Prev</v-btn> -->
             <v-card-text
                 class="flex"
             >
@@ -228,7 +263,7 @@
         </div>
 
         <div class="">
-            <div class="date-select ml-auto">
+            <div class="date-select ma-5">
                 <VueDatePicker v-model="time" time-picker class="time-picker" @closed="timeSort"/>
             </div>
         </div>
@@ -246,14 +281,16 @@
 
                 <!-- ノーマルは現在時刻を基準に早い順 -->
                 <!-- for文で表示 -->
+                <!-- <p v-if="toUni()">運行終了</p> -->
                 <div
                     v-for="(uniBus, index) in toUni()" 
                     :key="uniBus.departID"
                 >
                     <!-- limitの件数だけ表示 -->
                     <!-- さらに表示でlimitを増やしたり 次へでoffsetを1つ進めたり -->
-                    <v-card 
-                        v-if="busOffset <= index & index < busLimit"
+                    <!-- <v-card 
+                        v-if="busOffset <= index && index < busLimit" -->
+                    <v-card
                         class="ml-5 mr-5 mb-5 pa-5" 
                         link>
                         {{ dispTime(uniBus.depTime) }}発 - {{ dispTime(uniBus.endTime) }}着
