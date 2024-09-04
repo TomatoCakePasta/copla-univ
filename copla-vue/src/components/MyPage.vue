@@ -32,8 +32,9 @@
                 </v-card>
                 <!-- <v-btn color="primary" height="40" width="100"><v-icon color="white" size="30">{{ mdiMagnify }}</v-icon></v-btn> -->
             </v-card-text>
-            Copla Newsを自分のメモに変えたり
-
+            <div class="trend flex ml-5 mt-3 mb-3">
+                <h4 class="mt-auto mb-auto">--さん</h4>
+            </div>
             <!-- <v-card> -->
             <v-tabs
                 bg-color="deep-purple-darken-4"
