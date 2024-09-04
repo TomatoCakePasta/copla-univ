@@ -844,6 +844,32 @@ app.get("/isVoted", (req, res) => {
     );
 });
 
+// バス時刻表取得
+app.get("/bus-table", (req, res) => {
+    const query = `SELECT 
+                    station,
+                    dest,
+                    depTime,
+                    endTime,
+                    schedule
+                FROM bustime
+                ORDER BY
+                    station,
+                    dest,
+                    depTime
+                ASC`;
+
+    con.query(query, (err, results) => {
+        if (err) {
+            res.send({ flag: false });
+        }
+        else {
+            console.log(results);
+            res.send({ flag: true, timetable: results });
+        }
+    })
+});
+
 // 時間割取得
 app.get("/timetable", (req, res) => {
     const userID = req.session.user.userID;
