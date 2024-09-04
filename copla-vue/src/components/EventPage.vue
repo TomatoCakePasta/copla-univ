@@ -251,7 +251,10 @@
             :isVotedID="isVotedID"
         />
 
-        <AnalysisPage v-else/>
+        <AnalysisPage 
+            v-else
+            :menus = "menus"
+        />
     </div>
 </template>
 
