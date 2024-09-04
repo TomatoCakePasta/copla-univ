@@ -273,6 +273,11 @@
                 loading.value = false;
             })
     }
+
+    const trendSearch = (key) => {
+        keyContent.value = key;
+        onKeySearch();
+    }
 </script>
 
 <template>
@@ -307,9 +312,10 @@
 
             <div class="trend flex ml-5 mt-3 mb-3">
                 <h4>今のトレンド</h4>
-                <p class="ml-5 tag">#研究室</p>
-                <p class="ml-5 tag">#ランチ</p>
-                <p class="ml-5 tag">#期末</p>
+                <!-- 本来は {{  }} でtrendSearchの引数と#{{  }}で動的に -->
+                <p class="ml-5 tag" @click="trendSearch('研究室')">#研究室</p>
+                <p class="ml-5 tag" @click="trendSearch('ランチ')">#ランチ</p>
+                <p class="ml-5 tag" @click="trendSearch('期末')">#期末</p>
             </div>
 
             <!-- <v-card> -->
