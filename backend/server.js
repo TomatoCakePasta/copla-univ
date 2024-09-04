@@ -793,6 +793,20 @@ app.get("/menus", (req, res) => {
     });
 });
 
+// 現在の上位3メニュー
+app.get("/lunch-top", (req, res) => {
+    let query = `SELECT * FROM menus ORDER BY fav DESC LIMIT 3`;
+    con.query(query, (err, results) => {
+        if (results) {
+            console.log(results);
+            res.send({ flag: true, rank: results });
+        }
+        else {
+            res.send({ flag: false });
+        }
+    })
+});
+
 // 新規投票
 app.post("/vote", (req, res) => {
     const userID = req.session.user.userID;

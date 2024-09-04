@@ -283,7 +283,7 @@
                 <!-- for文で表示 -->
                 <!-- <p v-if="toUni()">運行終了</p> -->
                 <div
-                    v-for="(uniBus, index) in toUni()" 
+                    v-for="(uniBus) in toUni()" 
                     :key="uniBus.departID"
                 >
                     <!-- limitの件数だけ表示 -->
