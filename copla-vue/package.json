@@ -12,6 +12,7 @@
     "@mdi/font": "^7.4.47",
     "@vuepic/vue-datepicker": "^9.0.2",
     "axios": "^1.7.3",
+    "node-schedule": "^2.1.1",
     "socket.io-client": "^4.7.5",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",

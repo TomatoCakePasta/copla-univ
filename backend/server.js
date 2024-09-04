@@ -12,6 +12,8 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import schedule from "node-schedule";
+
 const app = express();
 const PORT = 3000;
 
@@ -857,6 +859,41 @@ app.get("/isVoted", (req, res) => {
             }
     );
 });
+
+// 投票リセット
+// second, minute, hour, day of month, month, day of weekの順に指定
+// 毎日23:00にその日の投票結果を記録する
+const job = schedule.scheduleJob('0 0 23 * * *', function(){
+    console.log("本日の投票をリセットします");
+
+    recordVotes();
+});
+
+const recordVotes = () => {
+    let query = `INSERT INTO menu_sales(menuID, fav)
+                SELECT menuID, fav FROM menus`;
+
+    let clearQuery = `UPDATE menus SET fav = 0`;
+
+    con.query(query, (err) => {
+        if (err) {
+            console.error("Failed to record day votes", err);
+        }
+        else {
+            con.query(clearQuery, (err) => {
+                if (err) {
+                    console.error("Failed to clear day votes", err);
+                }
+                else {
+                    console.log("今日の投票結果を記録しました");
+                }
+            })
+        }
+    })
+}
+
+// 直書きでサーバ起動時に実行される
+// recordVotes();
 
 // バス時刻表取得
 app.get("/bus-table", (req, res) => {
