@@ -68,6 +68,12 @@
     ]);
     */
 
+    const topMenus = ref([
+        {"menuName": 0},
+        {"menuName": 0},
+        {"menuName": 0}
+    ]);
+
     const router = useRouter();
     const menuID = ref(-1);
     const isVotedID = ref(-1);
@@ -79,11 +85,13 @@
         console.log("EventPage読み込み");
         getMenus();
         isVoteRecorded();
+        nowRank();
     })
 
     const onMenu = (id) => {
 
         menuID.value = id;
+        nowRank();
 
         // getMenus();
 
@@ -117,6 +125,23 @@
                 console.error("Failed to get menus", err);
                 return;
             })
+    }
+
+    // 現在の上位3メニュー
+    const nowRank = () => {
+        axios
+            .get("/api/lunch-top", { withCredentials: true })
+            .then((res) => {
+                if (res.data.flag) {
+                    // 上位3件を格納
+                    topMenus.value = res.data.rank;
+
+                    console.log("トップ3", topMenus.value[0]);
+                }
+            })
+            .catch((err) => {
+                
+            });
     }
 
     // DBから取得したデータを整理
@@ -193,9 +218,9 @@
 
             <div class="trend flex ml-5 mt-3 mb-3">
                 <h4 class="mt-auto mb-auto">TOP3</h4>
-                <p class="ml-5 tag top mt-auto mb-auto">1位 {{ trend[0] }}</p>
-                <p class="ml-5 tag second mt-auto mb-auto">2位 {{ trend[1] }}</p>
-                <p class="ml-5 tag mt-auto mb-auto">3位 {{ trend[2] }}</p>
+                <p class="ml-5 tag top mt-auto mb-auto" @click="onMenu(topMenus[0].genre)">1位 {{ topMenus[0].menuName }}</p>
+                <p class="ml-5 tag second mt-auto mb-auto" @click="onMenu(topMenus[1].genre)">2位 {{ topMenus[1].menuName }}</p>
+                <p class="ml-5 tag mt-auto mb-auto" @click="onMenu(topMenus[2].genre)">3位 {{ topMenus[2].menuName }}</p>
             </div>
 
             <!-- <v-card> -->
