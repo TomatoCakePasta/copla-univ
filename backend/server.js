@@ -12,6 +12,8 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import schedule from "node-schedule";
+
 const app = express();
 const PORT = 3000;
 
@@ -856,6 +858,15 @@ app.get("/isVoted", (req, res) => {
                 }
             }
     );
+});
+
+// 投票リセット
+// second, minute, hour, day of month, month, day of weekの順に指定
+// 毎日23:00にその日の投票結果を記録する
+const job = schedule.scheduleJob('* * * * * *', function(){
+    console.log('The answer to life, the universe, and everything!');
+
+    
 });
 
 // バス時刻表取得
