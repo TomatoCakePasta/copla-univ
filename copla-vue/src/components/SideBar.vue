@@ -57,6 +57,8 @@
         { key: 8, value: "忘れ物" }
     ]);
 
+    const chips = ref([]);
+
     // ログアウト処理
     const onLogout = () => {
         loginFlag.value = !loginFlag.value;
@@ -195,6 +197,19 @@
 
         return `${y}-${m}-${d} ${H}:${M}:${s}`;
     }
+
+    const checkInput = () => {
+        const trimmedInput = String(chips.value[chips.value.length - 1]).trim();
+
+        console.log("Enter");
+
+        console.log(chips.value);
+
+        if (trimmedInput === "" || chips.value.length > 5) {
+            chips.value.splice(chips.value.length - 1 ,1)
+            return;
+        }
+    }
 </script>
 
 <template>
@@ -309,6 +324,28 @@
                     <v-card-text>
                         <v-text-field variant="outlined" v-if="selectedKey === 7" placeholder="タイトル" v-model.trim="chatTitle"></v-text-field>
                         <v-textarea variant="outlined" placeholder="投稿内容" class="area" v-model.trim="chatContent"></v-textarea>
+
+                        <v-combobox
+                            v-model="chips"
+                            label="オリジナルタグ + Enter 最大5個"
+                            variant="solo"
+                            chips
+                            clearable
+                            multiple
+                            @blur="checkInput()"
+                            @keydown.enter="checkInput()"
+                        >
+                            <template v-slot:selection="{ attrs, item }">
+                                <v-chip
+                                    v-bind="attrs"
+                                    closable
+                                    @click:close="remove(item)"
+                                >
+                                    <strong>{{ item }}</strong>&nbsp;
+                                </v-chip>
+                            </template>
+                        </v-combobox>
+                        {{ chips }}
 
                         <!-- 画像アップロード -->
                         <v-file-input

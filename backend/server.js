@@ -870,6 +870,10 @@ const job = schedule.scheduleJob('0 0 23 * * *', function(){
 });
 
 const recordVotes = () => {
+    // 翌日とかに直で更新する場合
+    // let query = `INSERT INTO menu_sales(menuID, fav, saleDate)
+    //             SELECT menuID, fav, '2024-09-04' FROM menus`;
+    
     let query = `INSERT INTO menu_sales(menuID, fav)
                 SELECT menuID, fav FROM menus`;
 
