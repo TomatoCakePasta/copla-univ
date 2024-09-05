@@ -276,6 +276,9 @@
                         <h1>{{ props.post.postTitle }}</h1>
                         <!-- {{ props.post.postContent }} -->
                     </v-card-text>
+                    <div class="flex" v-if="props.post.postTags.length">
+                        <v-chip class="ml-3 " v-for="(tag, index) in props.post.postTags" :key="index">{{ tag }}</v-chip>
+                    </div>
                 </v-card-item>
 
                 <!-- リアクション いいねとか -->
