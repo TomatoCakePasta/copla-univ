@@ -323,6 +323,7 @@ app.get("/get/genre/:id", (req, res) => {
                     u.icon AS postUserIcon,
                     p.body AS postContent, 
                     p.pic AS postPic,
+                    p.tags AS postTags,
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
@@ -377,6 +378,7 @@ app.get("/get/myposts", (req, res) => {
                     u.icon AS postUserIcon,
                     p.body AS postContent, 
                     p.pic AS postPic,
+                    p.tags AS postTags,
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
@@ -422,6 +424,7 @@ app.post("/search", (req, res) => {
                     u.icon AS postUserIcon,
                     p.body AS postContent, 
                     p.pic AS postPic,
+                    p.tags AS postTags,
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
@@ -491,6 +494,7 @@ app.get("/get/:id", (req, res) => {
                     u.icon AS postUserIcon,
                     p.body AS postContent, 
                     p.pic AS postPic,
+                    p.tags AS postTags,
                     p.datetime AS postTime, 
                     p.fav AS postFav,
                     r.repID,
@@ -524,7 +528,7 @@ app.post("/post", upload.single("image"), (req, res) => {
     // セッションからuserIDを取得
     const userID = req.session.user.userID;
     const data = JSON.parse(req.body.data)
-    let { content, genre, datetime, title } = data;
+    let { content, genre, datetime, title, tags } = data;
 
     let pic = "";
 
@@ -541,8 +545,8 @@ app.post("/post", upload.single("image"), (req, res) => {
     // console.log("---------data-----------");
     // console.log(data);
 
-    con.query(`INSERT INTO posts(userID, genre, body, pic, datetime, title) VALUES(?, ?, ?, ?, ?, ?)`, 
-                [userID, genre, content, pic, datetime, title],
+    con.query(`INSERT INTO posts(userID, genre, body, pic, datetime, title, tags) VALUES(?, ?, ?, ?, ?, ?, ?)`, 
+                [userID, genre, content, pic, datetime, title, tags],
                 (err) => {
         if (err) {
             console.error("Failed to post", err);
@@ -575,7 +579,7 @@ app.post("/reply", (req, res) => {
     })
 });
 
-// いいね済み投稿の取得
+// いいね済み投稿IDの取得
 app.get("/posts/faved", (req, res) => {
     const userID = req.session.user.userID;
 
@@ -596,7 +600,7 @@ app.get("/posts/faved", (req, res) => {
 
 });
 
-// いいね済み返信の取得
+// いいね済み返信IDの取得
 app.get("/replies/faved", (req, res) => {
     const userID = req.session.user.userID;
 
@@ -649,6 +653,7 @@ app.get("/bookmark-posts", (req, res) => {
                         u.icon AS postUserIcon,
                         p.body AS postContent, 
                         p.pic AS postPic,
+                        p.tags AS postTags,
                         p.datetime AS postTime, 
                         p.fav AS postFav,
                         r.repID,
@@ -870,6 +875,10 @@ const job = schedule.scheduleJob('0 0 23 * * *', function(){
 });
 
 const recordVotes = () => {
+    // 翌日とかに直で更新する場合
+    // let query = `INSERT INTO menu_sales(menuID, fav, saleDate)
+    //             SELECT menuID, fav, '2024-09-04' FROM menus`;
+    
     let query = `INSERT INTO menu_sales(menuID, fav)
                 SELECT menuID, fav FROM menus`;
 
