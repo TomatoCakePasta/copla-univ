@@ -153,11 +153,14 @@
 
         const postTime = getTime();
 
+        const tagString = chips.value.join(",");
+
         const data = { 
             content: chatContent.value,
             genre: selectedKey.value,
             datetime: postTime,
-            title: chatTitle.value
+            title: chatTitle.value,
+            tags: tagString
         };
 
         // 直接オブジェクトを送れないので
@@ -345,7 +348,7 @@
                                 </v-chip>
                             </template>
                         </v-combobox>
-                        {{ chips }}
+                        <!-- {{ chips }} -->
 
                         <!-- 画像アップロード -->
                         <v-file-input

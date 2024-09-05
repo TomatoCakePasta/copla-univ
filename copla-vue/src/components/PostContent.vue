@@ -280,6 +280,10 @@
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
                         {{ props.post.postContent }}
                     </v-card-text>
+                    <!-- {{ props.post.postTags }} -->
+                    <div class="flex" v-if="props.post.postTags.length">
+                        <v-chip class="ml-3 " v-for="(tag, index) in props.post.postTags" :key="index">{{ tag }}</v-chip>
+                    </div>
                 </v-card-item>
 
                 <!-- リアクション いいねとか -->

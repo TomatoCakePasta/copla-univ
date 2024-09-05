@@ -118,6 +118,9 @@
                     postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
                     postPicUrl: item.picUrl,
+                    // ,で結合されたタグ文字列を,区切りで配列にする
+                    // 空の要素[""]は除外する
+                    postTags: item.postTags.split(",").filter(item => item !== ""),
                     // postUserIcon: 0,
                     postFav: item.postFav,
                     postTime: item.postTime,
