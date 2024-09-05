@@ -79,6 +79,7 @@
                     postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
                     postPicUrl: item.picUrl,
+                    postTags: item.postTags.split(",").filter(item => item !== ""),
                     // postUserIcon: 0,
                     postFav: item.postFav,
                     postTime: item.postTime,
@@ -400,6 +401,9 @@
                     <v-card-text class="pt-0" style="white-space: pre-wrap;">
                         {{ post.postContent }}
                     </v-card-text>
+                    <div class="flex" v-if="post.postTags.length">
+                        <v-chip class="ml-3 " v-for="(tag, index) in post.postTags" :key="index">{{ tag }}</v-chip>
+                    </div>
                 </v-card-item>
 
                 <v-card-item class="pt-0">

@@ -70,6 +70,7 @@
                     postUserIcon: item.postUserIcon,
                     postContent: item.postContent,
                     postPicUrl: item.picUrl,
+                    postTags: item.postTags.split(",").filter(item => item !== ""),
                     // postUserIcon: 0,
                     postFav: item.postFav,
                     postTime: item.postTime,
