@@ -51,28 +51,6 @@
     const repFavs = ref({});
     const bookmarks = ref({});
 
-    // 投稿ボタンが押された場合
-    const onSubmit = () => {
-        if (chatContent.value !== "") {
-            const post = {
-                id: postId.value++,
-                userName: "Taro Yamada",
-                content: chatContent.value,
-                replies: null
-            }
-
-            console.log(post);
-
-            postsImageData.value.unshift(post);
-            console.log(postsImageData);
-
-            chatContent.value = "";
-        }
-        else {
-            alert("Write something");
-        }
-    };
-
     // 投稿を取得
     // 画面読み込み時, 一定間隔, ソケットイベント検知などのタイミングで呼出
     const getDatas = (genre = 0) => {
@@ -294,7 +272,6 @@
         -->
         <!-- {{ loginName }} {{ loginID }} -->
         <div>
-
             <v-card-text
                 class="flex"
             >

@@ -35,7 +35,7 @@
 
     const openFlag = ref(false);
 
-    const genre = ["All", "授業", "サークル", "研究室", "就活", "その他", "イベント", "記事"]
+    const genre = ["All", "授業", "サークル", "研究室", "就活", "その他", "イベント", "記事", "忘れ物"]
 
     const post_favs = ref({});
 
@@ -235,6 +235,16 @@
         props.bookmarks[postID] = false;
         console.log("ブックマークを削除: ", postID);
     }
+
+    const strongInfo = () => {
+        // console.log("genre", props.post.postGenre);
+        if (props.post.postGenre === 8) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 </script>
 
 <!--
@@ -268,7 +278,10 @@
                              {{ props.post.postTime }}
                         </p>
                         <!-- <p class="mt-2 ml-auto sub-info">{{ post.postGenre }}</p> -->
-                        <v-chip class="mt-2 ml-auto sub-info">{{ genre[props.post.postGenre] }}</v-chip>
+                        <v-chip 
+                            class="mt-2 ml-auto sub-info"
+                            :color="strongInfo() ? 'red' : ''"
+                        >{{ genre[props.post.postGenre] }}</v-chip>
                     </div>
                 </v-card-item>
 

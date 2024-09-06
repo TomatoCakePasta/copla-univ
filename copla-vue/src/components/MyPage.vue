@@ -33,7 +33,7 @@
                 <!-- <v-btn color="primary" height="40" width="100"><v-icon color="white" size="30">{{ mdiMagnify }}</v-icon></v-btn> -->
             </v-card-text>
             <div class="trend flex ml-5 mt-3 mb-3">
-                <h4 class="mt-auto mb-auto">--さん</h4>
+                <!-- <h4 class="mt-auto mb-auto"></h4> -->
             </div>
             <!-- <v-card> -->
             <v-tabs
