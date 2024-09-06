@@ -45,7 +45,7 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 
 -- DB
 -- users
-#	名前	タイプ	照合順序	Null	デフォルト値
+id	名前	タイプ	照合順序	Null	デフォルト値
 1	userID 主	varchar(7)	utf8mb4_general_ci		いいえ	なし
 2	password	varchar(255)	utf8mb4_general_ci		いいえ	なし			
 3	userName	varchar(20)	utf8mb4_general_ci		いいえ	なし		
@@ -55,7 +55,7 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 7	ini	int(11)			いいえ	0
 
 -- posts
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	postID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
 2	userID インデックス	varchar(7)	utf8mb4_general_ci		いいえ	なし		
 3	genre	int(11)			いいえ	なし			
@@ -68,13 +68,13 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 10	tags	varchar(60)	utf8mb4_general_ci		いいえ	なし
 
 -- post_likes
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	likeID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
 2	postID インデックス	int(11)			いいえ	なし		
 3	userID インデックス	varchar(7)	utf8mb4_general_ci		いいえ	なし
 
 -- replies
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	repID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
 2	postID	int(11)			いいえ	なし			
 3	userID	varchar(7)	utf8mb4_general_ci		いいえ	なし	
@@ -85,19 +85,19 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 8	fav	int(11)			いいえ	0
 
 -- reply_likes
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	likeID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
 2	repID インデックス	int(11)			いいえ	なし			
 3	userID インデックス	varchar(7)	utf8mb4_general_ci		いいえ	なし
 
 -- bookmarks
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	bookmarkID 主	int(11)			いいえ	なし		AUTO_INCREMENT
 2	postID	int(11)			いいえ	なし			
 3	userID	varchar(7)	utf8mb4_general_ci		いいえ	なし
 
 -- bustime
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	departID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
 2	station	int(11)			いいえ	なし		
 3	dest	int(1)			いいえ	なし	
@@ -106,7 +106,7 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 6	schedule	int(11)			いいえ	なし
 
 -- menus
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	menuID 主	int(11)			いいえ	なし		AUTO_INCREMENT
 2	genre	int(11)			いいえ	なし		
 3	menuName	varchar(10)	utf8mb4_general_ci		いいえ	なし			
@@ -117,21 +117,21 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 8	fav	int(11)			いいえ	なし
 
 -- menu_sales
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	salesID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
 2	menuID	int(11)			いいえ	なし			
 3	saleDate	date			いいえ	current_timestamp()			
 4	fav	int(11)			いいえ	なし
 
 -- votes
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	voteID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
 2	userID	varchar(7)	utf8mb4_general_ci		いいえ	なし		
 3	menuID	int(11)			いいえ	なし		
 4	voteDate	date			いいえ	current_timestamp()	
 
 -- timetable
-#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+id	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
 1	timetableID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
 2	userID	varchar(7)	utf8mb4_general_ci		いいえ	なし			
 3	className	varchar(30)	utf8mb4_general_ci		いいえ	なし			
