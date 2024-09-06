@@ -42,185 +42,100 @@ cdコマンドでbackendディレクトリに移動し、下記を実行 <br>
 ローカル開発環境<br>
 ・XAMPP(MySQLを利用)<br>
 <br>
--- DB初期化用
 
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- ホスト: 127.0.0.1
--- 生成日時: 2024-06-07 05:10:18
--- サーバのバージョン： 10.4.32-MariaDB
--- PHP のバージョン: 8.2.12
+-- DB
+-- users
+#	名前	タイプ	照合順序	Null	デフォルト値
+1	userID 主	varchar(7)	utf8mb4_general_ci		いいえ	なし
+2	password	varchar(255)	utf8mb4_general_ci		いいえ	なし			
+3	userName	varchar(20)	utf8mb4_general_ci		いいえ	なし		
+4	icon	varchar(30)	utf8mb4_general_ci		いいえ	#f0e68c		
+5	idName	varchar(30)	utf8mb4_general_ci		いいえ	なし			
+6	birthday	date			いいえ	なし		
+7	ini	int(11)			いいえ	0
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+-- posts
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	postID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
+2	userID インデックス	varchar(7)	utf8mb4_general_ci		いいえ	なし		
+3	genre	int(11)			いいえ	なし			
+4	body	varchar(300)	utf8mb4_general_ci		いいえ	なし			
+5	pic	varchar(50)	utf8mb4_general_ci		いいえ	なし		
+6	location	varchar(50)	utf8mb4_general_ci		いいえ	なし			
+7	datetime	datetime			いいえ	なし			
+8	fav	int(11)			いいえ	0			
+9	title	text	utf8mb4_general_ci		いいえ	なし			
+10	tags	varchar(60)	utf8mb4_general_ci		いいえ	なし
 
+-- post_likes
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	likeID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
+2	postID インデックス	int(11)			いいえ	なし		
+3	userID インデックス	varchar(7)	utf8mb4_general_ci		いいえ	なし
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+-- replies
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	repID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
+2	postID	int(11)			いいえ	なし			
+3	userID	varchar(7)	utf8mb4_general_ci		いいえ	なし	
+4	body	varchar(300)	utf8mb4_general_ci		いいえ	なし		
+5	pic	varchar(30)	utf8mb4_general_ci		いいえ	なし		
+6	location	varchar(50)	utf8mb4_general_ci		いいえ	なし	
+7	datetime	datetime			いいえ	なし		
+8	fav	int(11)			いいえ	0
 
---
--- データベース: `copla_db`
---
+-- reply_likes
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	likeID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
+2	repID インデックス	int(11)			いいえ	なし			
+3	userID インデックス	varchar(7)	utf8mb4_general_ci		いいえ	なし
 
--- --------------------------------------------------------
+-- bookmarks
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	bookmarkID 主	int(11)			いいえ	なし		AUTO_INCREMENT
+2	postID	int(11)			いいえ	なし			
+3	userID	varchar(7)	utf8mb4_general_ci		いいえ	なし
 
---
--- テーブルの構造 `posts`
---
+-- bustime
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	departID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
+2	station	int(11)			いいえ	なし		
+3	dest	int(1)			いいえ	なし	
+4	depTime	time			いいえ	00:00:00		
+5	endTime	time			いいえ	00:00:00		
+6	schedule	int(11)			いいえ	なし
 
-CREATE TABLE `posts` (
-  `postID` int(11) NOT NULL,
-  `userID` varchar(7) NOT NULL,
-  `genre` int(11) NOT NULL,
-  `body` varchar(300) NOT NULL,
-  `pic` varchar(50) NOT NULL,
-  `location` varchar(50) NOT NULL,
-  `datetime` datetime NOT NULL,
-  `fav` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- menus
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	menuID 主	int(11)			いいえ	なし		AUTO_INCREMENT
+2	genre	int(11)			いいえ	なし		
+3	menuName	varchar(10)	utf8mb4_general_ci		いいえ	なし			
+4	comment	varchar(10)	utf8mb4_general_ci		いいえ	なし			
+5	detail	varchar(30)	utf8mb4_general_ci		いいえ	なし			
+6	image	varchar(30)	utf8mb4_general_ci		いいえ	なし			
+7	price	int(5)			いいえ	なし		
+8	fav	int(11)			いいえ	なし
 
--- --------------------------------------------------------
+-- menu_sales
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	salesID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
+2	menuID	int(11)			いいえ	なし			
+3	saleDate	date			いいえ	current_timestamp()			
+4	fav	int(11)			いいえ	なし
 
---
--- テーブルの構造 `post_likes`
---
+-- votes
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	voteID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
+2	userID	varchar(7)	utf8mb4_general_ci		いいえ	なし		
+3	menuID	int(11)			いいえ	なし		
+4	voteDate	date			いいえ	current_timestamp()	
 
-CREATE TABLE `post_likes` (
-  `likeID` int(11) NOT NULL,
-  `postID` int(11) NOT NULL,
-  `userID` varchar(7) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `replies`
---
-
-CREATE TABLE `replies` (
-  `repID` int(11) NOT NULL,
-  `postID` int(11) NOT NULL,
-  `userID` varchar(7) NOT NULL,
-  `body` varchar(300) NOT NULL,
-  `pic` varchar(30) NOT NULL,
-  `location` varchar(50) NOT NULL,
-  `datetime` datetime NOT NULL,
-  `fav` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `reply_likes`
---
-
-CREATE TABLE `reply_likes` (
-  `likeID` int(11) NOT NULL,
-  `repID` int(11) NOT NULL,
-  `userID` varchar(7) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- テーブルの構造 `users`
---
-
-CREATE TABLE `users` (
-  `userID` varchar(7) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `userName` varchar(20) NOT NULL,
-  `idName` varchar(30) NOT NULL,
-  `birthday` date NOT NULL,
-  `ini` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- ダンプしたテーブルのインデックス
---
-
---
--- テーブルのインデックス `posts`
---
-ALTER TABLE `posts`
-  ADD PRIMARY KEY (`postID`),
-  ADD KEY `userID` (`userID`);
-
---
--- テーブルのインデックス `post_likes`
---
-ALTER TABLE `post_likes`
-  ADD PRIMARY KEY (`likeID`),
-  ADD UNIQUE KEY `unique_like` (`postID`,`userID`);
-
---
--- テーブルのインデックス `replies`
---
-ALTER TABLE `replies`
-  ADD PRIMARY KEY (`repID`);
-
---
--- テーブルのインデックス `reply_likes`
---
-ALTER TABLE `reply_likes`
-  ADD PRIMARY KEY (`likeID`),
-  ADD UNIQUE KEY `unique_like` (`repID`,`userID`);
-
---
--- テーブルのインデックス `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`userID`);
-
---
--- ダンプしたテーブルの AUTO_INCREMENT
---
-
---
--- テーブルの AUTO_INCREMENT `posts`
---
-ALTER TABLE `posts`
-  MODIFY `postID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- テーブルの AUTO_INCREMENT `post_likes`
---
-ALTER TABLE `post_likes`
-  MODIFY `likeID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- テーブルの AUTO_INCREMENT `replies`
---
-ALTER TABLE `replies`
-  MODIFY `repID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- テーブルの AUTO_INCREMENT `reply_likes`
---
-ALTER TABLE `reply_likes`
-  MODIFY `likeID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- ダンプしたテーブルの制約
---
-
---
--- テーブルの制約 `posts`
---
-ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
-
-
-etc/dbinfo.php内にデータベースのエンドポイント、データべ―ス名、ユーザー名、パスワードを入力
+-- timetable
+#	名前	タイプ	照合順序	属性	Null	デフォルト値	その他
+1	timetableID 主	int(11)			いいえ	なし		AUTO_INCREMENT	
+2	userID	varchar(7)	utf8mb4_general_ci		いいえ	なし			
+3	className	varchar(30)	utf8mb4_general_ci		いいえ	なし			
+4	room	varchar(11)	utf8mb4_general_ci		いいえ	なし			
+5	detail	varchar(30)	utf8mb4_general_ci		いいえ	なし			
+6	dayID	int(1)			いいえ	なし			
+7	periodID	int(1)			いいえ	なし
