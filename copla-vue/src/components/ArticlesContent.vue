@@ -35,7 +35,7 @@
 
     const openFlag = ref(false);
 
-    const genre = ["All", "授業", "サークル", "研究室", "就活", "その他", "イベント", "記事"]
+    const genre = ["All", "授業", "サークル", "研究室", "就活", "その他", "イベント", "記事", "忘れ物"];
 
     const post_favs = ref({});
 
