@@ -76,7 +76,7 @@ app.use(session({
 
     // 開発環境ではfalse, 本番はtrueらしい
     cookie: { 
-        maxAge: 1000 * 60 * 5,
+        maxAge: 1000 * 60 * 15,
         secure: false,
 
         // JSからのアクセス防止

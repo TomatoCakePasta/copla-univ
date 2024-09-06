@@ -24,6 +24,8 @@
     const id = ref();
     const repContent = ref("");
 
+    const genre = ["All", "授業", "サークル", "研究室", "就活", "その他", "イベント", "記事", "忘れ物"]
+
     // const post = route.state.post;
     // console.log("GET state post");
     // console.log(post);
@@ -351,6 +353,16 @@
                 // alert("Failed to get posts faved", err);
             });
     }
+
+    const strongInfo = () => {
+        console.log("genre", post.value.postGenre);
+        if (post.value.postGenre === 8) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 </script>
 
 <template>
@@ -388,6 +400,10 @@
                         <p class="mt-2 ml-2 sub-info">
                             {{ post.postTime }}
                         </p>
+                        <v-chip 
+                            class="mt-2 ml-auto sub-info"
+                            :color="strongInfo() ? 'red' : ''"
+                        >{{ genre[post.postGenre] }}</v-chip>
                     </div>
                 </v-card-item>
 
