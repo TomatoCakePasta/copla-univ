@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import { findUserByName, getAllUsers, insertUser, createTimetableForUser } from "../models/userModel.js";
 
+// 新規登録
 export const signup = (req, res) => {
     const { name, pass } = req.body;
-    console.log(name);
-
+    // console.log(name);
     const hashed_pass = bcrypt.hashSync(pass, 10);
 
     console.log("/auth/signup");
@@ -44,6 +44,7 @@ export const signup = (req, res) => {
 // ログイン
 export const login = (req, res) => {
     const { name, pass } = req.body;
+    console.log("/auth/login");
 
     findUserByName(name, (err, rows) => {
         // ユーザが見つかった場合
@@ -73,8 +74,11 @@ export const login = (req, res) => {
 
 // ログアウト
 export const logout = (req, res) => {
+    console.log("/auth/logout");
+
     req.session.destroy((err) => {
         if (err) {
+            console.error("Failed to destory session:", err);
             res.send({ flag: false });
         }
         else {
