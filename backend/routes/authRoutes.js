@@ -1,6 +1,7 @@
 import express from "express";
-import bcrypt from "bcrypt";
-import con from "../etc/db.js";
+// import bcrypt from "bcrypt";
+// import con from "../etc/db.js";
+import { signup, login, logout }  from "../controllers/authController.js";
 
 const router = express.Router();
 
@@ -13,6 +14,7 @@ router.get("/info", (req, res) => {
 });
 
 // 新規登録
+/**
 router.post("/signup", (req, res) => {
     // 重複チェック
     const { name, pass } = req.body;
@@ -62,8 +64,13 @@ router.post("/signup", (req, res) => {
         }
     });
 });
+*/
+router.post("/signup", signup);
+router.post("/login", login);
+router.post("/logout", logout);
 
 // ログイン処理
+/**
 router.post("/login", (req, res) => {
     // 分割代入
     const { name, pass } = req.body;
@@ -114,5 +121,6 @@ router.post("/logout", (req, res) => {
         }
     })
 });
+*/
 
 export default router;
