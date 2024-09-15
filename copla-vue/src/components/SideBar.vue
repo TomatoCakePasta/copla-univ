@@ -171,7 +171,7 @@
         console.log(formData);
 
         // postリクエスト
-        axios.post("/api/post", formData, config)
+        axios.post("/api/posts", formData, config)
             .then((res) => {
                 if (res.data.flag) {
                     // フォームを閉じる

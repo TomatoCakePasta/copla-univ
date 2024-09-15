@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import { findUserByName, getAllUsers, insertUser, createTimetableForUser } from "../models/userModel.js";
 
+// Controllerは関数を呼出
+
 // 新規登録
 export const signup = (req, res) => {
     const { name, pass } = req.body;

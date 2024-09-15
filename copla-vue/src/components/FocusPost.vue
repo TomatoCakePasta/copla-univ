@@ -55,7 +55,7 @@
     const testFlag = ref(true);
 
     const getSinglePost = (id) => {
-        axios.get(`/api/get/${id}`)
+        axios.get(`/api/posts/single/${id}`)
             .then((res) => {
                 post.value = nestPostsAndReplies(res.data.posts);
                 post.value = post.value[0];
@@ -263,7 +263,7 @@
             datetime: repTime
         };
 
-        axios.post("/api/reply", data, { withCredentials: true})
+        axios.post("/api/posts/reply", data, { withCredentials: true})
             .then((res) => {
                 if (res.data.flag) {
                     repContent.value = "";

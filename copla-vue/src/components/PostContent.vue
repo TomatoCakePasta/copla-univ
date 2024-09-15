@@ -79,7 +79,7 @@
             datetime: repTime
         };
 
-        axios.post("/api/reply", data, { withCredentials: true})
+        axios.post("/api/posts/reply", data, { withCredentials: true})
             .then((res) => {
                 if (res.data.flag) {
                     repContent.value = "";

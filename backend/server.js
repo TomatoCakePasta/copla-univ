@@ -15,10 +15,17 @@ import { fileURLToPath } from "url";
 import schedule from "node-schedule";
 
 import authRouter from "./routes/authRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
+import likeRoutes from "./routes/likeRoutes.js";
+import bookmarkRoutes from "./routes/bookmarkRoutes.js";
+import menuRoutes from "./routes/menuRoutes.js";
+import scheduleRoutes from "./routes/scheduleRoutes.js";
+import transitTimeRoutes from "./routes/transitTimeRoutes.js";
 
 const app = express();
 const PORT = 3000;
 
+/*
 const storage = multer.diskStorage({
     // cbはcall backの略
     destination: (req, file, cb) => {
@@ -33,9 +40,10 @@ const storage = multer.diskStorage({
         cb(null, decodeName);
     },
 });
+*/
 
 // multerインスタンス
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
@@ -87,6 +95,7 @@ app.use(session({
 }));
 
 // db接続
+/*
 const con = mysql.createConnection({
     host : "localhost",
     user : "root",
@@ -97,13 +106,32 @@ const con = mysql.createConnection({
     // 日本時間
     timezone: "jst"
 });
+*/
 
 /**
  * あとでファイル分割する, ログイン系, 投稿系, ...
  */
 
-// 認証系(ログイン,ログアウト,サインアップ)
+// 認証関連(ログイン,ログアウト,サインアップ)
 app.use("/auth", authRouter);
+
+// 投稿関連(通常投稿, 返信, 検索)
+app.use("/posts", postRoutes);
+
+// いいね関連(押下, いいね投稿取得)
+app.use("/likes", likeRoutes);
+
+// ブックマーク関連(押下, ブックマーク投稿取得)
+app.use("/bookmarks", bookmarkRoutes);
+
+// メニュー関連(閲覧, 投票)
+app.use("/menu", menuRoutes);
+
+// 時間割関連(予定閲覧, 修正)
+app.use("/schedule", scheduleRoutes);
+
+// 交通時刻表関連(閲覧)
+app.use("/transit", transitTimeRoutes);
 
 // セッションチェック
 app.get("/session", (req, res) => {
@@ -123,11 +151,13 @@ app.get("/session", (req, res) => {
     res.status(200).send({ flag: flag, user: req.session.user });
 });
 
+// 初期ルート
 app.get("/", (req, res) => {
     // console.log(req.session.user);
     res.send("Hello World");
 });
 
+// マイページ
 // ユーザ情報取得
 app.get("/get/user", (req, res) => {
     const userID = req.session.user.userID;
@@ -221,6 +251,8 @@ app.post("/set/user", (req, res) => {
     }
 });
 
+// 投稿関連
+/*
 // 投稿取得
 app.get("/get/genre/:id", (req, res) => {
     console.log("get all posts");
@@ -491,6 +523,10 @@ app.post("/reply", (req, res) => {
     })
 });
 
+*/
+
+// いいね関連
+/*
 // いいね済み投稿IDの取得
 app.get("/posts/faved", (req, res) => {
     const userID = req.session.user.userID;
@@ -534,6 +570,65 @@ app.get("/replies/faved", (req, res) => {
 
 });
 
+// 投稿いいね押下
+app.post("/post/add-fav", (req, res) => {
+    const postID = req.body.postID;
+    const userID = req.session.user.userID;
+
+    // post_likesで誰がどの投稿にいいねしたか追加
+    con.query(`INSERT INTO post_likes(postID, userID) VALUES(?, ?)`, 
+                [postID, userID],
+                (err) => {
+        if (err) {
+            console.error("Failed to fav", err);
+            res.status(200).send({ flag: false });
+        }
+        else {
+            // postsで投稿のいいね数を加算
+            con.query(`UPDATE posts SET fav = fav + 1 WHERE postID = ?`, [postID], (err) => {
+                if (err) {
+                    console.error("Failed to fav", err);
+                    res.status(200).send({ flag: false });
+                }
+                else {
+                    res.status(200).send({ flag: true });
+                }
+            });
+        }
+    });
+});
+
+// 返信いいね押下
+app.post("/reply/add-fav", (req, res) => {
+    const repID = req.body.repID;
+    const userID = req.session.user.userID;
+
+    // post_likesで誰がどの返信にいいねしたか追加
+    con.query(`INSERT INTO reply_likes(repID, userID) VALUES(?, ?)`, 
+                [repID, userID],
+                (err) => {
+        if (err) {
+            console.error("Failed to rep fav", err);
+            res.status(200).send({ flag: false });
+        }
+        else {
+            // postsで投稿のいいね数を加算
+            con.query(`UPDATE replies SET fav = fav + 1 WHERE repID = ?`, [repID], (err) => {
+                if (err) {
+                    console.error("Failed to rep fav", err);
+                    res.status(200).send({ flag: false });
+                }
+                else {
+                    res.status(200).send({ flag: true });
+                }
+            });
+        }
+    });
+});
+*/
+
+// ブックマーク関連
+/*
 // ブックマーク済み投稿IDの取得
 app.get("/bookmarks", (req, res) => {
     const userID = req.session.user.userID;
@@ -604,62 +699,6 @@ app.get("/bookmark-posts", (req, res) => {
 
 });
 
-// 投稿いいね押下
-app.post("/post/add-fav", (req, res) => {
-    const postID = req.body.postID;
-    const userID = req.session.user.userID;
-
-    // post_likesで誰がどの投稿にいいねしたか追加
-    con.query(`INSERT INTO post_likes(postID, userID) VALUES(?, ?)`, 
-                [postID, userID],
-                (err) => {
-        if (err) {
-            console.error("Failed to fav", err);
-            res.status(200).send({ flag: false });
-        }
-        else {
-            // postsで投稿のいいね数を加算
-            con.query(`UPDATE posts SET fav = fav + 1 WHERE postID = ?`, [postID], (err) => {
-                if (err) {
-                    console.error("Failed to fav", err);
-                    res.status(200).send({ flag: false });
-                }
-                else {
-                    res.status(200).send({ flag: true });
-                }
-            });
-        }
-    });
-});
-
-// 返信いいね押下
-app.post("/reply/add-fav", (req, res) => {
-    const repID = req.body.repID;
-    const userID = req.session.user.userID;
-
-    // post_likesで誰がどの返信にいいねしたか追加
-    con.query(`INSERT INTO reply_likes(repID, userID) VALUES(?, ?)`, 
-                [repID, userID],
-                (err) => {
-        if (err) {
-            console.error("Failed to rep fav", err);
-            res.status(200).send({ flag: false });
-        }
-        else {
-            // postsで投稿のいいね数を加算
-            con.query(`UPDATE replies SET fav = fav + 1 WHERE repID = ?`, [repID], (err) => {
-                if (err) {
-                    console.error("Failed to rep fav", err);
-                    res.status(200).send({ flag: false });
-                }
-                else {
-                    res.status(200).send({ flag: true });
-                }
-            });
-        }
-    });
-});
-
 // ブックマーク追加
 app.post("/bookmark/add", (req, res) => {
     const postID = req.body.postID;
@@ -698,7 +737,10 @@ app.delete("/bookmark/del", (req, res) => {
         }
     });
 });
+*/
 
+// メニュー関連
+/*
 // メニュー取得
 app.get("/menus", (req, res) => {
     // console.log("メニュー取得");
@@ -776,6 +818,7 @@ app.get("/isVoted", (req, res) => {
             }
     );
 });
+*/
 
 // 投票リセット
 // second, minute, hour, day of month, month, day of weekの順に指定
@@ -817,6 +860,7 @@ const recordVotes = () => {
 // recordVotes();
 
 // バス時刻表取得
+/*
 app.get("/bus-table", (req, res) => {
     const query = `SELECT 
                     station,
@@ -841,7 +885,9 @@ app.get("/bus-table", (req, res) => {
         }
     })
 });
+*/
 
+/*
 // 時間割取得
 app.get("/timetable", (req, res) => {
     const userID = req.session.user.userID;
@@ -892,6 +938,7 @@ app.post("/set/timetable", (req, res) => {
         }
     }
 });
+*/
 
 app.listen(PORT, () => {
     console.log(`Server is running http://localhost:${ PORT }`);

@@ -56,7 +56,7 @@
     const getDatas = (genre = 0) => {
         getLoading.value = true;
         // 以下のURLに投稿取得リクエストをします
-        axios.get(`/api/get/genre/${genre}`, {withCredentials: true})
+        axios.get(`/api/posts/genre/${genre}`, {withCredentials: true})
             .then((res) => {
                 getLoading.value = false;
                 postsImageData.value = nestPostsAndReplies(res.data.posts);
