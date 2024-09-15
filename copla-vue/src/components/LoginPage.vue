@@ -24,7 +24,7 @@
         console.log(data);
 
         // APIリクエスト
-        axios.post("/api/login", data, {withCredentials: true})
+        axios.post("/api/auth/login", data, {withCredentials: true})
             .then((res) => {
                 // console.log(res);
                 if (res.data.flag) {

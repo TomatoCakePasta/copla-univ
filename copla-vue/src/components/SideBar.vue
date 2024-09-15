@@ -65,7 +65,7 @@
         
         // ログアウトリクエスト
         // セッションをクリアする
-        axios.post("/api/logout", {}, { withCredentials: true })
+        axios.post("/api/auth/logout", {}, { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     console.log("Success to logout");
