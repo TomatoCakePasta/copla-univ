@@ -14,7 +14,7 @@ import { fileURLToPath } from "url";
 
 import schedule from "node-schedule";
 
-import authRouter from "./routes/auth.js";
+import authRouter from "./routes/authRoutes.js";
 
 const app = express();
 const PORT = 3000;
