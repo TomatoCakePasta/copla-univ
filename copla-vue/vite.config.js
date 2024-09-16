@@ -18,13 +18,15 @@ export default defineConfig({
     proxy: {
       "/api" : {
         // バックエンドサーバのURL
-        target: "http://localhost:3000",
+        // target: "http://localhost:3000",
+        target: "https://copla-univ.onrender.com",
         changeOrigin: true,
         // /api プレフィックスを削除して転送
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
       "/socket.io" : {
-        target: "http://localhost:3000",
+        // target: "http://localhost:3000",
+        target: "https://copla-univ.onrender.com",
         changeOrigin: true,
         ws: true,
         // rewrite: (path) => path.replace(/^\/socket.io/, ""),
