@@ -22,6 +22,22 @@ const baseQuery = `SELECT
                 LEFT JOIN replies r ON p.postID = r.postID
                 LEFT JOIN users u2 ON r.userID = u2.userID`;
 
+const executeGetPostsQuery  = (query, params, callback) => {
+    con.query(query, params, (err, results) => {
+        if (err) {
+            return callback(err);
+        }
+
+        // 結果に画像URLを追加
+        const postsWithImageUrls = results.map(post => ({
+            ...post,
+            picUrl: post.postPic ? `/images/${post.postPic}` : null
+        }));
+
+        return callback(null, postsWithImageUrls);
+    });
+};
+
 export const insertNewPost = (userID, genre, content, pic, datetime, title, tags, callback) => {
     const query = `
                     INSERT INTO posts (
@@ -68,19 +84,7 @@ export const getPostsByGenre = (genre, callback) => {
         query += ` WHERE p.genre = ${ genre } ORDER BY p.datetime DESC`;
     }
 
-    con.query(query, (err, results) => {
-        if (err) {
-            return callback(err);
-        }
-
-        // 結果に画像URLを追加
-        const postsWithImageUrls = results.map(post => ({
-            ...post,
-            picUrl: post.postPic ? `/images/${post.postPic}` : null
-        }));
-
-        return callback(null, postsWithImageUrls);
-    });
+    executeGetPostsQuery(query, [], callback);
 };
 
 export const getPostById = (postId, callback) => {
@@ -88,18 +92,55 @@ export const getPostById = (postId, callback) => {
                 WHERE p.postID = ? 
                 ORDER BY p.datetime DESC`;
 
-    con.query(query, [postId], (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            return callback(err);
+    executeGetPostsQuery(query, [ postId ], callback);
+};
+
+export const getPostsByUserId = (userID, callback) => {
+    const query = `${baseQuery} 
+                    WHERE p.userID = ? 
+                    ORDER BY p.postID DESC
+                    `;
+    
+    executeGetPostsQuery(query, [ userID ], callback);
+};
+
+export const getPostsByKeyword = (rowWords, callback) => {
+    const queryWords = rowWords.map(word => `%${word}%`);
+    const genreWords = { "授業": 1, "サークル": 2, "研究室": 3, "就活": 4, "その他": 5, "イベント": 6, "記事": 7 };
+    let genreIDs = [];
+    let genre = 0;
+
+    let query = baseQuery;
+
+    if (rowWords.length > 0) {
+        query += " WHERE";
+    }
+
+    query += queryWords.map((word) => ` p.body LIKE '${ word }' OR p.title LIKE '${ word }' OR u.userName LIKE '${ word }'`).join(" OR ");
+    // OR p.genre = ?
+
+    // 記事タイトルも
+
+    // もしタグ名が含まれていたら
+    rowWords.some((word) => {
+        if (genreWords[word]) {
+            genreIDs.push(genreWords[word]);
         }
-
-        const postsWithImageUrls = results.map(post => ({
-            ...post,
-            picUrl: post.postPic ? `/images/${post.postPic}` : null
-        }));
-
-        return callback(null, postsWithImageUrls);
+        // Allタグの場合 
+        // スマートではない 本来はWHERE無しでgetPostsByGenre(0)を呼びたい
+        else if (word === "All") {
+            for (let i = 0; i <= Object.keys(genreWords).length; i++) {
+                genreIDs.push(i);
+            }
+        }
     });
 
-};
+    if (genreIDs.length > 0) {
+        query += ` OR p.genre IN (${ genreIDs }) ORDER BY p.datetime DESC`;
+    }
+    else {
+        query += ` ORDER BY p.datetime DESC`;
+    }
+
+    executeGetPostsQuery(query, [], callback);
+}

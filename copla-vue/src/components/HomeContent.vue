@@ -233,7 +233,7 @@
         // もしジャンルが入力されていたら
         // サーバー側でジャンルをキーに対応する番号に変換する
         // 就活 ES みたいな検索イメージ
-        axios.post("/api/search", { words: words}, { withCredentials: true})
+        axios.post("/api/posts/search", { words: words}, { withCredentials: true})
             .then((res) => {
                 // もし0件なら投稿が見つかりませんでしたを表示したい
                 if (res.data.flag) {
