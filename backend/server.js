@@ -21,6 +21,7 @@ import bookmarkRoutes from "./routes/bookmarkRoutes.js";
 import menuRoutes from "./routes/menuRoutes.js";
 import scheduleRoutes from "./routes/scheduleRoutes.js";
 import transitTimeRoutes from "./routes/transitTimeRoutes.js";
+import settingRoutes from "./routes/settingRoutes.js";
 
 const app = express();
 const PORT = 3000;
@@ -98,6 +99,9 @@ app.use("/schedule", scheduleRoutes);
 // 交通時刻表関連(閲覧)
 app.use("/transit", transitTimeRoutes);
 
+// 設定
+app.use("/setting", settingRoutes);
+
 // セッションチェック
 app.get("/session", (req, res) => {
     let flag = false;
@@ -123,6 +127,7 @@ app.get("/", (req, res) => {
 });
 
 // マイページ
+/*
 // ユーザ情報取得
 app.get("/get/user", (req, res) => {
     const userID = req.session.user.userID;
@@ -215,6 +220,7 @@ app.post("/set/user", (req, res) => {
         })
     }
 });
+*/
 
 // 投票リセット
 // second, minute, hour, day of month, month, day of weekの順に指定
