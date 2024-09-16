@@ -34,7 +34,7 @@
                       <v-card-item>
                           <!-- ユーザのカラーコードまたはアイコン画像パスとか -->
                           <div class="flex">
-                              <p class="icon" :style="{ backgroundColor: blue }"></p>
+                              <p class="icon"></p>
                               <p class="mt-2 font-weight-bold">
                                   Copla公式
                               </p>
