@@ -20,7 +20,7 @@
 
     // 時間割取得
     const getClasses = () => {
-        axios.get("/api/timetable", { withCredentials: true })
+        axios.get("/api/schedule", { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     // 取得した時間割を整理して格納
@@ -44,7 +44,7 @@
         // 編集完了
         if (editFlag.value) {
             // 時間割更新
-            axios.post("/api/set/timetable", data, { withCredentials: true })
+            axios.post("/api/schedule", data, { withCredentials: true })
                 .then((res) => {
                     if (!res.data.flag) {
                         console.error("Something error");

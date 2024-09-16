@@ -72,7 +72,7 @@
 
         console.log("新規投票");
         // 新規投票
-        axios.post("/api/vote", { menuID: id }, { withCredentials: true })
+        axios.post("/api/menu/vote", { menuID: id }, { withCredentials: true })
             .then((res) => {
                 isVotedID.value = id;
 

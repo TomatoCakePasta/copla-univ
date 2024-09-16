@@ -85,7 +85,7 @@
         console.log("EventPage読み込み");
         getMenus();
         isVoteRecorded();
-        nowRank();
+        // nowRank();
     })
 
     const onMenu = (id) => {
@@ -102,7 +102,7 @@
         let datas;
         console.log("メニュー取得");
 
-        axios.get("/api/menus", { withCredentials: true })
+        axios.get("/api/menu", { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     datas = res.data.menus;
@@ -130,7 +130,7 @@
     // 現在の上位3メニュー
     const nowRank = () => {
         axios
-            .get("/api/lunch-top", { withCredentials: true })
+            .get("/api/menu/top3", { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     // 上位3件を格納
@@ -167,7 +167,7 @@
     // 投票済み確認
     // 投票したメニューIDを取得 or -1
     const isVoteRecorded = () => {
-        axios.get("/api/isVoted", { withCredentials: true })
+        axios.get("/api/menu/isvoted", { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     console.log(res.data.menuID[0].menuID);

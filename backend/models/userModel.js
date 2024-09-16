@@ -1,5 +1,7 @@
 import con from "../etc/db.js";
 
+// Modelは関数の中身を記述
+
 export const findUserByName = (name, callback) => {
     con.query(`SELECT * FROM users WHERE userName = ?`, [name], (err, results) => {
         if (err) {
@@ -11,7 +13,7 @@ export const findUserByName = (name, callback) => {
     });
 };
 
-export const getAllUsers = (callback) => {
+export const fetchAllUsers = (callback) => {
     con.query(`SELECT * FROM users`, callback);
 };
 
