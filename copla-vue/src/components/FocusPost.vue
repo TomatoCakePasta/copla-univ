@@ -174,7 +174,7 @@
         // 取り消し
         if (bookmarks.value[postID]) {
             // deleteリクエスト
-            axios.delete("/api/bookmark/del", {
+            axios.delete("/api/bookmarks", {
                 data: { postID: postID },
                 withCredentials: true
                 })
@@ -188,7 +188,7 @@
         // 追加
         else {
             // postリクエスト
-            axios.post("/api/bookmark/add", { postID: postID }, { withCredentials: true })
+            axios.post("/api/bookmarks", { postID: postID }, { withCredentials: true })
             .then((res) => {
                 addBookmark(postID);
             })

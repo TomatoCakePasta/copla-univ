@@ -116,7 +116,7 @@
 
     // いいね済み投稿取得
     const getPostsFaved = () => {
-        axios.get("/api/posts/faved", { withCredentials: true} )
+        axios.get("/api/likes/user/posts", { withCredentials: true} )
             .then((res) => {
                 if (res.data.flag && res.data.favs > 0) {
                     // console.log(res.data.postIDs);
@@ -136,7 +136,7 @@
 
     // いいね済み返信取得
     const getRepFaved = () => {
-        axios.get("/api/replies/faved", { withCredentials: true} )
+        axios.get("/api/likes/user/replies", { withCredentials: true} )
             .then((res) => {
                 if (res.data.flag && res.data.favs > 0) {
                     // console.log(res.data.postIDs);

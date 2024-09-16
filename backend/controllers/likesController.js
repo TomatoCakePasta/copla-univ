@@ -5,7 +5,7 @@ import {
     addReplyFav
  } from "../models/likeModel.js";
 
-// いいねした通常投稿
+// いいねした通常投稿ID
 export const getUserLikedPostIds = (req ,res) => {
     const userID = req.session.user.userID;
 
@@ -20,7 +20,7 @@ export const getUserLikedPostIds = (req ,res) => {
     });
 };
 
-// いいねした返信
+// いいねした返信ID
 export const getUserLikedReplyIds = (req, res) => {
     const userID = req.session.user.userID;
 
