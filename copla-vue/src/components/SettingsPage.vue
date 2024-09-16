@@ -19,7 +19,7 @@
     })
 
     const getUser = () => {
-        axios.get("/api/get/user", { withCredentials: true })
+        axios.get("/api/setting/user", { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     console.log(res.data.userInfo);
@@ -74,7 +74,7 @@
         };
 
         console.log("変更リクエスト送信");
-        axios.post("/api/set/user", data, { withCredentials: true })
+        axios.post("/api/setting/user", data, { withCredentials: true })
             .then((res) => {
                 switch(res.data.flag) {
                     case 0:
