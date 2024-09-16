@@ -132,7 +132,7 @@
 
     const onGetTable = () => {
         axios
-            .get("/api/bus-table", { withCredentials: true })
+            .get("/api/transit", { withCredentials: true })
             .then((res) => {
                 if (res.data.flag) {
                     // デフォルト値を保持

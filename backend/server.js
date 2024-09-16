@@ -15,27 +15,18 @@ import { fileURLToPath } from "url";
 import schedule from "node-schedule";
 
 import authRouter from "./routes/authRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
+import likeRoutes from "./routes/likeRoutes.js";
+import bookmarkRoutes from "./routes/bookmarkRoutes.js";
+import menuRoutes from "./routes/menuRoutes.js";
+import scheduleRoutes from "./routes/scheduleRoutes.js";
+import transitTimeRoutes from "./routes/transitTimeRoutes.js";
 
 const app = express();
 const PORT = 3000;
 
-const storage = multer.diskStorage({
-    // cbはcall backの略
-    destination: (req, file, cb) => {
-        cb(null, "images/");
-    },
-    filename: (req, file, cb) => {
-        // console.log("画像格納");
-        // console.log(req.session.user.userID);
-        // 先頭にユーザID, 時刻を追加
-        // 別の形式に変換されたものを元に戻す(デコード)
-        const decodeName = req.session.user.userID + "_" + Date.now() + "_" + decodeURIComponent(file.originalname);
-        cb(null, decodeName);
-    },
-});
-
 // multerインスタンス
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
@@ -86,24 +77,26 @@ app.use(session({
     }
 }));
 
-// db接続
-const con = mysql.createConnection({
-    host : "localhost",
-    user : "root",
-    // 外部変数?にした方がいい
-    // envファイル, dotenv?
-    password: "",
-    database : "copla_db",
-    // 日本時間
-    timezone: "jst"
-});
-
-/**
- * あとでファイル分割する, ログイン系, 投稿系, ...
- */
-
-// 認証系(ログイン,ログアウト,サインアップ)
+// 認証関連(ログイン,ログアウト,サインアップ)
 app.use("/auth", authRouter);
+
+// 投稿関連(通常投稿, 返信, 検索)
+app.use("/posts", postRoutes);
+
+// いいね関連(押下, いいね投稿取得)
+app.use("/likes", likeRoutes);
+
+// ブックマーク関連(押下, ブックマーク投稿取得)
+app.use("/bookmarks", bookmarkRoutes);
+
+// メニュー関連(閲覧, 投票)
+app.use("/menu", menuRoutes);
+
+// 時間割関連(予定閲覧, 修正)
+app.use("/schedule", scheduleRoutes);
+
+// 交通時刻表関連(閲覧)
+app.use("/transit", transitTimeRoutes);
 
 // セッションチェック
 app.get("/session", (req, res) => {
@@ -123,11 +116,13 @@ app.get("/session", (req, res) => {
     res.status(200).send({ flag: flag, user: req.session.user });
 });
 
+// 初期ルート
 app.get("/", (req, res) => {
     // console.log(req.session.user);
     res.send("Hello World");
 });
 
+// マイページ
 // ユーザ情報取得
 app.get("/get/user", (req, res) => {
     const userID = req.session.user.userID;
@@ -221,562 +216,6 @@ app.post("/set/user", (req, res) => {
     }
 });
 
-// 投稿取得
-app.get("/get/genre/:id", (req, res) => {
-    console.log("get all posts");
-    // console.log(req.session);
-
-    let genre = +req.params.id;
-    let query = `SELECT 
-                    p.postID, 
-                    p.genre, 
-                    p.title,
-                    u.userName AS postName, 
-                    u.icon AS postUserIcon,
-                    p.body AS postContent, 
-                    p.pic AS postPic,
-                    p.tags AS postTags,
-                    p.datetime AS postTime, 
-                    p.fav AS postFav,
-                    r.repID,
-                    u2.userName AS repName,
-                    u2.icon AS repUserIcon,
-                    r.body AS repContent,
-                    r.datetime AS repTime,
-                    r.fav AS repFav
-                FROM posts p
-                LEFT JOIN users u ON p.userID = u.userID 
-                LEFT JOIN replies r ON p.postID = r.postID
-                LEFT JOIN users u2 ON r.userID = u2.userID`;
-
-    // 全投稿
-    if (genre === 0) {
-        query += " ORDER BY p.datetime DESC";
-    }
-    // 特定ジャンル
-    else {
-        query += ` WHERE p.genre = ${ genre } ORDER BY p.datetime DESC`;
-    }
-
-    con.query(query, (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            return;
-        }
-
-        // 結果に画像URLを追加
-        // 要素をスプレッド構文で展開して要素の末尾にpicUrlを追加
-        const postsWithImageUrls = results.map(post => ({
-            ...post,
-            picUrl: post.postPic ? `/images/${post.postPic}` : null
-        }));
-
-        res.status(200).send({ flag: true, posts: postsWithImageUrls });
-    });
-});
-
-// 自分の投稿
-app.get("/get/myposts", (req, res) => {
-    console.log("get my posts");
-    // console.log(req.session);
-
-    const userID = req.session.user.userID;
-
-    let query = `SELECT 
-                    p.postID, 
-                    p.genre, 
-                    p.title,
-                    u.userName AS postName, 
-                    u.icon AS postUserIcon,
-                    p.body AS postContent, 
-                    p.pic AS postPic,
-                    p.tags AS postTags,
-                    p.datetime AS postTime, 
-                    p.fav AS postFav,
-                    r.repID,
-                    u2.userName AS repName,
-                    u2.icon AS repUserIcon,
-                    r.body AS repContent,
-                    r.datetime AS repTime,
-                    r.fav AS repFav
-                FROM posts p
-                LEFT JOIN users u ON p.userID = u.userID 
-                LEFT JOIN replies r ON p.postID = r.postID
-                LEFT JOIN users u2 ON r.userID = u2.userID
-                WHERE p.userID = ? ORDER BY p.postID DESC`;
-
-    con.query(query, [ userID ], (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            return;
-        }
-
-        const postsWithImageUrls = results.map(post => ({
-            ...post,
-            picUrl: post.postPic ? `/images/${post.postPic}` : null
-        }));
-
-        res.status(200).send({ flag: true, posts: postsWithImageUrls });
-    });
-});
-
-// 検索投稿取得
-app.post("/search", (req, res) => {
-    let rowWords = req.body.words;
-    const queryWords = rowWords.map(word => `%${word}%`);
-    const genreWords = { "授業": 1, "サークル": 2, "研究室": 3, "就活": 4, "その他": 5, "イベント": 6, "記事": 7 };
-    let genreIDs = [];
-    let genre = 0;
-
-    let query = `SELECT 
-                    p.postID, 
-                    p.genre, 
-                    p.title,
-                    u.userName AS postName, 
-                    u.icon AS postUserIcon,
-                    p.body AS postContent, 
-                    p.pic AS postPic,
-                    p.tags AS postTags,
-                    p.datetime AS postTime, 
-                    p.fav AS postFav,
-                    r.repID,
-                    u2.userName AS repName,
-                    u2.icon AS repUserIcon,
-                    r.body AS repContent,
-                    r.datetime AS repTime,
-                    r.fav AS repFav
-                FROM posts p
-                LEFT JOIN users u ON p.userID = u.userID 
-                LEFT JOIN replies r ON p.postID = r.postID
-                LEFT JOIN users u2 ON r.userID = u2.userID`;
-
-    if (rowWords.length > 0) {
-        query += " WHERE";
-    }
-
-    query += queryWords.map((word) => ` p.body LIKE '${ word }' OR p.title LIKE '${ word }' OR u.userName LIKE '${ word }'`).join(" OR ");
-                // OR p.genre = ?
-
-                // p.genreがまだ中途半端
-                // Allの投稿が全て当てはまるから
-                // 記事タイトルも
-
-    // もしタグ名が含まれていたら
-    rowWords.some((word) => {
-        if (genreWords[word]) {
-            genreIDs.push(genreWords[word]);
-        }
-    });
-
-    if (genreIDs.length > 0) {
-        query += ` OR p.genre IN (${ genreIDs }) ORDER BY p.datetime DESC`;
-    }
-    else {
-        query += ` ORDER BY p.datetime DESC`;
-    }
-
-    // console.log(genre, queryWords, query);
-
-    con.query(query, (err, results) => {
-        if (err) {
-            console.error(err);
-            res.send({ flag: false, msg: "Internal Server Error" });
-        }
-        else {
-            // console.log(results);
-            const postsWithImageUrls = results.map(post => ({
-                ...post,
-                picUrl: post.postPic ? `/images/${post.postPic}` : null
-            }));
-            res.send({ flag: true, posts: postsWithImageUrls });
-        }
-    });
-
-})
-
-// シングルポスト表示
-app.get("/get/:id", (req, res) => {
-    const id = +req.params.id;
-    // console.log(`single post id = ${id}`);
-    con.query(`SELECT 
-                    p.postID, 
-                    p.genre, 
-                    p.title,
-                    u.userName AS postName, 
-                    u.icon AS postUserIcon,
-                    p.body AS postContent, 
-                    p.pic AS postPic,
-                    p.tags AS postTags,
-                    p.datetime AS postTime, 
-                    p.fav AS postFav,
-                    r.repID,
-                    u2.userName AS repName,
-                    u2.icon AS repUserIcon,
-                    r.body AS repContent,
-                    r.datetime AS repTime,
-                    r.fav AS repFav
-                FROM posts p
-                LEFT JOIN users u ON p.userID = u.userID 
-                LEFT JOIN replies r ON p.postID = r.postID
-                LEFT JOIN users u2 ON r.userID = u2.userID
-                WHERE p.postID = ?
-                ORDER BY p.datetime DESC`, id, (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            return;
-        }
-
-        const postsWithImageUrls = results.map(post => ({
-            ...post,
-            picUrl: post.postPic ? `/images/${post.postPic}` : null
-        }));
-
-        res.status(200).send({ posts: postsWithImageUrls });
-    });
-});
-
-// 新規投稿
-app.post("/post", upload.single("image"), (req, res) => {
-    // セッションからuserIDを取得
-    const userID = req.session.user.userID;
-    const data = JSON.parse(req.body.data)
-    let { content, genre, datetime, title, tags } = data;
-
-    let pic = "";
-
-    // console.log("get post info: ", content, genre, datetime, title);
-
-    // console.log("New POST");
-    // console.log(userID);
-
-    if (req.file) {
-        pic = req.file.filename;
-        // console.log("pic: ", pic);
-    }
-
-    // console.log("---------data-----------");
-    // console.log(data);
-
-    con.query(`INSERT INTO posts(userID, genre, body, pic, datetime, title, tags) VALUES(?, ?, ?, ?, ?, ?, ?)`, 
-                [userID, genre, content, pic, datetime, title, tags],
-                (err) => {
-        if (err) {
-            console.error("Failed to post", err);
-            res.status(200).send({ flag: false });
-        }
-        else {
-            res.status(200).send({ flag: true });
-        }
-    })
-});
-
-// 新規返信
-app.post("/reply", (req, res) => {
-    const userID = req.session.user.userID;
-    const { postID, repContent, datetime } = req.body;
-
-    // console.log("New Reply");
-    // console.log(userID);
-
-    con.query(`INSERT INTO replies(postID, userID, body, datetime) VALUES(?, ?, ?, ?)`, 
-                [postID, userID, repContent, datetime],
-                (err) => {
-        if (err) {
-            console.error("Failed to reply", err);
-            res.status(200).send({ flag: false });
-        }
-        else {
-            res.status(200).send({ flag: true });
-        }
-    })
-});
-
-// いいね済み投稿IDの取得
-app.get("/posts/faved", (req, res) => {
-    const userID = req.session.user.userID;
-
-    con.query(`SELECT 
-                    postID
-                FROM post_likes
-                WHERE userID = ?
-                ORDER BY postID ASC`, [userID], (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            return;
-        }
-        else {
-            // console.log(results.length);
-            res.status(200).send({flag: true, postIDs: results, favs: results.length });
-        }
-    });
-
-});
-
-// いいね済み返信IDの取得
-app.get("/replies/faved", (req, res) => {
-    const userID = req.session.user.userID;
-
-    // console.log("rep fav");
-    con.query(`SELECT 
-                    repID
-                FROM reply_likes
-                WHERE userID = ?
-                ORDER BY repID ASC`, [userID], (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            return;
-        }
-        else {
-            // console.log(results.length);
-            res.status(200).send({flag: true, repIDs: results, favs: results.length });
-        }
-    });
-
-});
-
-// ブックマーク済み投稿IDの取得
-app.get("/bookmarks", (req, res) => {
-    const userID = req.session.user.userID;
-
-    con.query(`SELECT 
-                    postID
-                FROM bookmarks
-                WHERE userID = ?
-                ORDER BY bookmarkID ASC`, [userID], (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            return;
-        }
-        else {
-            // console.log(results.length);
-            res.status(200).send({flag: true, postIDs: results, bookmarks: results.length });
-        }
-    });
-
-});
-
-// ブックマーク済み投稿要素全体の取得
-app.get("/bookmark-posts", (req, res) => {
-    const query = `SELECT 
-                        book.postID, 
-                        p.genre, 
-                        p.title,
-                        u.userName AS postName, 
-                        u.icon AS postUserIcon,
-                        p.body AS postContent, 
-                        p.pic AS postPic,
-                        p.tags AS postTags,
-                        p.datetime AS postTime, 
-                        p.fav AS postFav,
-                        r.repID,
-                        u2.userName AS repName,
-                        u2.icon AS repUserIcon,
-                        r.body AS repContent,
-                        r.datetime AS repTime,
-                        r.fav AS repFav
-                    FROM bookmarks book
-                    LEFT JOIN posts p ON book.postID = p.postID
-                    LEFT JOIN users u ON book.userID = u.userID 
-                    LEFT JOIN replies r ON book.postID = r.postID
-                    LEFT JOIN users u2 ON r.userID = u2.userID
-                    WHERE book.userID = ?
-                    ORDER BY book.postID DESC`;
-
-    const userID = req.session.user.userID;
-
-    con.query(query, [ userID ], (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            return;
-        }
-        else {
-            // console.log("お気に入り");
-            // console.log(results);
-
-            const postsWithImageUrls = results.map(post => ({
-                ...post,
-                picUrl: post.postPic ? `/images/${post.postPic}` : null
-            }));
-
-            res.status(200).send({ flag: true, posts: postsWithImageUrls });
-        }
-    });
-
-});
-
-// 投稿いいね押下
-app.post("/post/add-fav", (req, res) => {
-    const postID = req.body.postID;
-    const userID = req.session.user.userID;
-
-    // post_likesで誰がどの投稿にいいねしたか追加
-    con.query(`INSERT INTO post_likes(postID, userID) VALUES(?, ?)`, 
-                [postID, userID],
-                (err) => {
-        if (err) {
-            console.error("Failed to fav", err);
-            res.status(200).send({ flag: false });
-        }
-        else {
-            // postsで投稿のいいね数を加算
-            con.query(`UPDATE posts SET fav = fav + 1 WHERE postID = ?`, [postID], (err) => {
-                if (err) {
-                    console.error("Failed to fav", err);
-                    res.status(200).send({ flag: false });
-                }
-                else {
-                    res.status(200).send({ flag: true });
-                }
-            });
-        }
-    });
-});
-
-// 返信いいね押下
-app.post("/reply/add-fav", (req, res) => {
-    const repID = req.body.repID;
-    const userID = req.session.user.userID;
-
-    // post_likesで誰がどの返信にいいねしたか追加
-    con.query(`INSERT INTO reply_likes(repID, userID) VALUES(?, ?)`, 
-                [repID, userID],
-                (err) => {
-        if (err) {
-            console.error("Failed to rep fav", err);
-            res.status(200).send({ flag: false });
-        }
-        else {
-            // postsで投稿のいいね数を加算
-            con.query(`UPDATE replies SET fav = fav + 1 WHERE repID = ?`, [repID], (err) => {
-                if (err) {
-                    console.error("Failed to rep fav", err);
-                    res.status(200).send({ flag: false });
-                }
-                else {
-                    res.status(200).send({ flag: true });
-                }
-            });
-        }
-    });
-});
-
-// ブックマーク追加
-app.post("/bookmark/add", (req, res) => {
-    const postID = req.body.postID;
-    const userID = req.session.user.userID;
-
-    // bookmarksで誰がどの投稿にブックマークしたか追加
-    con.query(`INSERT INTO bookmarks(postID, userID) VALUES(?, ?)`, 
-                [postID, userID],
-                (err) => {
-        if (err) {
-            console.error("Failed to add bookmark", err);
-            res.status(200).send({ flag: false });
-        }
-        else {
-            res.send({ flag: true });
-        }
-    });
-});
-
-// ブックマーク削除
-app.delete("/bookmark/del", (req, res) => {
-    const postID = req.body.postID;
-    const userID = req.session.user.userID;
-    // console.log("削除", postID, userID);
-
-    // bookmarksで誰がどの投稿にブックマーク削除したか
-    con.query(`DELETE FROM bookmarks WHERE postID = ? AND userID = ?`, 
-                [postID, userID],
-                (err) => {
-        if (err) {
-            console.error("Failed to delete bookmark", err);
-            res.status(200).send({ flag: false });
-        }
-        else {
-            res.send({ flag: true });
-        }
-    });
-});
-
-// メニュー取得
-app.get("/menus", (req, res) => {
-    // console.log("メニュー取得");
-    con.query(`SELECT * FROM menus ORDER BY genre ASC`, (err, results) => {
-        if (results) {
-            res.send({ flag: true, menus: results });
-        }
-        else {
-            res.send({ flag: false });
-        }
-    });
-});
-
-// 現在の上位3メニュー
-app.get("/lunch-top", (req, res) => {
-    let query = `SELECT * FROM menus ORDER BY fav DESC LIMIT 3`;
-    con.query(query, (err, results) => {
-        if (results) {
-            console.log(results);
-            res.send({ flag: true, rank: results });
-        }
-        else {
-            res.send({ flag: false });
-        }
-    })
-});
-
-// 新規投票
-app.post("/vote", (req, res) => {
-    const userID = req.session.user.userID;
-    const menuID = req.body.menuID;
-
-    con.query(`INSERT INTO votes(userID, menuID, voteDate) VALUES(?, ?, curdate())`,
-        [ userID, menuID ], (err) => {
-            if (err) {
-                console.error("Failed to add new vote", err);
-                res.send({ flag: false});
-            }
-            else {
-                // いいねを追加
-                con.query(`UPDATE menus SET fav = fav + 1 WHERE menuID = ?`,
-                    [ menuID ],
-                    (err) => {
-                        if (err) {
-                            console.error("Failed to add new fav", err);
-                            res.send({ flag: false });
-                        }
-                        else {
-                            // console.log("新規投票を追加 : userID ", userID, ", menuID : ", menuID);
-                            res.send({ flag: true });
-                        }
-                    }
-                )
-            }
-        }
-    )
-});
-
-// 投票済み
-app.get("/isVoted", (req, res) => {
-    const userID = req.session.user.userID;
-
-    // 今日そのユーザが投票したか
-    con.query(`SELECT menuID FROM votes WHERE userID = ? AND voteDate = curdate();`,
-            [ userID ], 
-            (err, results) => {
-                if (results.length) {
-                    // console.log("isVoted : ", results);
-                    res.send({ flag: true, menuID: results });
-                }
-                else {
-                    // console.log("isNotVoted : ", results);
-                    res.send({ flag: false });
-                }
-            }
-    );
-});
-
 // 投票リセット
 // second, minute, hour, day of month, month, day of weekの順に指定
 // 毎日23:00にその日の投票結果を記録する
@@ -815,83 +254,6 @@ const recordVotes = () => {
 
 // 直書きでサーバ起動時に実行される
 // recordVotes();
-
-// バス時刻表取得
-app.get("/bus-table", (req, res) => {
-    const query = `SELECT 
-                    station,
-                    dest,
-                    depTime,
-                    endTime,
-                    schedule
-                FROM bustime
-                ORDER BY
-                    station,
-                    dest,
-                    depTime
-                ASC`;
-
-    con.query(query, (err, results) => {
-        if (err) {
-            res.send({ flag: false });
-        }
-        else {
-            console.log(results);
-            res.send({ flag: true, timetable: results });
-        }
-    })
-});
-
-// 時間割取得
-app.get("/timetable", (req, res) => {
-    const userID = req.session.user.userID;
-
-    con.query(`SELECT 
-                    className,
-                    dayID,
-                    periodID
-                FROM timetable
-                WHERE userID = ?
-                ORDER BY dayID DESC, periodID DESC`,
-            [ userID ],
-            (err, results) => {
-                if (err) {
-                    res.send({ flag: false });
-                }
-                else {
-                    // console.log(results);
-                    res.send({ flag: true, timetable: results });
-                }
-            });
-})
-
-// 時間割更新
-app.post("/set/timetable", (req, res) => {
-    const userID = req.session.user.userID;
-    const timetable = req.body.classes;
-    // console.log(timetable);
-
-    let count = 0;
-    for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-            con.query(`UPDATE timetable 
-                        SET className = ?
-                        WHERE userID = ? AND dayID = ? AND periodID = ?`,
-                        [ timetable[i][j], userID, i, j ],
-                        (err) => {
-                            if (err) {
-                                console.error("Failed to set new timetable", err);
-                                res.send({ flag: false });
-                            }
-                            else if (++count === 25) {
-                                res.send({ flag: true });
-                            }
-                        }
-
-            )
-        }
-    }
-});
 
 app.listen(PORT, () => {
     console.log(`Server is running http://localhost:${ PORT }`);
