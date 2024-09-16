@@ -1,10 +1,10 @@
 import { 
         insertNewPost,
         insertNewReply,
-        getPostsByGenre,
-        getPostById,
-        getPostsByUserId,
-        getPostsByKeyword
+        fetchPostsByGenre,
+        fetchPostById,
+        fetchPostsByUserId,
+        fetchPostsByKeyword
      } from "../models/postModel.js";
 
 // Controller:レスポンス処理に専念
@@ -60,7 +60,7 @@ export const getPosts = (req, res) => {
     console.log("/posts/genre/:id, get all posts");
     let genre = +req.params.id;
 
-    getPostsByGenre(genre, (err, posts) => {
+    fetchPostsByGenre(genre, (err, posts) => {
         if (err) {
             console.error("Failed to get posts by genre", err);
             res.send({ flag: false });
@@ -76,7 +76,7 @@ export const getSinglePost = (req, res) => {
     const id = +req.params.id;
     console.log("/posts/single/:id, getSinglePost id = ", id);
 
-    getPostById(id, (err, posts) => {
+    fetchPostById(id, (err, posts) => {
         if (err) {
             console.error("Failed to get posts by postId", err);
             res.send({ flag: false });
@@ -92,7 +92,7 @@ export const getMyPosts = (req, res) => {
     const userID = req.session.user.userID;
     console.log("/posts/myposts getMyPosts");
 
-    getPostsByUserId(userID, (err, posts) => {
+    fetchPostsByUserId(userID, (err, posts) => {
         if (err) {
             console.error("Failed to get posts by userID", err);
             res.send({ flag: false });
@@ -108,7 +108,7 @@ export const searchPosts = (req, res) => {
     let rowWords = req.body.words;
     console.log("/posts/search searchPosts");
 
-    getPostsByKeyword(rowWords, (err, posts) => {
+    fetchPostsByKeyword(rowWords, (err, posts) => {
         if (err) {
             console.error("Failed to get posts by keywords", err);
             res.send({ flag: false });

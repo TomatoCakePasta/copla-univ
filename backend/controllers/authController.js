@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { findUserByName, getAllUsers, insertUser, createTimetableForUser } from "../models/userModel.js";
+import { findUserByName, fetchAllUsers, insertUser, createTimetableForUser } from "../models/userModel.js";
 
 // Controllerは関数を呼出
 // 必要なModelを呼び出すイメージ
@@ -18,7 +18,7 @@ export const signup = (req, res) => {
             res.status(200).send({ flag: false});
         }
         else {
-            getAllUsers((err, allRows) => {
+            fetchAllUsers((err, allRows) => {
                 const nextID = allRows.length + 1;
                 console.log(nextID, name);
 

@@ -1,15 +1,15 @@
 import { 
-        getAllMenu,
-        getTopLunchMenu,
+        fetchAllMenu,
+        fetchTopLunchMenu,
         addVoteMenu,
-        getVotedMenuIdByUser
+        fetchVotedMenuIdByUser
     } from "../models/menuModel.js";
 
 // 全メニュー取得
 export const getMenu = (req, res) => {
     console.log("/menu getMenu");
 
-    getAllMenu((err, menus) => {
+    fetchAllMenu((err, menus) => {
         if (err) {
             console.error("Failed to get menu", err);
             req.send({ flag: false });
@@ -25,7 +25,7 @@ export const getTop3Menu = (req, res) => {
     console.log("/menu/top3 getTop3Menu");
 
     // モデルを呼出
-    getTopLunchMenu((err, rank) => {
+    fetchTopLunchMenu((err, rank) => {
         if (err) {
             console.error("Failed to get top3 menu", err);
             res.send({ flag: false });
@@ -36,6 +36,7 @@ export const getTop3Menu = (req, res) => {
     });
 };
 
+// メニュー投票
 export const voteForMenu = (req, res) => {
     const userID = req.session.user.userID;
     const menuID = req.body.menuID;
@@ -53,12 +54,13 @@ export const voteForMenu = (req, res) => {
     });
 };
 
+// 投票済み確認
 export const isVoted = (req, res) => {
     const userID = req.session.user.userID;
     
     console.log("/menu/isvoted isVoted");
 
-    getVotedMenuIdByUser(userID, (err, menuID) => {
+    fetchVotedMenuIdByUser(userID, (err, menuID) => {
         if (err) {
             console.error("Failed to get voted menu id by user", err);
             res.send({ flag: false });

@@ -72,7 +72,7 @@ export const insertNewReply = (postID, userID, repContent, datetime, callback) =
     con.query(query, values, callback);
 };
 
-export const getPostsByGenre = (genre, callback) => {
+export const fetchPostsByGenre = (genre, callback) => {
     let query = baseQuery;
 
     // 全投稿
@@ -87,7 +87,7 @@ export const getPostsByGenre = (genre, callback) => {
     executeGetPostsQuery(query, [], callback);
 };
 
-export const getPostById = (postId, callback) => {
+export const fetchPostById = (postId, callback) => {
     const query = `${baseQuery} 
                 WHERE p.postID = ? 
                 ORDER BY p.datetime DESC`;
@@ -95,7 +95,7 @@ export const getPostById = (postId, callback) => {
     executeGetPostsQuery(query, [ postId ], callback);
 };
 
-export const getPostsByUserId = (userID, callback) => {
+export const fetchPostsByUserId = (userID, callback) => {
     const query = `${baseQuery} 
                     WHERE p.userID = ? 
                     ORDER BY p.postID DESC
@@ -104,7 +104,7 @@ export const getPostsByUserId = (userID, callback) => {
     executeGetPostsQuery(query, [ userID ], callback);
 };
 
-export const getPostsByKeyword = (rowWords, callback) => {
+export const fetchPostsByKeyword = (rowWords, callback) => {
     const queryWords = rowWords.map(word => `%${word}%`);
     const genreWords = { "授業": 1, "サークル": 2, "研究室": 3, "就活": 4, "その他": 5, "イベント": 6, "記事": 7 };
     let genreIDs = [];

@@ -1,6 +1,6 @@
 import con from "../etc/db.js";
 
-export const getTimeTableByUserId = (userID, callback) => {
+export const fetchTimeTableByUserId = (userID, callback) => {
     const query = `SELECT 
                         className,
                         dayID,

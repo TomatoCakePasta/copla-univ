@@ -1,6 +1,6 @@
 import con from "../etc/db.js";
 
-export const getLikedPostsIdByUser = (userID, callback) => {
+export const fetchLikedPostsIdByUser = (userID, callback) => {
     const query = `SELECT 
                         postID
                     FROM post_likes
@@ -11,7 +11,7 @@ export const getLikedPostsIdByUser = (userID, callback) => {
     con.query(query, [ userID ], callback);
 };
 
-export const getLikedRepliesIdByUser = (userID, callback) => {
+export const fetchLikedRepliesIdByUser = (userID, callback) => {
     const query = `SELECT 
                         repID
                     FROM reply_likes

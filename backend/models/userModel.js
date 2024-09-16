@@ -13,7 +13,7 @@ export const findUserByName = (name, callback) => {
     });
 };
 
-export const getAllUsers = (callback) => {
+export const fetchAllUsers = (callback) => {
     con.query(`SELECT * FROM users`, callback);
 };
 

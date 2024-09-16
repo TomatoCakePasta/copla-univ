@@ -1,6 +1,6 @@
 import { 
-        getBookmarkPostsIdByUser,
-        getBookmarkPostsByUser,
+        fetchBookmarkPostsIdByUser,
+        fetchBookmarkPostsByUser,
         addPostBookmark,
         delPostBookmark
     } from "../models/bookmarkModel.js";
@@ -10,7 +10,7 @@ export const getUserBookmarkIds = (req, res) => {
     const userID = req.session.user.userID;
     console.log("/bookmarks getUserBookmarkIds");
 
-    getBookmarkPostsIdByUser(userID, (err, results) => {
+    fetchBookmarkPostsIdByUser(userID, (err, results) => {
         if (err) {
             console.error("Failed to get bookmark posts id", err);
             res.send({ flag: false });
@@ -26,7 +26,7 @@ export const getUserBookmarkPosts = (req, res) => {
     const userID = req.session.user.userID;
     console.log("/bookmarks/posts getUserBookmarkPosts");
 
-    getBookmarkPostsByUser(userID, (err, posts) => {
+    fetchBookmarkPostsByUser(userID, (err, posts) => {
         if (err) {
             console.error("Failed to get bookmark posts by user", err);
             res.send({ flag: false });

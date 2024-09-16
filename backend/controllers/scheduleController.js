@@ -1,5 +1,5 @@
 import { 
-        getTimeTableByUserId,
+        fetchTimeTableByUserId,
         updateTimetableByUsreId
     } from "../models/scheduleModel.js";
 
@@ -9,7 +9,7 @@ export const getUserTimetable = (req, res) => {
 
     console.log("get /schedule getUserTimetable");
 
-    getTimeTableByUserId(userID, (err, timetable) => {
+    fetchTimeTableByUserId(userID, (err, timetable) => {
         if (err) {
             console.error("Failed to get timetable by userID", err);
             res.send({ flag: false });

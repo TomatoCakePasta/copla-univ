@@ -1,6 +1,6 @@
 import con from "../etc/db.js";
 
-export const getBookmarkPostsIdByUser = (userID, callback) => {
+export const fetchBookmarkPostsIdByUser = (userID, callback) => {
     const query = `SELECT 
                         postID
                     FROM bookmarks
@@ -11,7 +11,7 @@ export const getBookmarkPostsIdByUser = (userID, callback) => {
     con.query(query, [ userID ], callback);
 };
 
-export const getBookmarkPostsByUser = (userID, callback) => {
+export const fetchBookmarkPostsByUser = (userID, callback) => {
     const query = `SELECT 
                         book.postID, 
                         p.genre, 

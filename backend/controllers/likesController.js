@@ -1,6 +1,6 @@
 import { 
-    getLikedPostsIdByUser,
-    getLikedRepliesIdByUser,
+    fetchLikedPostsIdByUser,
+    fetchLikedRepliesIdByUser,
     addPostFav,
     addReplyFav
  } from "../models/likeModel.js";
@@ -9,7 +9,7 @@ import {
 export const getUserLikedPostIds = (req ,res) => {
     const userID = req.session.user.userID;
 
-    getLikedPostsIdByUser(userID, (err, results) => {
+    fetchLikedPostsIdByUser(userID, (err, results) => {
         if (err) {
             console.error("Failed to get liked posts by user", err);
             res.send({ flag: false });
@@ -24,7 +24,7 @@ export const getUserLikedPostIds = (req ,res) => {
 export const getUserLikedReplyIds = (req, res) => {
     const userID = req.session.user.userID;
 
-    getLikedRepliesIdByUser(userID, (err, results) => {
+    fetchLikedRepliesIdByUser(userID, (err, results) => {
         if (err) {
             console.error("Failed to get liked replies by user", err);
             res.send({ flag: false });

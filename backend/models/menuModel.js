@@ -1,6 +1,6 @@
 import con from "../etc/db.js";
 
-export const getAllMenu = (callback) => {
+export const fetchAllMenu = (callback) => {
     const query = `SELECT * 
                     FROM menus 
                     ORDER BY genre ASC
@@ -9,7 +9,7 @@ export const getAllMenu = (callback) => {
     con.query(query, callback);
 };
 
-export const getTopLunchMenu = (callback) => {
+export const fetchTopLunchMenu = (callback) => {
     const query = `SELECT * 
                     FROM menus 
                     ORDER BY fav DESC 
@@ -44,7 +44,7 @@ export const addVoteMenu = (userID, menuID, callback) => {
     );
 };
 
-export const getVotedMenuIdByUser = (userID, callback) => {
+export const fetchVotedMenuIdByUser = (userID, callback) => {
     const query = `SELECT menuID FROM votes WHERE userID = ? AND voteDate = curdate();`;
 
     con.query(query, [ userID ], callback);
