@@ -1,3 +1,7 @@
+import { 
+
+    } from "../models/bookmarkModel.js";
+
 export const getUserBookmarkIds = (req, res) => {
 
 };

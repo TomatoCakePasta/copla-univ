@@ -140,7 +140,7 @@
 
         // サーバのlikesテーブルの追加処理のみする?
         // こちらでlikesテーブルのユーザがいいねした投稿IDを取得しないとか
-        axios.post("/api/post/add-fav", { postID: postID }, { withCredentials: true })
+        axios.post("/api/likes/post", { postID: postID }, { withCredentials: true })
             .then((res) => {
                 // 取得した自分がいいねした投稿のIDをpost_favsに格納
                 addPostFav(postID); 
@@ -159,7 +159,7 @@
             return;
         }
 
-        axios.post("/api/reply/add-fav", { repID: repID }, { withCredentials: true })
+        axios.post("/api/likes/reply", { repID: repID }, { withCredentials: true })
             .then((res) => {
                 // 取得した自分がいいねした投稿のIDをpost_favsに格納
                 addRepFav(repID); 
@@ -294,7 +294,7 @@
 
     // いいね済み投稿取得
     const getPostsFaved = () => {
-        axios.get("/api/posts/faved", { withCredentials: true} )
+        axios.get("/api/likes/user/posts", { withCredentials: true} )
             .then((res) => {
                 if (res.data.flag && res.data.favs > 0) {
                     // console.log(res.data.postIDs);
@@ -315,7 +315,7 @@
 
     // いいね済み投稿取得
     const getRepFaved = () => {
-        axios.get("/api/replies/faved", { withCredentials: true} )
+        axios.get("/api/likes/user/replies", { withCredentials: true} )
             .then((res) => {
                 if (res.data.flag && res.data.favs > 0) {
                     // console.log(res.data.postIDs);

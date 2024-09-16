@@ -1,0 +1,1 @@
+import con from "../etc/db.js";
