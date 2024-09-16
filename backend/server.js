@@ -21,6 +21,7 @@ import bookmarkRoutes from "./routes/bookmarkRoutes.js";
 import menuRoutes from "./routes/menuRoutes.js";
 import scheduleRoutes from "./routes/scheduleRoutes.js";
 import transitTimeRoutes from "./routes/transitTimeRoutes.js";
+import settingRoutes from "./routes/settingRoutes.js";
 
 const app = express();
 const PORT = 3000;
@@ -98,6 +99,9 @@ app.use("/schedule", scheduleRoutes);
 // 交通時刻表関連(閲覧)
 app.use("/transit", transitTimeRoutes);
 
+// 設定
+app.use("/setting", settingRoutes);
+
 // セッションチェック
 app.get("/session", (req, res) => {
     let flag = false;
@@ -120,100 +124,6 @@ app.get("/session", (req, res) => {
 app.get("/", (req, res) => {
     // console.log(req.session.user);
     res.send("Hello World");
-});
-
-// マイページ
-// ユーザ情報取得
-app.get("/get/user", (req, res) => {
-    const userID = req.session.user.userID;
-
-    let query = `SELECT 
-                    u.userName,
-                    u.icon
-                FROM users u
-                WHERE userID = ?`;
-    
-    con.query(query, [ userID ], (err, results) => {
-        if (err) {
-            console.error("DB query error:", err);
-            res.send({ flag: false });
-            return;
-        }
-        else {
-            // console.log(results);
-            res.status(200).send({ flag: true, userInfo: results });
-        }
-    })
-
-});
-
-// ユーザ情報更新
-app.post("/set/user", (req, res) => {
-    const userID = req.session.user.userID;
-
-    let { userName, profilePict, currentPass, renewPass } = req.body;
-    
-    let hashedRenewPass = bcrypt.hashSync(renewPass, 10);
-
-    // console.log(userName, " : ", profilePict, currentPass, " -> ", renewPass);
-
-    let query = `UPDATE users SET 
-                userName = COALESCE(?, userName),
-                icon = COALESCE(?, icon),
-                password = COALESCE(?, password)
-                WHERE userID = ?`
-
-    // もしパスワードが入力されている場合
-    if (renewPass !== "") {
-        // 既存のパスと比較
-        con.query(`SELECT * FROM users WHERE userID = ?`, 
-                [ userID ], 
-                (err, results) => {
-            if (err || results.length === 0) {
-                console.error("DB query error:", err);
-                res.send({ flag: -1 });
-                return;
-            }
-            // ユーザ入力の現在のパスが一致しなかった場合
-            else if (!bcrypt.compareSync(currentPass, results[0].password)) {
-                console.log("現在のパスが不一致");
-                res.send({ flag: 0 });
-                return;
-            }
-            else {
-                // データ更新
-                console.log("パスワード込みデータ更新");
-                con.query(query, [userName, profilePict, hashedRenewPass, userID], (err, results) => {
-                    if (err) {
-                        console.error("DB query error:", err);
-                        res.send({ flag: -1 });
-                        return;    
-                    }
-    
-                    res.send({ flag: 2 });
-                });
-            }
-        });
-    }
-    else {
-        console.log("通常データ更新")
-        // もし空データならnullに変換
-        if (renewPass === "") {
-            hashedRenewPass = null;
-        }
-    
-        // データ更新
-        con.query(query, [userName, profilePict, hashedRenewPass, userID], (err, results) => {
-            if (err) {
-                console.error("DB query error:", err);
-                res.send({ flag: -1 });
-                return;
-            }
-            else {
-                res.status(200).send({ flag: 2 });
-            }
-        })
-    }
 });
 
 // 投票リセット
