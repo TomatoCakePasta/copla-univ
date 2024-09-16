@@ -14,9 +14,10 @@
 
   import io from "socket.io-client"
 
-  const PORT = 8000;
+  const PORT = 3000;
 
-  const socket = io.connect(`http://localhost:${PORT}`);
+  // const socket = io.connect(`http://localhost:${PORT}`);
+  const socket = io();
 
   socket.on("connect", () => {
     console.log("connected to server.");

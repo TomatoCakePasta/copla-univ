@@ -23,6 +23,12 @@ export default defineConfig({
         // /api プレフィックスを削除して転送
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/socket.io" : {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        ws: true,
+        // rewrite: (path) => path.replace(/^\/socket.io/, ""),
+      },
       "/images" : {
         // バックエンドサーバのURL
         target: "http://localhost:3000",
