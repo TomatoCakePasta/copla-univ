@@ -78,7 +78,7 @@
             datetime: repTime
         };
 
-        axios.post("/api/reply", data, { withCredentials: true})
+        axios.post("/api/posts/reply", data, { withCredentials: true})
             .then((res) => {
                 if (res.data.flag) {
                     repContent.value = "";
@@ -112,7 +112,7 @@
 
         // サーバのlikesテーブルの追加処理のみする?
         // こちらでlikesテーブルのユーザがいいねした投稿IDを取得しないとか
-        axios.post("/api/post/add-fav", { postID: postID }, { withCredentials: true })
+        axios.post("/api/likes/post", { postID: postID }, { withCredentials: true })
             .then((res) => {
                 // 取得した自分がいいねした投稿のIDをpost_favsに格納
                 addPostFav(postID); 
@@ -130,7 +130,7 @@
             return;
         }
 
-        axios.post("/api/reply/add-fav", { repID: repID }, { withCredentials: true })
+        axios.post("/api/likes/reply", { repID: repID }, { withCredentials: true })
             .then((res) => {
                 // 取得した自分がいいねした投稿のIDをpost_favsに格納
                 addRepFav(repID); 
@@ -144,7 +144,7 @@
         // 取り消し
         if (props.bookmarks[postID]) {
             // deleteリクエスト
-            axios.delete("/api/bookmark/del", {
+            axios.delete("/api/bookmarks", {
                 data: { postID: postID },
                 withCredentials: true
                 })
@@ -158,7 +158,7 @@
         // 追加
         else {
             // postリクエスト
-            axios.post("/api/bookmark/add", { postID: postID }, { withCredentials: true })
+            axios.post("/api/bookmarks", { postID: postID }, { withCredentials: true })
             .then((res) => {
                 addBookmark(postID);
             })
